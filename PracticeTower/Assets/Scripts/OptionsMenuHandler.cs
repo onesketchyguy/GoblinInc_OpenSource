@@ -7,23 +7,24 @@ namespace LowEngine
 {
     public class OptionsMenuHandler : MonoBehaviour
     {
+        public enum Viewing { Main, LoadView, SaveView, Quit }
+
+        private Viewing currentView;
+
+        public Viewing viewing { get { return currentView; } set { currentView = value; UpdateView(); } }
+
         private void OnEnable()
         {
-            showingMain = true;
-            Saving = false;
-
-            UpdateView();
+            viewing = Viewing.Main;
         }
-
-        bool Saving;
-
-        bool showingMain;
 
         public Font font;
 
         public GameObject MainView;
 
         public GameObject SavesView;
+
+        public GameObject QuitView;
 
         public Transform savesViewContentHold;
 
@@ -51,9 +52,7 @@ namespace LowEngine
 
                 GameHandler.instance.SaveGame();
 
-                Saving = false;
-                showingMain = true;
-                UpdateView();
+                viewing = Viewing.Main;
 
                 InputField.onValueChanged.RemoveListener(TextChanged);
             }
@@ -66,7 +65,7 @@ namespace LowEngine
 
             GameObjects.Add(button.gameObject);
 
-            button.onClick.AddListener( () => { GameHandler.instance.LoadGame(index); showingMain = true; UpdateView(); });
+            button.onClick.AddListener( () => { GameHandler.instance.LoadGame(index); viewing = Viewing.Main; });
         }
 
         private void SpawnDeleteSaveButton(SaveManager.SaveData data, int index)
@@ -75,7 +74,7 @@ namespace LowEngine
 
             GameObjects.Add(button.gameObject);
 
-            button.onClick.AddListener(() => { GameHandler.instance.ClearSavedData(index); showingMain = true; UpdateView(); });
+            button.onClick.AddListener(() => { GameHandler.instance.ClearSavedData(index); viewing = Viewing.Main; });
         }
 
         private void SpawnOverriteSaveButton(SaveManager.SaveData data, int index)
@@ -101,9 +100,7 @@ namespace LowEngine
                 GameHandler.instance.saveName = input;
 
                 GameHandler.instance.SaveGame();
-                showingMain = true;
-                Saving = false;
-                UpdateView();
+                viewing = Viewing.Main;
             });
         }
 
@@ -123,8 +120,7 @@ namespace LowEngine
                 return;
             }
 
-            showingMain = false;
-            UpdateView();
+            viewing = Viewing.LoadView;
         }
         public void SaveGame()
         {
@@ -136,10 +132,7 @@ namespace LowEngine
                 SpawnOverriteSaveButton(save, i);
             }
 
-            Saving = true;
-
-            showingMain = false;
-            UpdateView();
+            viewing = Viewing.SaveView;
 
             InputField.onValueChanged.AddListener(TextChanged);
         }
@@ -159,23 +152,23 @@ namespace LowEngine
                 return;
             }
 
-            showingMain = false;
-            UpdateView();
+            viewing = Viewing.LoadView;
         }
         public void LeaveGame()
         {
-            Application.Quit();
+            viewing = Viewing.Quit;
         }
 
         void UpdateView()
         {
-            MainView.SetActive(showingMain);
-            SavesView.SetActive(!showingMain);
+            MainView.SetActive(currentView == Viewing.Main);
+            SavesView.SetActive(currentView == Viewing.SaveView || currentView == Viewing.LoadView);
+            QuitView.SetActive(currentView == Viewing.Quit);
 
-            InputField.gameObject.SetActive(Saving);
-            inputRegion.SetActive(Saving);
+            InputField.gameObject.SetActive(currentView == Viewing.SaveView);
+            inputRegion.SetActive(currentView == Viewing.SaveView);
 
-            if (showingMain)
+            if (currentView == Viewing.Main)
             {
                 while (GameObjects.Count > 0)
                 {

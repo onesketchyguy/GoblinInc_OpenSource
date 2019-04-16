@@ -7,7 +7,7 @@ namespace LowEngine
 {
     public class HiringPanel : MonoBehaviour
     {
-        public static int Hirable = 5;
+        int Hirable = 3;
 
         public Transform spawningParent;
 
@@ -16,6 +16,39 @@ namespace LowEngine
         List<SaveManager.SavableObject.Worker> todaysEmployees = new List<SaveManager.SavableObject.Worker>() { };
 
         public Text selectedEmployeeBio;
+
+        public void UpdateApplicants()
+        {
+            //Remove old employees
+            if (todaysEmployees.Count > 0)
+            {
+                List<SaveManager.SavableObject.Worker> applicantsToRemove = new List<SaveManager.SavableObject.Worker>() { };
+
+                int ran = Random.Range(0, todaysEmployees.Count);
+
+                for (int i = 0; i < ran; i++)
+                {
+                    if (todaysEmployees[i] != null)
+                    {
+                        applicantsToRemove.Add(todaysEmployees[i]);
+                    }
+                }
+
+
+                while (applicantsToRemove.Count > 0)
+                {
+                    todaysEmployees.Remove(todaysEmployees[0]);
+                    applicantsToRemove.Remove(applicantsToRemove[0]);
+                }
+            }
+
+            Hirable = Random.Range(1, 7);
+        }
+
+        private void Start()
+        {
+            TimeManagement.TimeScale.DayChanged += UpdateApplicants;
+        }
 
         private void OnEnable()
         {
@@ -122,7 +155,7 @@ namespace LowEngine
             {
                 float eff = worker.skill;
 
-                Display($"{worker.name}\nEfficiency:{eff}%");
+                Display($"{worker.name}\nEfficiency:{eff}%\nWill work for: ${worker.pay}(Due on payday)");
                 selectedEmployee = worker;
             });
 

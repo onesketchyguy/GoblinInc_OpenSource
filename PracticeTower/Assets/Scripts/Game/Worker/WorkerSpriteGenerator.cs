@@ -52,7 +52,11 @@ namespace LowEngine
 
             float skill = Random.Range(20, 100);
 
-            worker = new SaveManager.SavableObject.Worker(name, headIndex, eyeIndex, noseIndex, mouthIndex, hairIndex, hairColor, skill, 0, new float[] { 100, 100 });
+            float income = Random.Range(5, 50) + skill;
+
+            income = (float)System.Math.Round(income, 2);
+
+            worker = new SaveManager.SavableObject.Worker(name, headIndex, eyeIndex, noseIndex, mouthIndex, hairIndex, hairColor, skill, income, 0, new float[] { 100, 100 });
 
             return toReturn;
         }
@@ -131,7 +135,11 @@ namespace LowEngine
 
             float skill = Random.Range(20, 100);
 
-            worker = new SaveManager.SavableObject.Worker(name, headIndex, eyeIndex, noseIndex, mouthIndex, hairIndex, hairColor, skill, 0, new float[] { 100, 100 });
+            float income = Random.Range(5f, 50) + skill;
+
+            income = (float)System.Math.Round(income, 2);
+
+            worker = new SaveManager.SavableObject.Worker(name, headIndex, eyeIndex, noseIndex, mouthIndex, hairIndex, hairColor, skill, income, 0, new float[] { 100, 100 });
 
             return toReturn;
         }
@@ -173,7 +181,6 @@ namespace LowEngine
 
             SpriteRenderer spr = head.AddComponent<SpriteRenderer>();
             spr.sprite = GetSpriteFromArray(sprites, out val);
-
             spr.sortingOrder = order;
 
             if (sprites == Hairs)
@@ -190,7 +197,6 @@ namespace LowEngine
 
             SpriteRenderer spr = part.AddComponent<SpriteRenderer>();
             spr.sprite = sprites[index];
-
             spr.sortingOrder = order;
 
             if (sprites == Hairs)

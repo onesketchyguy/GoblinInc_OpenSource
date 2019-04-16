@@ -12,14 +12,14 @@ namespace LowEngine
 
         public TaskWorkerAI currentWorker;
 
-        public void Clicked()
+        public void Clicked(TaskWorkerAI workerTryingToClick)
         {
-            if (Vector2.Distance(transform.position, currentWorker.transform.position) >= 2)
+            if (currentWorker == null)
             {
-                currentWorker.taskManager.tasks.Clear();
-
-                return;
+                currentWorker = workerTryingToClick;
             }
+
+            if (currentWorker == null || Vector2.Distance(transform.position, currentWorker.transform.position) > 2) return;
 
             GameHandler.instance.Money += moneyToAdd;
 
@@ -63,7 +63,7 @@ namespace LowEngine
             }
         }
 
-        float inactivityTime = 0;
+        float inactiveTime;
 
         private void Update()
         {
@@ -76,31 +76,14 @@ namespace LowEngine
                 if (distanceToWorker < 1)
                 {
                     currentWorker.worker.Face(transform.position);
-
-                    inactivityTime = 0;
-                }
-                else
-                {
-                    if (currentWorker.taskManager.tasks.Count > 0)
-                    {
-                        inactivityTime += Time.deltaTime;
-
-                        if (inactivityTime >= 2)
-                        {
-                            currentWorker.state = TaskWorkerAI.State.WaitingForNewTask;
-
-                            currentWorker.taskManager.tasks.Clear();
-
-                            currentWorker = null;
-
-                            return;
-                        }
-                    }
                 }
 
                 if (currentWorker.taskManager.tasks.Count == 0)
                 {
-                    currentWorker = null;
+                    inactiveTime += Time.deltaTime;
+
+                    if (inactiveTime > 1)
+                        currentWorker = null;
                 }
             }
         }
@@ -109,24 +92,16 @@ namespace LowEngine
         {
             if (currentWorker != null) return;
 
-            TaskSystem.Task getOverHere = new TaskSystem.Task
+            TaskSystem.Task StartWorking = new TaskSystem.Task
             {
-                moveToPosition = new TaskSystem.Task.MoveTo(chair.position, 0)
-            };
-
-            TaskSystem.Task clickButton = new TaskSystem.Task
-            {
+                moveToPosition = new TaskSystem.Task.MoveTo(chair.position, 0, () => currentWorker = worker),
                 executeActionRecurring = () =>
                 {
-                    Clicked();
+                    Clicked(worker);
                 }
             };
 
-            worker.taskManager.tasks.Enqueue(getOverHere);
-
-            worker.taskManager.tasks.Enqueue(clickButton);
-
-            currentWorker = worker;
+            worker.taskManager.tasks.Enqueue(StartWorking);
         }
     }
 }

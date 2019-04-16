@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using LowEngine.Tasks;
 using LowEngine.Tasks.Needs;
 using LowEngine.Navigation;
@@ -13,15 +11,14 @@ namespace LowEngine.Saving
     {
         public static GameObject GetWorker(SaveManager.SavableObject.Worker WorkerToSpawn)
         {
-            Vector3 spawnPoint = FindObjectOfType<MapLayoutManager>().PlayAreaSize/2;
+            Vector3 spawnPoint = FindObjectOfType<MapLayoutManager>().PlayAreaSize - Vector2.one;
 
             GameObject obj = new GameObject(WorkerToSpawn.name);
 
             TaskWorkerAI workerAI = obj.AddComponent<TaskWorkerAI>();
-            PathFinding pathFinding = obj.AddComponent<PathFinding>();
             Worker worker = obj.AddComponent<Worker>();
 
-            worker.InitializeWorker(WorkerToSpawn, pathFinding);
+            worker.InitializeWorker(WorkerToSpawn);
             workerAI.Setup(worker);
 
             if (WorkerToSpawn.position != Vector2.zero)
@@ -38,16 +35,13 @@ namespace LowEngine.Saving
 
                 Vector3 pos = FindObjectOfType<MapLayoutManager>().NodeFromWorldPosition(Vector3.zero).position;
 
-                obj.transform.position = pos;
-
-                /*
+                
                 TaskSystem.Task comeToview = new TaskSystem.Task
                 {
                     moveToPosition = new TaskSystem.Task.MoveTo(pos, Random.Range(0, 2f))
                 };
 
                 workerAI.taskManager.tasks.Enqueue(comeToview);
-                */
             }
 
             return obj;
@@ -60,6 +54,7 @@ namespace LowEngine.Saving
             SpriteRenderer spr = obj.AddComponent<SpriteRenderer>();
             spr.sprite = data.sprite;
             spr.sortingOrder = data.spriteSortingLayer;
+            spr.material = GameHandler.instance.gameObjectMaterial;
 
             Color savedColor = data.color;
             Debug.Log(savedColor);

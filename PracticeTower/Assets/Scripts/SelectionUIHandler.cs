@@ -56,7 +56,7 @@ namespace LowEngine
                 return;
             }
 
-            NameDisplay.text = $"Worker name: { SelectedWorker.name}";
+            NameDisplay.text = $"{SelectedWorker.name} : ${SelectedWorker.worker.workerData.pay}";
             SkillDisplay.text = $"Skill Level: {SelectedWorker.worker.workerData.skill}/100";
             EfficiencyDisplay.text = $"Efficiency: { 100 - SelectedWorker.worker.ineffiency}%";
             UnhappinessDisplay.text = $"Unhappiness:{SelectedWorker.worker.unhappiness}%";

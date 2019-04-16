@@ -326,7 +326,9 @@ namespace LowEngine.Saving
                 public float skill;
                 public float experience;
 
-                public Worker(string name, int headIndex, int eyeIndex, int noseIndex, int mouthIndex, int hairIndex, Color hairColor, float skill, float experience, float[] needs)
+                public float pay;
+
+                public Worker(string name, int headIndex, int eyeIndex, int noseIndex, int mouthIndex, int hairIndex, Color hairColor, float skill, float pay, float experience, float[] needs)
                 {
                     this.name = name;
                     this.headIndex = headIndex;
@@ -338,6 +340,7 @@ namespace LowEngine.Saving
                     this.skill = skill;
                     this.hunger = needs[0];
                     this.thirst = needs[1];
+                    this.pay = pay;
                     this.experience = experience;
                 }
 

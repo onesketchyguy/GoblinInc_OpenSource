@@ -14,7 +14,7 @@ namespace LowEngine
         {
             if (placing == null)
             {
-                okayToPlace = true;
+                okayToPlace = false;
 
                 return;
             }
@@ -29,7 +29,9 @@ namespace LowEngine
                 okayToPlace = (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
             }
 
-            Collider2D[] collisions = Physics2D.OverlapCircleAll(transform.position, 0.4f);
+            Collider2D[] collisions = null;
+
+            collisions = Physics2D.OverlapCircleAll(transform.position, 0.4f);
 
             if (collisions == null || collisions.Length == 0)
             {
@@ -58,15 +60,15 @@ namespace LowEngine
                             {
                                 okayToPlace = NothingBlocking(PlacedObject);
                             }
-                            else
-                            {
-                                return;
-                            }
+                        }
+                        else
+                        {
+                            okayToPlace = NothingBlocking(PlacedObject);
                         }
                     }
                     else
                     {
-                        okayToPlace = NothingBlocking(PlacedObject);
+                        okayToPlace = false;
                     }
                 }
             }

@@ -16,8 +16,6 @@ namespace LowEngine.Tasks
 
         public float ineffiency { get; set; }
 
-        PathFinding pathing;
-
         public SaveManager.SavableObject.Worker workerData { get; set; }
         public Need[] needs { get; set; } = new Need[] { new Need { thisNeed = NeedDefinition.Hunger }, new Need { thisNeed = NeedDefinition.Thirst } };
         public Need GetNeed(NeedDefinition needToGet)
@@ -57,20 +55,19 @@ namespace LowEngine.Tasks
             {
                 position = MoveToPosition,
                 stoppingDistance = stoppingDistance,
-                onArrivedAtPosition = onArrivedAtPosition
+                onArrivedAtPosition = onArrivedAtPosition,
+                pathFinding = new PathFinding()
             };
         }
 
         MoveToPosition moveTo;
 
-        public void InitializeWorker(SaveManager.SavableObject.Worker bodyData, PathFinding pathFinding)
+        public void InitializeWorker(SaveManager.SavableObject.Worker bodyData)
         {
             if (body != null)
             {
                 Destroy(body);
             }
-
-            pathing = pathFinding;
 
             workerData = bodyData;
 
@@ -109,22 +106,41 @@ namespace LowEngine.Tasks
 
             workerData.hunger = GetNeed(NeedDefinition.Hunger).value;
             workerData.thirst = GetNeed(NeedDefinition.Thirst).value;
+
+            if (workerData.experience > 1f)
+            {
+                if (workerData.skill < 99)
+                {
+                    workerData.skill += 1;
+                    workerData.experience = 0;
+                }
+            }
+
+            if (workerData.experience < 0f)
+            {
+                if (workerData.skill > 1)
+                {
+                    workerData.skill -= 1;
+                    workerData.experience = 0.99f;
+                }
+            }
         }
 
         int tries;
 
-        int pathIndex = 0;
         void PathToPoint()
         {
             float distanceToTarget = Vector3.Distance(transform.position, moveTo.position);
 
-            if (pathing.Path.Count == 0)
+            if (moveTo.pathFinding.Path.Count == 0 || moveTo.pathFinding.Path == null)
             {
+                moveTo.pathIndex = 0;
+
                 if (tries < 20)
                 {
                     FindObjectOfType<MapLayoutManager>().UpdateGrid();
 
-                    pathing.FindPath(transform.position, moveTo.position);
+                    moveTo.pathFinding.FindPath(transform.position, moveTo.position, FindObjectOfType<MapLayoutManager>());
 
                     tries++;
                 }
@@ -132,23 +148,38 @@ namespace LowEngine.Tasks
                 {
                     transform.position = Vector3.MoveTowards(transform.position, moveTo.position, speed * Time.deltaTime);
                 }
-
-                return;
             }
             else
             {
-                for (int i = 0; i < pathing.Path.Count; i++)
+                //----------------------------------------Node movement-------------------------------
+                for (int first = 0; first < moveTo.pathFinding.Path.Count; first++)
                 {
-                    Node node = pathing.Path[i];
-                    if (i + 1 < pathing.Path.Count)
-                        Debug.DrawLine(node.position, pathing.Path[i + 1].position, Color.red, 1);
-                    else
+                    for (int second = 1; second < moveTo.pathFinding.Path.Count + 1; second++)
                     {
-                        Debug.DrawLine(node.position, transform.position, Color.blue);
+                        if (second < moveTo.pathFinding.Path.Count)
+                        {
+                            Debug.DrawLine(moveTo.pathFinding.Path[first].position, moveTo.pathFinding.Path[second].position, Color.red);
+                        }
+                        else
+                        {
+                            Debug.DrawLine(moveTo.pathFinding.Path[first].position, transform.position, Color.blue);
+                        }
                     }
                 }
 
-                Node currentNode = pathing.Path[pathIndex];
+                Node currentNode = null;
+
+                if (moveTo.pathIndex < moveTo.pathFinding.Path.Count)
+                {
+                    currentNode = moveTo.pathFinding.Path[moveTo.pathIndex];
+                }
+                else
+                {
+                    int val = moveTo.pathFinding.Path.Count - 1 >= 0 ? moveTo.pathFinding.Path.Count - 1 : 0;
+                    currentNode = moveTo.pathFinding.Path[val];
+                }
+
+                if (currentNode == null) return;
 
                 float distanceToNode = Vector3.Distance(transform.position, currentNode.position);
 
@@ -162,9 +193,11 @@ namespace LowEngine.Tasks
 
                     if (distanceToNode < 0.5f + moveTo.stoppingDistance)
                     {
-                        pathIndex++;
+                        if (moveTo.pathIndex < moveTo.pathFinding.Path.Count)
+                            moveTo.pathIndex++;
                     }
                 }
+                //----------------------------------------end Node movement-------------------------------
             }
 
             if (distanceToTarget <= moveTo.stoppingDistance)
@@ -174,10 +207,8 @@ namespace LowEngine.Tasks
                     moveTo.onArrivedAtPosition.Invoke();
                 }
 
-                pathIndex = 0;
+                moveTo.pathIndex = 0;
                 tries = 0;
-
-                pathing.Path = new System.Collections.Generic.List<Node>();
 
                 moveTo = null;
             }
@@ -206,6 +237,9 @@ namespace LowEngine.Tasks
 
     public class MoveToPosition
     {
+        public PathFinding pathFinding;
+        public int pathIndex = 0;
+
         public Vector3 position;
 
         public float stoppingDistance;
@@ -215,13 +249,13 @@ namespace LowEngine.Tasks
 
     public interface IWorker
     {
-        Saving.SaveManager.SavableObject.Worker workerData { get; set; }
+        SaveManager.SavableObject.Worker workerData { get; set; }
 
         void MoveTo(Vector3 position, float stoppingDistance, System.Action onArrivedAtPosition = null);
 
         void ExecuteAction(System.Action action = null);
 
-        void InitializeWorker(Saving.SaveManager.SavableObject.Worker bodyData, Navigation.PathFinding pathFinding);
+        void InitializeWorker(SaveManager.SavableObject.Worker bodyData);
 
         void Face(Vector3 position);
 

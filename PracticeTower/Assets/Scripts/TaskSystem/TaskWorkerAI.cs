@@ -50,9 +50,13 @@ namespace LowEngine.Tasks
                     {
                         GetNearestNeed(need).FulFillneed(worker);
 
+                        currentThought = "That's better";
+
                         state = State.WaitingForNewTask;
                     }),
                 };
+
+                currentTask = "Taking a break.";
             }
 
             return fulfil;
@@ -60,10 +64,12 @@ namespace LowEngine.Tasks
 
         public TaskSystem.Task GoHome => new TaskSystem.Task
         {
-            moveToPosition = new TaskSystem.Task.MoveTo(FindObjectOfType<MapLayoutManager>().PlayAreaSize/2, 0, () => 
+            moveToPosition = new TaskSystem.Task.MoveTo(FindObjectOfType<MapLayoutManager>().PlayAreaSize - Vector2.one, 0, () => 
             {
                 worker.GetNeed(NeedDefinition.Hunger).Set(100);
                 worker.GetNeed(NeedDefinition.Thirst).Set(100);
+
+                currentTask = "Going home.";
 
                 state = State.WaitingForNewTask;
             }),
@@ -94,8 +100,17 @@ namespace LowEngine.Tasks
             boxCollider.isTrigger = true;
         }
 
+        float timeSinceLastTask;
+
         private void Update()
         {
+            if (timeSinceLastTask > 101 * Time.deltaTime)
+            {
+                RequestNextTask();
+
+                return;
+            }
+
             switch (state)
             {
                 case State.WaitingForNewTask:
@@ -104,65 +119,66 @@ namespace LowEngine.Tasks
 
                     if (WaitingTimer <= 0)
                     {
+                        timeSinceLastTask += WaitingTimer;
+
                         WaitingTimer = worker.ineffiency * Time.deltaTime;
+
                         RequestNextTask();
-
-                        float valX = Mathf.Abs(worker.workerData.skill - worker.unhappiness) + (worker.workerData.skill/2); 
-
-                        if (valX <= worker.workerData.skill)
-                        {
-                            //Alieve this unhappiness
-
-                            taskManager.tasks.Clear();
-
-                            if (worker.GetNeed(NeedDefinition.Hunger).value <= 100 - worker.workerData.skill)
-                            {
-                                if (FulfilNeed(NeedDefinition.Hunger) != null)
-                                {
-                                    taskManager.tasks.Enqueue(FulfilNeed(NeedDefinition.Hunger));
-                                }
-                                else
-                                {
-                                    taskManager.tasks.Enqueue(GoHome);
-                                }
-                            }
-
-                            if (worker.GetNeed(NeedDefinition.Thirst).value <= 100 - worker.workerData.skill)
-                            {
-                                if (FulfilNeed(NeedDefinition.Thirst) != null)
-                                {
-                                    taskManager.tasks.Enqueue(FulfilNeed(NeedDefinition.Thirst));
-                                }
-                                else
-                                {
-                                    taskManager.tasks.Enqueue(GoHome);
-                                }
-                            }
-
-                            taskManager.tasks.Enqueue(ComeBack);
-                        }
-
-                        if (worker.workerData.experience > 1f)
-                        {
-                            if (worker.workerData.skill < 99)
-                            {
-                                worker.workerData.skill += 1;
-                                worker.workerData.experience = 0;
-                            }
-                        }
-
-                        if (worker.workerData.experience < 0f)
-                        {
-                            if (worker.workerData.skill > 1)
-                            {
-                                worker.workerData.skill -= 1;
-                                worker.workerData.experience = 0.99f;
-                            }
-                        }
                     }
                     break;
                 case State.ExecutingTask:
+                    timeSinceLastTask = 0;
                     break;
+            }
+        }
+
+        private void HandleNeeds()
+        {
+            float valX = Mathf.Abs(worker.workerData.skill - worker.unhappiness) + (worker.workerData.skill / 2);
+
+            if (valX <= worker.workerData.skill)
+            {
+                //Alieve this unhappiness
+
+                taskManager.tasks.Clear();
+
+                currentThought = "Need a break.";
+
+                float skill = 150 - worker.workerData.skill;
+
+                if (worker.GetNeed(NeedDefinition.Hunger).value <= skill)
+                {
+                    currentThought = "Hungery";
+
+                    TaskSystem.Task hunger = FulfilNeed(NeedDefinition.Hunger);
+
+                    if (hunger != null)
+                    {
+                        taskManager.tasks.Enqueue(hunger);
+                    }
+                    else
+                    {
+                        taskManager.tasks.Enqueue(GoHome);
+                    }
+                }
+
+                if (worker.GetNeed(NeedDefinition.Thirst).value <= skill)
+                {
+                    currentThought = "Thirsty";
+
+                    TaskSystem.Task thirst = FulfilNeed(NeedDefinition.Thirst);
+
+                    if (thirst != null)
+                    {
+                        taskManager.tasks.Enqueue(thirst);
+                    }
+                    else
+                    {
+                        taskManager.tasks.Enqueue(GoHome);
+                    }
+                }
+
+                taskManager.tasks.Enqueue(ComeBack);
             }
         }
 
@@ -174,18 +190,23 @@ namespace LowEngine.Tasks
 
             if (task == null)
             {
+                currentTask = "Waiting for a task.";
+
                 state = State.WaitingForNewTask;
 
-                taskManager.tasks.Enqueue(GetNearestDesk);
+                if (GetNearestDesk != null)
+                {
+                    taskManager.tasks.Enqueue(GetNearestDesk);
+                }
             }
             else
             {
-                worker.workerData.experience += Random.Range(0f, 1 - ((worker.workerData.skill * 0.005f) + (worker.unhappiness * 0.01f))) * Time.deltaTime;
-
                 state = State.ExecutingTask;
 
                 if (task.moveToPosition != null)
                 {
+                    currentTask = "Moving to location.";
+
                     worker.MoveTo(task.moveToPosition.targetPosition, task.moveToPosition.stoppingDistance, () =>
                     {
                         if (task.moveToPosition.executeAction != null)
@@ -194,24 +215,23 @@ namespace LowEngine.Tasks
                         }
 
                         state = State.WaitingForNewTask;
-
-                        taskManager.tasks.Enqueue(celebrate);
                     });
                 }
 
                 if (task.executeAction != null)
                 {
-                    state = State.WaitingForNewTask;
+                    currentTask = "Executing task.";
 
                     worker.ExecuteAction(task.executeAction);
 
-                    if (task.executeAction != celebrate.executeAction)
-                        taskManager.tasks.Enqueue(celebrate);
+                    state = State.WaitingForNewTask;
                 }
 
                 if (task.executeActionRecurring != null)
                 {
-                    state = State.WaitingForNewTask;
+                    worker.workerData.experience += Random.Range(0f, 1 - ((worker.workerData.skill * 0.005f) + (worker.unhappiness * 0.01f))) * Time.deltaTime;
+
+                    currentTask = "Executing a recurring task.";
 
                     worker.ExecuteAction(task.executeActionRecurring);
 
@@ -220,10 +240,12 @@ namespace LowEngine.Tasks
                         executeActionRecurring = task.executeActionRecurring
                     };
 
-                    taskManager.tasks.Enqueue(recurringTask);
-                    taskManager.tasks.Enqueue(celebrate);
+
+                    state = State.WaitingForNewTask;
                 }
             }
+
+            HandleNeeds();
         }
 
         private NeedFulfiller GetNearestNeed(NeedDefinition need)
@@ -258,7 +280,7 @@ namespace LowEngine.Tasks
             {
                 float dist = Vector2.Distance(transform.position, desk.transform.position);
 
-                if (dist < nearest && desk.currentWorker == null)
+                if (dist < nearest && (desk.currentWorker == null || desk.currentWorker == this))
                 {
                     button = desk;
                     nearest = dist;

@@ -1,10 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 using LowEngine.Tasks;
 using LowEngine.Saving;
-using UnityEngine.SceneManagement;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 
 namespace LowEngine
@@ -22,6 +18,22 @@ namespace LowEngine
         }
         #endregion
 
+        public static float MoneyToPayOnPayDay()
+        {
+            float val = 0;
+
+            foreach (var worker in FindObjectsOfType<Worker>())
+            {
+                val += worker.workerData.pay;
+            }
+
+            return val;
+        }
+
+        public static int daysUntilPayDay = 6;
+
+        public Material gameObjectMaterial;
+
         SaveManager.SaveData ActivePlayerData;
         public SaveManager.SaveData[] savesData;
 
@@ -32,6 +44,31 @@ namespace LowEngine
         public static GameState gameState = GameState.Default;
 
         public float Money = 50;
+
+        private void Start()
+        {
+            TimeManagement.TimeScale.DayChanged += NewDay;
+        }
+
+        public void NewDay()
+        {
+            if (daysUntilPayDay > 0)
+                daysUntilPayDay--;
+
+            if (daysUntilPayDay == 0)
+            {
+                //It's pay day!
+
+                Money -= MoneyToPayOnPayDay();
+
+                daysUntilPayDay = 7;
+            }
+
+            if (Money < 0)
+            {
+                NotificationManager.instance.ShowNotification("You've gone broke!");
+            }
+        }
 
         void SetupApplicationVersion()
         {

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using LowEngine.Navigation;
+using LowEngine.Saving;
 
 namespace LowEngine
 {
@@ -66,9 +67,7 @@ namespace LowEngine
                 {
                     Vector2 pos = transform.position + new Vector3(x, y);
 
-                    GameObject go = Instantiate(Concrete, pos, Quaternion.identity, ConcreteParent.transform);
-
-                    concreteTiles.Add(pos, go);
+                    ReplaceTile(pos);
                 }
             }
 
@@ -182,9 +181,11 @@ namespace LowEngine
 
         public void ReplaceTile(Vector2 tilePos)
         {
-            GameObject go = Instantiate(Concrete, tilePos, Quaternion.identity, ConcreteParent.transform);
+            GameObject n_concrete = Instantiate(Concrete, tilePos, Quaternion.identity, ConcreteParent.transform);
 
-            ReplaceTileInDictionary(tilePos, go);
+            n_concrete.GetComponent<SpriteRenderer>().material = GameHandler.instance.gameObjectMaterial;
+
+            ReplaceTileInDictionary(tilePos, n_concrete);
 
             UpdateGrid();
         }

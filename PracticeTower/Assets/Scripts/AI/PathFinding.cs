@@ -3,17 +3,12 @@ using System.Collections.Generic;
 
 namespace LowEngine.Navigation
 {
-    public class PathFinding : MonoBehaviour
+    public class PathFinding
     {
         public List<Node> Path = new List<Node>();
 
-        MapLayoutManager grid;
-
-        public void FindPath(Vector3 start, Vector3 end)
+        public void FindPath(Vector3 start, Vector3 end, MapLayoutManager grid)
         {
-            if (grid == null)
-                grid = FindObjectOfType<MapLayoutManager>();
-
             Node StartNode = grid.NodeFromWorldPosition(start);
             Node TargetNode = grid.NodeFromWorldPosition(end);
 

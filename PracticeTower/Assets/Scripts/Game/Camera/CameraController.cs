@@ -20,12 +20,12 @@ namespace LowEngine
 
         bool moving;
 
-        public Vector2 MaxCam = new Vector2(20, 20);
+        private Vector2 MaxCam;
         public Vector2 currentMaxCam;
 
         private void Start()
         {
-            Vector3 stored = MaxCam;
+            Vector3 stored = FindObjectOfType<MapLayoutManager>().PlayAreaSize;
 
             MaxCam = transform.position + stored;
         }

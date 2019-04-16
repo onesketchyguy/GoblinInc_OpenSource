@@ -12,7 +12,7 @@ namespace LowEngine
             instance = this;
         }
 
-        public enum Show { none, crafting, hiring, workerInfo, options }
+        public enum Show { none, crafting, hiring, workerInfo, options, calender }
 
         public Show CurrentlyDisplaying;
 
@@ -37,15 +37,24 @@ namespace LowEngine
             UpdateShowing(Show.options);
         }
 
+        public GameObject CalenderPanel;
+
+        public void ToggleCalenderPanel()
+        {
+            UpdateShowing(Show.calender);
+        }
+
         public GameObject WorkerInfoPanel;
 
         public Text MoneyText;
 
         private void Update()
         {
-            float Money = GameHandler.instance.Money;
+            string Money = $"{GameHandler.instance.Money}";
 
-            MoneyText.text = $"{Money}:$";
+            string display = GameHandler.MoneyToPayOnPayDay() == 0 ? Money : $"{GameHandler.instance.Money} - ${GameHandler.MoneyToPayOnPayDay()} on payday";
+
+            MoneyText.text = $"$:{display}";
         }
 
         public void UpdateShowing(Show show)
@@ -63,6 +72,7 @@ namespace LowEngine
             HiringMenu.SetActive(CurrentlyDisplaying == Show.hiring);
             OptionsPanel.SetActive(CurrentlyDisplaying == Show.options);
             WorkerInfoPanel.SetActive(CurrentlyDisplaying == Show.workerInfo);
+            CalenderPanel.SetActive(CurrentlyDisplaying == Show.calender);
         }
     }
 }
