@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using LowEngine.Saving;
 
 namespace LowEngine
@@ -13,14 +11,15 @@ namespace LowEngine
         {
             "Rorot", "Brolaf", "Haushtahmp", "Harry", "Stinky", "Thudnaldo", "Rile", "Loser", "Knife-face", "Happy", "Face", "Shothead", "Awful", "Ahsome", "Awesome",
             "Mother-Lover", "BloodSoaked", "Rotten", "Yucky", "Ill founded", "Yuck", "Ick", "Gross", "Inefficient", "Blood", "Potty", "Scrott", "Stabber", "Frankendave",
-            "Johnny", "Mouth", "Unit No.", "Experiment", "xXb1narieXx", "Snoop", "Lil'", "Lilo", "Stitch", "Mr.Proffesor-Doctor-Captain-Sir", "King", "Barf", "Wiggler"
+            "Johnny", "Mouth", "Unit No.", "Experiment", "xXb1narieXx", "Snoop", "Lil'", "Lilo", "Stitch", "Mr.Proffesor-Doctor-Captain-Sir", "King", "Barf", "Wiggler",
+            "Turd", "Spoiled", "Lemony", "Ugly"
         };
         private static string[] LastNames = new string[]
         {
             "Pricenstein", "Dreadrichards", "Greenrobinson", "Stench", "Anstench", "Cheapwick", "Creep", "Chuckles", "McStab-stab", "Stabber", "McStabby", "Head", "Baby", "Stinker",
             "The Stabbed", "The once-wronged", "Peace-ohe-shet", "McLoser", "Drencher", "Soaker", "Booger", "Buggar", "Dumby", "McEfficient", "McEfficiency", "of Awesometopia", "Lame",
             "[Your ad space here]", "The weak", "The strong", "Strong", "Jarhead", "Crotch", "Hatred", "The French", "McInefficient", "McInefficiency", "Dumb-phuck", "McFace", "00110001",
-            "626", "The Second", "Junior", "Jr.", "Barfers", "Barf", "\"King\"", "On the roof"
+            "626", "The Second", "Junior", "Jr.", "Barfers", "Barf", "\"King\"", "On the roof", "Rotthand", "Milk", "Sucker", "Rocket"
         };
 
         public static string GetCelebration()

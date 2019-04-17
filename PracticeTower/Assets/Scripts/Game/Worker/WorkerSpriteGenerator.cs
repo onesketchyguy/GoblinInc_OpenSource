@@ -52,7 +52,7 @@ namespace LowEngine
 
             int day = TimeManagement.TimeScale.days % 7;
 
-            float skill = Random.Range(10 * day, 20 * day) % 70;
+            float skill = Random.Range(30 * day, 50 * day) % 70;
 
             float income = Random.Range(5, 500);
 
@@ -137,7 +137,7 @@ namespace LowEngine
 
             int day = TimeManagement.TimeScale.days % 7;
 
-            float skill = Random.Range(10 * day, 20 * day) % 70;
+            float skill = Random.Range(30 * day, 50 * day) % 70;
 
             float income = Random.Range(5f, 500);
 

@@ -1,1 +1,0 @@
-{"userName":"NewGame_0","money":241.0,"minute":21,"hour":15,"day":2}

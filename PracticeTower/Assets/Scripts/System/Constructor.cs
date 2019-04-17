@@ -66,8 +66,8 @@ namespace LowEngine.Saving
             obj.transform.rotation = data.rotation;
 
             PlacedObject objectData = obj.AddComponent<PlacedObject>();
-
             objectData.objectData = data;
+            objectData.objectData.name = data.name + obj.transform.position;
 
             switch (data.objectType)
             {
@@ -85,7 +85,9 @@ namespace LowEngine.Saving
                     obj.GetComponent<WorkerButton>().chair = child;
                     break;
                 case PlacedObjectType.Need:
-                    obj.AddComponent<NeedFulfiller>();
+                    NeedFulfiller need = obj.AddComponent<NeedFulfiller>();
+
+                    need.Fulfills = data.fulFills;
                     break;
                 default:
                     break;

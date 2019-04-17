@@ -174,6 +174,12 @@ namespace LowEngine
 
         public static void ReplaceTileInDictionary(Vector2 pos, GameObject go)
         {
+            GameObject toRemove;
+
+            concreteTiles.TryGetValue(pos, out toRemove);
+
+            Destroy(toRemove);
+
             concreteTiles.Remove(pos);
 
             concreteTiles.Add(pos, go);

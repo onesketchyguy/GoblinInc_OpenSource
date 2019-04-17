@@ -145,6 +145,10 @@ namespace LowEngine
             Money = ActivePlayerData.money;
             saveName = ActivePlayerData.userName;
 
+            TimeScale.minutes = ActivePlayerData.minute;
+            TimeScale.hours = ActivePlayerData.hour;
+            TimeScale.days = ActivePlayerData.day;
+
             // -----------------Load workers---------------
             foreach (var item in FindObjectsOfType<Worker>())
             {
@@ -157,7 +161,7 @@ namespace LowEngine
 
             if (workers == null || workers.Length == 0)
             {
-                Debug.LogError("No workers to load!");
+                Debug.Log("No workers to load!");
             }
             else
             {
@@ -181,7 +185,7 @@ namespace LowEngine
 
             if (objects == null || objects.Length == 0)
             {
-                Debug.LogError("No objects to load!");
+                Debug.Log("No objects to load!");
             }
             else
             {

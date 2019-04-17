@@ -104,6 +104,11 @@ namespace LowEngine
                 images = WorkerSpriteGenerator.instance.GetWorkerSprites(worker);
             }
 
+            if (worker.skill < 20)
+            {
+                return;
+            }
+
             GameObject spawnable = new GameObject(worker.name); //Create a temporary object to spawn
             spawnable.AddComponent<Image>();
 

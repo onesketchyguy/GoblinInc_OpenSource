@@ -16,8 +16,8 @@ MonoBehaviour:
   rotatable: 0
   ObjectData:
     value: 150
-    position: {x: 0, y: 0}
-    rotation: {x: 0, y: 0, z: 0, w: 0}
+    position: {x: -1, y: 2}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
     name: BloodCooler
     color: {r: 1, g: 1, b: 1, a: 1}
     sprite: {fileID: 21300000, guid: 5cb70ef0c4e47c14ab28242dbd2976b7, type: 3}

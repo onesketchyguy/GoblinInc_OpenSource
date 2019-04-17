@@ -16,7 +16,7 @@ MonoBehaviour:
   rotatable: 1
   ObjectData:
     value: 25
-    position: {x: -1, y: -0}
+    position: {x: -2, y: 1}
     rotation: {x: 0, y: 0, z: 0, w: 1}
     name: Desk
     color: {r: 1, g: 1, b: 1, a: 1}

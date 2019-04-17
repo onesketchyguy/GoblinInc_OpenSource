@@ -234,6 +234,13 @@ namespace LowEngine.Tasks
             }
             else
             {
+                if (task == ComeBack && TimeManagement.TimeScale.isDayTime() == false && AtHome)
+                {
+                    taskManager.tasks.Clear();
+
+                    return;
+                }
+
                 state = State.ExecutingTask;
 
                 if (task.moveToPosition != null)

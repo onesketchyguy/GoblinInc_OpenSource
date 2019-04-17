@@ -16,9 +16,9 @@ MonoBehaviour:
   rotatable: 0
   ObjectData:
     value: 0
-    position: {x: 0, y: 0}
-    rotation: {x: 0, y: 0, z: 0, w: 0}
-    name: 
+    position: {x: -3, y: 1}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    name: Wall
     color: {r: 1, g: 1, b: 1, a: 1}
     sprite: {fileID: 21300002, guid: fb0b2c1c57780fc4d8b9cb43b85ef389, type: 3}
     spriteSortingLayer: 0

@@ -224,26 +224,18 @@ namespace LowEngine
                 worldObjectParent = new GameObject("Building");
             }
 
-            Spawning.ObjectData.position = GridLockedMousePos;
-            Spawning.ObjectData.rotation = ghostObject.transform.rotation;
+            Color newColor = (Spawning.ChangableColor) ? PlacingColor : Spawning.ObjectData.color;
 
-            GameObject go = Constructor.GetObject(Spawning.ObjectData, worldObjectParent.transform);
+            GameObject go = Constructor.GetObject(GetObjectData(Spawning.ObjectData, GridLockedMousePos, ghostObject.transform.rotation, newColor), worldObjectParent.transform);
 
             if (ghostObject.overlapping != null)
             {
                 if (ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>().objectData.type == ObjectType.Abstract)
                 {
-                    Destroy(ghostObject.overlapping[ghostObject.overlapping.Length - 1]);
-
                     MapLayoutManager.ReplaceTileInDictionary(GridLockedMousePos, go);
                 }
                     
             }
-
-
-            if (Spawning.ChangableColor) go.GetComponent<SpriteRenderer>().color = PlacingColor;
-
-            go.name = Spawning.ObjectData.name;
 
             GameHandler.instance.Money -= Spawning.ObjectData.value;
 
@@ -251,6 +243,31 @@ namespace LowEngine
             {
                 ClearObject();
             }
+        }
+
+        SaveManager.SavableObject.WorldObject GetObjectData(SaveManager.SavableObject.WorldObject data, Vector3 position, Quaternion rotation, Color color)
+        {
+            SaveManager.SavableObject.WorldObject r = new SaveManager.SavableObject.WorldObject { };
+
+            r = new SaveManager.SavableObject.WorldObject
+            {
+                value = data.value,
+                type = data.type,
+                objectType = data.objectType,
+                fulFills = data.fulFills,
+                position = position,
+                childPos = data.childPos,
+                rotation = rotation,
+                name = data.name,
+                sprite = data.sprite,
+                spriteSortingLayer = data.spriteSortingLayer,
+                color = color
+            };
+
+            r.position = position;
+            r.rotation = rotation;
+
+            return r;
         }
 
         void RotatePlacing(float degrees)

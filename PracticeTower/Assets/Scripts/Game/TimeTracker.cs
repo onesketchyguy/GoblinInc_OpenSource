@@ -16,7 +16,7 @@ namespace LowEngine.TimeManagement
 
         public void SetClockType(bool type)
         {
-            amClock = type;
+            amClock = !type;
         }
 
         void Update()
@@ -29,7 +29,7 @@ namespace LowEngine.TimeManagement
 
             string extension = (amClock) ? (TimeScale.hours > 12 ? ".PM" : ".AM") : "";
 
-            GetComponent<Text>().text = $"Time - {hour}:{minute}{extension}";
+            GetComponent<Text>().text = $"{hour}:{minute}{extension}";
         }
     }
 }

@@ -56,8 +56,6 @@ namespace LowEngine.Navigation
 
                 if (currentNode == TargetNode)
                 {
-                    Debug.Log($"start : {StartNode.position}, target : {TargetNode.position} | {Path.Count}");
-
                     GetFinalPath(StartNode, TargetNode);
                 }
 
