@@ -16,7 +16,19 @@ namespace LowEngine.TimeManagement
 
         void LateUpdate()
         {
-            timeScale = (TimeScale.isDayTime() == false && FindObjectsOfType<Tasks.Worker>().Length > 0) ? 20 : 1;
+            Tasks.TaskWorkerAI[] workers = FindObjectsOfType<Tasks.TaskWorkerAI>();
+
+            int numberOfWorkersStillAtWork = workers.Length;
+
+            foreach (var worker in workers)
+            {
+                if (worker.AtHome == true)
+                {
+                    numberOfWorkersStillAtWork -= 1;
+                }
+            }
+
+            timeScale = (TimeScale.isDayTime() == false && numberOfWorkersStillAtWork < 1) ? 50 : (FindObjectsOfType<Tasks.TaskWorkerAI>().Length < 1) ? 0 : 5;
 
             TimeScale.SetTime();
 
@@ -32,6 +44,18 @@ namespace LowEngine.TimeManagement
         public void SetTime()
         {
             int time = TimeScale.hours - 12;
+
+            if (TimeScale.hours == 8)
+            {
+                //Play awake sound
+                AudioManager.instance.PlayOpenSound(transform.position);
+            }
+
+            if (TimeScale.hours == 17)
+            {
+                //Play closingtime sound
+                AudioManager.instance.PlayClosingSound(transform.position);
+            }
 
             int rot = (15 * (time % 24)) % 360;
 

@@ -28,9 +28,11 @@ namespace LowEngine.TimeManagement
 
                 obj.Day.text = $"{day}";
 
-                obj.checkBox.gameObject.SetActive(TimeScale.days > day);
+                int CurrentDay = TimeScale.days % 7;
 
-                obj.PayDayDisplay.gameObject.SetActive(TimeScale.days + GameHandler.daysUntilPayDay == day);
+                obj.checkBox.gameObject.SetActive(CurrentDay > day);
+
+                obj.PayDayDisplay.gameObject.SetActive(CurrentDay + GameHandler.daysUntilPayDay == day);
             }
         }
     }

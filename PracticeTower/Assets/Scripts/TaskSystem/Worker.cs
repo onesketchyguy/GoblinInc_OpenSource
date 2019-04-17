@@ -14,6 +14,8 @@ namespace LowEngine.Tasks
 
         GameObject body;
 
+        public WorkerButton Desk { get; set; }
+
         public float ineffiency { get; set; }
 
         public SaveManager.SavableObject.Worker workerData { get; set; }
@@ -106,6 +108,7 @@ namespace LowEngine.Tasks
 
             workerData.hunger = GetNeed(NeedDefinition.Hunger).value;
             workerData.thirst = GetNeed(NeedDefinition.Thirst).value;
+            workerData.pay = workerData.FlatPay + workerData.skill;
 
             if (workerData.experience > 1f)
             {
@@ -249,6 +252,8 @@ namespace LowEngine.Tasks
 
     public interface IWorker
     {
+        WorkerButton Desk { get; set; }
+
         SaveManager.SavableObject.Worker workerData { get; set; }
 
         void MoveTo(Vector3 position, float stoppingDistance, System.Action onArrivedAtPosition = null);

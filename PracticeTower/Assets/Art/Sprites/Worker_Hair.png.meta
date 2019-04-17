@@ -1,14 +1,33 @@
 fileFormatVersion: 2
 guid: 8efa5c8a34ec9f042a69dbe070c9a8bc
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: Worker_Hair_0
-    21300002: Worker_Hair_1
-    21300004: Worker_Hair_2
-    21300006: Worker_Hair_3
-    21300008: Worker_Hair_4
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: Worker_Hair_0
+  - first:
+      213: 21300002
+    second: Worker_Hair_1
+  - first:
+      213: 21300004
+    second: Worker_Hair_2
+  - first:
+      213: 21300006
+    second: Worker_Hair_3
+  - first:
+      213: 21300008
+    second: Worker_Hair_4
+  - first:
+      213: 8730818618775066302
+    second: Worker_Hair_5
+  - first:
+      213: -7624175870961239284
+    second: Worker_Hair_6
+  - first:
+      213: -6316337438190477699
+    second: Worker_Hair_7
   externalObjects: {}
-  serializedVersion: 9
+  serializedVersion: 10
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -125,7 +144,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cf2f96718310ee148a5709283e7b3f3b
+      spriteID: b67285942f85aba49a81d4b5cd52dd52
+      internalID: 21300000
       vertices: []
       indices: 
       edges: []
@@ -145,7 +165,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c81c57cb1941ca24fb537ba7d2492755
+      spriteID: 45b026a6bb082544c9a4ef17803890db
+      internalID: 21300002
       vertices: []
       indices: 
       edges: []
@@ -165,7 +186,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe8774dd994c5b44784353aaaee705f1
+      spriteID: ac031cb6a47dc7d438651db6bd2a17f9
+      internalID: 21300004
       vertices: []
       indices: 
       edges: []
@@ -185,7 +207,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a46f3c89d5ee7f4c820db0e12dc6e83
+      spriteID: 652dfea999f087641b5c39f2b185658e
+      internalID: 21300006
       vertices: []
       indices: 
       edges: []
@@ -205,7 +228,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1ec6e68606d1af74f83ef7bac3c874c8
+      spriteID: cb09758bba1ff2c428e58c830716b2a9
+      internalID: 21300008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Hair_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b083d0d457d74e34eb56dff89834a371
+      internalID: 8730818618775066302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Hair_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e6a003080791a247b2431aef5340689
+      internalID: -7624175870961239284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Hair_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d9f90feee732344f856f5da06ba6bce
+      internalID: -6316337438190477699
       vertices: []
       indices: 
       edges: []
@@ -214,10 +301,12 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: c6153a95144b2c94d8479ed52a052e5e
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
+    secondaryTextures: []
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

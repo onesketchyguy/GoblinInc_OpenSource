@@ -27,8 +27,9 @@ namespace LowEngine.Tasks.Needs
         {
             if (GetComponent<PlacedObject>())
             {
-                GetComponent<PlacedObject>().thisObject = new Saving.SaveManager.SavableObject.WorldObject
+                GetComponent<PlacedObject>().objectData = new SaveManager.SavableObject.WorldObject
                 {
+                    type = ObjectType.Table,
                     objectType = PlacedObjectType.Need,
                     fulFills = Fulfills,
                     position = transform.position,

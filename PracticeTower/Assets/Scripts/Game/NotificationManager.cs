@@ -36,7 +36,8 @@ namespace LowEngine
             {
                 Button go = notifications.Dequeue();
 
-                Destroy(go.gameObject);
+                if (go != null)
+                    Destroy(go.gameObject);
 
                 if (notifications.Count > 0) Invoke("ClearOldestNotification", 5);
             }

@@ -34,7 +34,6 @@ namespace LowEngine
                     }
                 }
 
-
                 while (applicantsToRemove.Count > 0)
                 {
                     todaysEmployees.Remove(todaysEmployees[0]);
@@ -59,6 +58,16 @@ namespace LowEngine
         {
             Display("Select an employee...");
 
+            if (Hirable > 0)
+            {
+                for (int i = 0; i < Hirable; i++)
+                {
+                    SpawnButton(null);
+                }
+
+                Hirable = 0;
+            }
+
             foreach (var item in spawningParent.GetComponentsInChildren<Transform>())
             {
                 if (item.transform == spawningParent.transform) continue;
@@ -72,15 +81,6 @@ namespace LowEngine
                 {
                     SpawnButton(worker);
                 }
-            }
-            else
-            {
-                for (int i = 0; i < Hirable; i++)
-                {
-                    SpawnButton(null);
-                }
-
-                Hirable = 0;
             }
 
             if (todaysEmployees.Count == 0)

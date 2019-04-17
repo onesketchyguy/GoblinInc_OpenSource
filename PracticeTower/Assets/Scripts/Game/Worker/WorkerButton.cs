@@ -12,14 +12,14 @@ namespace LowEngine
 
         public TaskWorkerAI currentWorker;
 
-        public void Clicked(TaskWorkerAI workerTryingToClick)
+        public void Clicked()
         {
-            if (currentWorker == null)
+            if (currentWorker == null || Vector2.Distance(transform.position, currentWorker.transform.position) > 2)
             {
-                currentWorker = workerTryingToClick;
-            }
+                Debug.Log($"Some one is trying to click {gameObject.name} but I dont have any workers assigned to do that!");
 
-            if (currentWorker == null || Vector2.Distance(transform.position, currentWorker.transform.position) > 2) return;
+                return;
+            }
 
             GameHandler.instance.Money += moneyToAdd;
 
@@ -36,13 +36,15 @@ namespace LowEngine
         {
             if (PlaceObjectMenu.bullDozing) return;
 
-            if (SelectionUIHandler.SelectedWorker != null)
-            {
-                SetWorker(SelectionUIHandler.SelectedWorker);
-            }
-            else if (currentWorker != null)
+
+            if (currentWorker != null)
             {
                 SelectionUIHandler.SelectWorker(currentWorker);
+            }
+            else
+            if (SelectionUIHandler.SelectedWorker != null && currentWorker == null)
+            {
+                SetWorker(SelectionUIHandler.SelectedWorker);
             }
         }
 
@@ -50,13 +52,14 @@ namespace LowEngine
         {
             if (GetComponent<PlacedObject>())
             {
-                GetComponent<PlacedObject>().thisObject = new Saving.SaveManager.SavableObject.WorldObject
+                GetComponent<PlacedObject>().objectData = new Saving.SaveManager.SavableObject.WorldObject
                 {
+                    type = ObjectType.Table,
                     objectType = PlacedObjectType.Desk,
                     position = transform.position,
                     rotation = transform.rotation,
                     name = $"{gameObject.name}.{transform.position}",
-                    childPos = chair.position,
+                    childPos = chair.localPosition,
                     sprite = GetComponent<SpriteRenderer>().sprite,
                     color = Color.white
                 };
@@ -77,27 +80,22 @@ namespace LowEngine
                 {
                     currentWorker.worker.Face(transform.position);
                 }
-
-                if (currentWorker.taskManager.tasks.Count == 0)
-                {
-                    inactiveTime += Time.deltaTime;
-
-                    if (inactiveTime > 1)
-                        currentWorker = null;
-                }
             }
         }
 
         public void SetWorker(TaskWorkerAI worker)
         {
-            if (currentWorker != null) return;
+            if (currentWorker != null && worker != currentWorker) return;
+
+            currentWorker = worker;
+            currentWorker.worker.Desk = this;
 
             TaskSystem.Task StartWorking = new TaskSystem.Task
             {
                 moveToPosition = new TaskSystem.Task.MoveTo(chair.position, 0, () => currentWorker = worker),
                 executeActionRecurring = () =>
                 {
-                    Clicked(worker);
+                    Clicked();
                 }
             };
 

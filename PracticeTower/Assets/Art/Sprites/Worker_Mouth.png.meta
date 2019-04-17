@@ -1,14 +1,33 @@
 fileFormatVersion: 2
 guid: ddf5a925c84270c4abb8952e96303771
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: Worker_Mouth_0
-    21300002: Worker_Mouth_1
-    21300004: Worker_Mouth_2
-    21300006: Worker_Mouth_3
-    21300008: Worker_Mouth_4
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: Worker_Mouth_0
+  - first:
+      213: 21300002
+    second: Worker_Mouth_1
+  - first:
+      213: 21300004
+    second: Worker_Mouth_2
+  - first:
+      213: 21300006
+    second: Worker_Mouth_3
+  - first:
+      213: 21300008
+    second: Worker_Mouth_4
+  - first:
+      213: -8336112187790077221
+    second: Worker_Mouth_5
+  - first:
+      213: 2089663827089674804
+    second: Worker_Mouth_6
+  - first:
+      213: -2796251426278284649
+    second: Worker_Mouth_7
   externalObjects: {}
-  serializedVersion: 9
+  serializedVersion: 10
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -125,7 +144,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d0fe9a09139262842b84941bf435e010
+      spriteID: 5648417bcf2b5c64991d7cea4b853632
+      internalID: 21300000
       vertices: []
       indices: 
       edges: []
@@ -145,7 +165,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 078881df69276c14d9d456ab14276ebe
+      spriteID: 2b029fa993791e340a9a0b558f30230c
+      internalID: 21300002
       vertices: []
       indices: 
       edges: []
@@ -165,7 +186,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a9d6cb21d82525d4cb3f90d80f0eac0f
+      spriteID: ba94717c671808b4b9f1ea387250b201
+      internalID: 21300004
       vertices: []
       indices: 
       edges: []
@@ -185,7 +207,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a5ce983c7c4a04246a18bf31f7b3eb95
+      spriteID: a35bb6c7d8151fc439126899df51b4c2
+      internalID: 21300006
       vertices: []
       indices: 
       edges: []
@@ -205,7 +228,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 032475865bcca43478c8b5c8941a9e26
+      spriteID: 332fc1e8203b04c4396531354a2da46b
+      internalID: 21300008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Mouth_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 922c5dba6c003604294e6987b32d0658
+      internalID: -8336112187790077221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Mouth_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c7e65dd4f8458a4d9acef58b6caf54e
+      internalID: 2089663827089674804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Mouth_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 326aee9276c98e847b1f35bb68c41daa
+      internalID: -2796251426278284649
       vertices: []
       indices: 
       edges: []
@@ -214,10 +301,12 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: dbc12526b8485a74586f9195052ed087
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
+    secondaryTextures: []
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

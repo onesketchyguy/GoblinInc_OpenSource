@@ -47,14 +47,13 @@ namespace LowEngine
         public GameObject WorkerInfoPanel;
 
         public Text MoneyText;
+        public Text DebtText;
 
         private void Update()
         {
-            string Money = $"{GameHandler.instance.Money}";
+            if (GameHandler.MoneyToPayOnPayDay() > 0) DebtText.text = $"$:{GameHandler.MoneyToPayOnPayDay()} due on payday"; else DebtText.text = "";
 
-            string display = GameHandler.MoneyToPayOnPayDay() == 0 ? Money : $"{GameHandler.instance.Money} - ${GameHandler.MoneyToPayOnPayDay()} on payday";
-
-            MoneyText.text = $"$:{display}";
+            MoneyText.text = $"$:{GameHandler.instance.Money}";
         }
 
         public void UpdateShowing(Show show)

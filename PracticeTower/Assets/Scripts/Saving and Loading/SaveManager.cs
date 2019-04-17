@@ -290,6 +290,7 @@ namespace LowEngine.Saving
             public Sprite sprite;
         }
 
+        [System.Serializable]
         public class SavableObject
         {
             public float value;
@@ -297,8 +298,9 @@ namespace LowEngine.Saving
             public Quaternion rotation;
             public string name;
 
-            public Color color;
+            public Color color = Color.white;
 
+            [System.Serializable]
             public class WorldObject : SavableObject
             {
                 public Sprite sprite;
@@ -307,6 +309,8 @@ namespace LowEngine.Saving
                 public Vector2 childPos;
 
                 public PlacedObjectType objectType;
+
+                public ObjectType type;
 
                 public NeedDefinition fulFills;
             }
@@ -326,9 +330,11 @@ namespace LowEngine.Saving
                 public float skill;
                 public float experience;
 
+                public float FlatPay;
+
                 public float pay;
 
-                public Worker(string name, int headIndex, int eyeIndex, int noseIndex, int mouthIndex, int hairIndex, Color hairColor, float skill, float pay, float experience, float[] needs)
+                public Worker(string name, int headIndex, int eyeIndex, int noseIndex, int mouthIndex, int hairIndex, Color hairColor, float skill, float FlatPay, float pay, float experience, float[] needs)
                 {
                     this.name = name;
                     this.headIndex = headIndex;
@@ -340,6 +346,7 @@ namespace LowEngine.Saving
                     this.skill = skill;
                     this.hunger = needs[0];
                     this.thirst = needs[1];
+                    this.FlatPay = FlatPay;
                     this.pay = pay;
                     this.experience = experience;
                 }
@@ -353,7 +360,18 @@ namespace LowEngine.Saving
 
             public float money;
 
-            //----------Save time of day aswell!-------------
+            public int minute;
+            public int hour;
+            public int day;
+
+            public SaveData(string userName, float money, int minute, int hour, int day)
+            {
+                this.userName = userName;
+                this.money = money;
+                this.minute = minute;
+                this.hour = hour;
+                this.day = day;
+            }
         }
     }
 }

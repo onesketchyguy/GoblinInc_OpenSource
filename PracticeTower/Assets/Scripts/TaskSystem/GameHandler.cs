@@ -2,6 +2,8 @@
 using LowEngine.Tasks;
 using LowEngine.Saving;
 using System.IO;
+using LowEngine.TimeManagement;
+using System.Collections.Generic;
 
 namespace LowEngine
 {
@@ -62,6 +64,12 @@ namespace LowEngine
                 Money -= MoneyToPayOnPayDay();
 
                 daysUntilPayDay = 7;
+
+                NotificationManager.instance.ShowNotification($"You spent: ${MoneyToPayOnPayDay()} on saleries this week.");
+            }
+            else
+            {
+                NotificationManager.instance.ShowNotification($"{daysUntilPayDay} left until pay day!");
             }
 
             if (Money < 0)
@@ -82,11 +90,7 @@ namespace LowEngine
         public void SaveGame()
         {
             // -----------------Save Player data---------------
-            ActivePlayerData = new SaveManager.SaveData
-            {
-                money = Money,
-                userName = saveName
-            };
+            ActivePlayerData = new SaveManager.SaveData(saveName, Money, TimeScale.minutes, TimeScale.hours, TimeScale.days);
 
             SaveManager.DeleteSavedGame(ActivePlayerData);
 
@@ -105,14 +109,19 @@ namespace LowEngine
 
             // -----------------Save Objects---------------
             PlacedObject[] objects = FindObjectsOfType<PlacedObject>();
-            SaveManager.SavableObject.WorldObject[] savedObjects = new SaveManager.SavableObject.WorldObject[objects.Length];
+            List<SaveManager.SavableObject.WorldObject> savedObjects = new List<SaveManager.SavableObject.WorldObject>() { };
 
             for (int i = 0; i < objects.Length; i++)
             {
-                savedObjects[i] = objects[i].thisObject;
+                if (objects[i].objectData.type == ObjectType.Abstract)
+                {
+                    continue;
+                }
+
+                savedObjects.Add(objects[i].objectData);
             }
 
-            SaveManager.SaveObjects(ActivePlayerData.userName, savedObjects);
+            SaveManager.SaveObjects(ActivePlayerData.userName, savedObjects.ToArray());
 
             NotificationManager.instance.ShowNotification("Game saved!");
         }
@@ -125,6 +134,10 @@ namespace LowEngine
 
         public void LoadGame(int index)
         {
+            MapLayoutManager map = FindObjectOfType<MapLayoutManager>();
+
+            map.enabled = false;
+
             SetupSaves();
 
             ActivePlayerData = savesData[index];
@@ -179,6 +192,8 @@ namespace LowEngine
                     Constructor.GetObject(data);
                 }
             }
+
+            map.enabled = true;
 
             NotificationManager.instance.ShowNotification("Game Loaded!");
         }

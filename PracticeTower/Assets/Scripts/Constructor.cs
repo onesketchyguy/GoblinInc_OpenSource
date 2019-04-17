@@ -56,6 +56,8 @@ namespace LowEngine.Saving
             spr.sortingOrder = data.spriteSortingLayer;
             spr.material = GameHandler.instance.gameObjectMaterial;
 
+            obj.AddComponent<BoxCollider2D>();
+
             Color savedColor = data.color;
             Debug.Log(savedColor);
             spr.color = savedColor;
@@ -63,7 +65,9 @@ namespace LowEngine.Saving
             obj.transform.position = data.position;
             obj.transform.rotation = data.rotation;
 
-            obj.AddComponent<PlacedObject>();
+            PlacedObject objectData = obj.AddComponent<PlacedObject>();
+
+            objectData.objectData = data;
 
             switch (data.objectType)
             {
@@ -74,7 +78,9 @@ namespace LowEngine.Saving
 
                     child.SetParent(obj.transform);
 
-                    child.position = (data.childPos != Vector2.zero) ? child.position = data.childPos : obj.transform.position;
+                    child.localPosition = (data.childPos != Vector2.zero) ? child.position = data.childPos : obj.transform.position;
+
+                    child.rotation = obj.transform.rotation;
 
                     obj.GetComponent<WorkerButton>().chair = child;
                     break;
@@ -84,6 +90,15 @@ namespace LowEngine.Saving
                 default:
                     break;
             }
+
+            return obj;
+        }
+
+        public static GameObject GetObject(SaveManager.SavableObject.WorldObject data, Transform parent)
+        {
+            GameObject obj = GetObject(data);
+
+            obj.transform.SetParent(parent);
 
             return obj;
         }

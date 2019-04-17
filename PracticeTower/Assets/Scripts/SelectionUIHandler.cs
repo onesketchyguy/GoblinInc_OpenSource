@@ -12,7 +12,7 @@ namespace LowEngine
 
         public Color SelectedColor = Color.white;
 
-        public Text NameDisplay, SkillDisplay, EfficiencyDisplay, UnhappinessDisplay;
+        public Text NameDisplay, CostDisplay, SkillDisplay, EfficiencyDisplay, UnhappinessDisplay, ThoughtDisplay;
 
         public Slider ExperienceDisplay, HungerSlider, ThirstSlider;
 
@@ -56,10 +56,12 @@ namespace LowEngine
                 return;
             }
 
-            NameDisplay.text = $"{SelectedWorker.name} : ${SelectedWorker.worker.workerData.pay}";
+            NameDisplay.text = $"{SelectedWorker.name}";
+            CostDisplay.text = $"This worker is costing you: ${SelectedWorker.worker.workerData.pay} per week.";
             SkillDisplay.text = $"Skill Level: {SelectedWorker.worker.workerData.skill}/100";
             EfficiencyDisplay.text = $"Efficiency: { 100 - SelectedWorker.worker.ineffiency}%";
             UnhappinessDisplay.text = $"Unhappiness:{SelectedWorker.worker.unhappiness}%";
+            ThoughtDisplay.text = $"Last thought: \"{SelectedWorker.currentThought}\"";
 
             ExperienceDisplay.value = SelectedWorker.worker.workerData.experience;
             HungerSlider.value = 1 - (SelectedWorker.worker.workerData.hunger * 0.01f);

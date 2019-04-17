@@ -12,8 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb00671fb2dc9642bdd3cebcdb79f58, type: 3}
   m_Name: Desk
   m_EditorClassIdentifier: 
-  itemCost: 10
-  prefab: {fileID: 8597804408808071427, guid: 0fe2122125df353438171737ce1959ef, type: 3}
-  type: 1
   ChangableColor: 0
   rotatable: 1
+  ObjectData:
+    value: 25
+    position: {x: -1, y: -0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    name: Desk
+    color: {r: 1, g: 1, b: 1, a: 1}
+    sprite: {fileID: 21300000, guid: 048a36b076283a44b9c8d1c313df2997, type: 3}
+    spriteSortingLayer: 0
+    childPos: {x: -0.32, y: 0}
+    objectType: 1
+    type: 1
+    fulFills: 0

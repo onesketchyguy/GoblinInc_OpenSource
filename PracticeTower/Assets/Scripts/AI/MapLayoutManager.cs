@@ -7,7 +7,7 @@ namespace LowEngine
 {
     public class MapLayoutManager : MonoBehaviour
     {
-        public GameObject Concrete;
+        public PlaceableObject Concrete;
 
         /// <summary>
         /// Display half the size you want here.
@@ -141,9 +141,9 @@ namespace LowEngine
 
                     Collider2D collision = Physics2D.OverlapCircle(worldPoint, nodeRadius/2);
 
-                    if (collision != null && collision.GetComponent<PlacedObject>() && collision.GetComponent<PlacedObject>().obj)
+                    if (collision != null && collision.GetComponent<PlacedObject>() && collision.GetComponent<PlacedObject>().objectData != null)
                     {
-                        if (collision.GetComponent<PlacedObject>().obj.type == ObjectType.Wall)
+                        if (collision.GetComponent<PlacedObject>().objectData.type == ObjectType.Wall)
                         {
                             wall = true;
                         }
@@ -181,7 +181,9 @@ namespace LowEngine
 
         public void ReplaceTile(Vector2 tilePos)
         {
-            GameObject n_concrete = Instantiate(Concrete, tilePos, Quaternion.identity, ConcreteParent.transform);
+            Concrete.ObjectData.position = tilePos;
+
+            GameObject n_concrete = Constructor.GetObject(Concrete.ObjectData, ConcreteParent.transform);
 
             n_concrete.GetComponent<SpriteRenderer>().material = GameHandler.instance.gameObjectMaterial;
 

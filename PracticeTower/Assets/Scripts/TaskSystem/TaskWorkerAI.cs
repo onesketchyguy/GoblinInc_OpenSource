@@ -19,6 +19,8 @@ namespace LowEngine.Tasks
 
         public TaskSystem taskManager;
 
+        public bool AtHome { get { return Vector2.Distance(transform.position, FindObjectOfType<MapLayoutManager>().PlayAreaSize - Vector2.one) < 2; } }
+
         public TaskSystem.Task GetNearestDesk => new TaskSystem.Task
         {
             executeAction = () =>
@@ -77,7 +79,10 @@ namespace LowEngine.Tasks
 
         public TaskSystem.Task ComeBack => new TaskSystem.Task
         {
-            moveToPosition = new TaskSystem.Task.MoveTo(transform.position, 0, () => state = State.WaitingForNewTask)
+            moveToPosition = new TaskSystem.Task.MoveTo(transform.position, 0, () => 
+            {
+                state = State.WaitingForNewTask;
+            })
         };
 
         public TaskSystem.Task celebrate => new TaskSystem.Task
@@ -148,7 +153,7 @@ namespace LowEngine.Tasks
 
                 if (worker.GetNeed(NeedDefinition.Hunger).value <= skill)
                 {
-                    currentThought = "Hungery";
+                    currentThought = "Hungry";
 
                     TaskSystem.Task hunger = FulfilNeed(NeedDefinition.Hunger);
 
@@ -158,7 +163,13 @@ namespace LowEngine.Tasks
                     }
                     else
                     {
+                        taskManager.tasks.Clear();
+
                         taskManager.tasks.Enqueue(GoHome);
+
+                        taskManager.tasks.Enqueue(ComeBack);
+
+                        return;
                     }
                 }
 
@@ -174,7 +185,13 @@ namespace LowEngine.Tasks
                     }
                     else
                     {
+                        taskManager.tasks.Clear();
+
                         taskManager.tasks.Enqueue(GoHome);
+
+                        taskManager.tasks.Enqueue(ComeBack);
+
+                        return;
                     }
                 }
 
@@ -184,19 +201,35 @@ namespace LowEngine.Tasks
 
         private void RequestNextTask()
         {
+            HandleNeeds();
+
             TaskSystem.Task task = null;
 
             if (taskManager.tasks.Count > 0) task = taskManager.tasks.Dequeue();
 
             if (task == null)
             {
-                currentTask = "Waiting for a task.";
-
-                state = State.WaitingForNewTask;
-
-                if (GetNearestDesk != null)
+                if (TimeManagement.TimeScale.isDayTime())
                 {
-                    taskManager.tasks.Enqueue(GetNearestDesk);
+                    if (worker.Desk != null)
+                    {
+                        worker.Desk.SetWorker(this);
+                    }
+                    else
+                    {
+                        currentTask = "Waiting for a task.";
+
+                        state = State.WaitingForNewTask;
+
+                        if (GetNearestDesk != null)
+                        {
+                            taskManager.tasks.Enqueue(GetNearestDesk);
+                        }
+                    }
+                }
+                else
+                {
+                    taskManager.tasks.Enqueue(GoHome);
                 }
             }
             else
@@ -244,8 +277,6 @@ namespace LowEngine.Tasks
                     state = State.WaitingForNewTask;
                 }
             }
-
-            HandleNeeds();
         }
 
         private NeedFulfiller GetNearestNeed(NeedDefinition need)

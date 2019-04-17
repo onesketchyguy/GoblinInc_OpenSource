@@ -12,7 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb00671fb2dc9642bdd3cebcdb79f58, type: 3}
   m_Name: VendingMachine
   m_EditorClassIdentifier: 
-  itemCost: 10
-  prefab: {fileID: 7526737874870185055, guid: d98156ad0d0808d4e8cc55d29600e934, type: 3}
-  type: 1
   ChangableColor: 0
+  rotatable: 0
+  ObjectData:
+    value: 200
+    position: {x: 0, y: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    name: 
+    color: {r: 1, g: 1, b: 1, a: 1}
+    sprite: {fileID: 21300002, guid: 5cb70ef0c4e47c14ab28242dbd2976b7, type: 3}
+    spriteSortingLayer: 0
+    childPos: {x: 0, y: 0}
+    objectType: 2
+    type: 1
+    fulFills: 0

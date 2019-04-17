@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using LowEngine.Saving;
 
 namespace LowEngine
 {
@@ -19,14 +20,14 @@ namespace LowEngine
                 return;
             }
 
-            okayToPlace = (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
+            okayToPlace = (placing.ObjectData.type == ObjectType.Ground || placing.ObjectData.type == ObjectType.Wall);
         }
 
         private void FixedUpdate()
         {
             if (placing != null)
             {
-                okayToPlace = (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
+                okayToPlace = (placing.ObjectData.type == ObjectType.Ground || placing.ObjectData.type == ObjectType.Wall);
             }
 
             Collider2D[] collisions = null;
@@ -77,19 +78,19 @@ namespace LowEngine
 
         bool NothingBlocking(PlacedObject placedObject)
         {
-            if (placing == null || placedObject.obj.type == placing.type)
+            if (placing == null || placedObject.objectData.type == placing.ObjectData.type)
             {
                 return false;
             }
 
-            switch (placedObject.obj.type)
+            switch (placedObject.objectData.type)
             {
                 case ObjectType.Abstract:
-                    return (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
+                    return (placing.ObjectData.type == ObjectType.Ground || placing.ObjectData.type == ObjectType.Wall);
                 case ObjectType.Table:
-                    return (placing.type == ObjectType.Ground);
+                    return (placing.ObjectData.type == ObjectType.Ground);
                 case ObjectType.Ground:
-                    return (placing.type == ObjectType.Table);
+                    return (placing.ObjectData.type == ObjectType.Table);
                 case ObjectType.Wall:
                     return false;
                 default:

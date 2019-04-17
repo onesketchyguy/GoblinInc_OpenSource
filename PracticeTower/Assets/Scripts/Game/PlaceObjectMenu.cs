@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using LowEngine.Saving;
 
 namespace LowEngine
 {
     public class PlaceObjectMenu : MonoBehaviour
     {
         public Transform spawningParent;
+
+        public Text Descriptiontext;
 
         public PlaceableObject[] placeableObjects;
 
@@ -42,7 +45,7 @@ namespace LowEngine
             go.name = $"{obj.name}.Button";
             Image img = go.AddComponent<Image>();
 
-            img.sprite = obj.prefab.GetComponent<SpriteRenderer>().sprite;
+            img.sprite = obj.ObjectData.sprite;
 
             Button button = go.AddComponent<Button>();
 
@@ -53,6 +56,15 @@ namespace LowEngine
 
         private void Update()
         {
+            if (Spawning != null)
+            {
+                Descriptiontext.text = $"{Spawning.name}\n${Spawning.ObjectData.value}";
+            }
+            else
+            {
+                Descriptiontext.text = "Select an object.";
+            }
+
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 CancelInvoke("SpawnObject");
@@ -71,7 +83,7 @@ namespace LowEngine
                 {
                     ghostObject.transform.position = Utilities.GetMousePosition();
                 }
-
+                
                 return;
             }
 
@@ -83,7 +95,7 @@ namespace LowEngine
             {
                 GameHandler.gameState = GameHandler.GameState.Placing;
 
-                bool okayToPlace = (GameHandler.instance.Money >= Spawning.itemCost);
+                bool okayToPlace = (GameHandler.instance.Money >= Spawning.ObjectData.value);
 
                 if (ghostObject == null)
                 {
@@ -95,8 +107,8 @@ namespace LowEngine
 
                     SpriteRenderer spr = ghostObject.gameObject.AddComponent<SpriteRenderer>();
                     spr.sortingOrder = 100;
-                    Color c = (Spawning.ChangableColor) ? PlacingColor : Spawning.prefab.GetComponent<SpriteRenderer>().color;
-                    spr.sprite = Spawning.prefab.GetComponent<SpriteRenderer>().sprite;
+                    Color c = (Spawning.ChangableColor) ? PlacingColor : Spawning.ObjectData.color;
+                    spr.sprite = Spawning.ObjectData.sprite;
                     spr.color = new Color(c.r, c.g, c.b, ghostAlpha);
 
                     ghostObject.transform.position = GridLockedMousePos;
@@ -108,26 +120,19 @@ namespace LowEngine
                     ghostObject.transform.position = GridLockedMousePos;
 
                     SpriteRenderer spr = ghostObject.gameObject.GetComponent<SpriteRenderer>();
-                    Color c = (Spawning.ChangableColor)? PlacingColor : Spawning.prefab.GetComponent<SpriteRenderer>().color;
+                    Color c = (Spawning.ChangableColor) ? PlacingColor : Spawning.ObjectData.color;
 
-                    spr.sprite = Spawning.prefab.GetComponent<SpriteRenderer>().sprite;
+                    spr.sprite = Spawning.ObjectData.sprite;
                     spr.color = okayToPlace ? new Color(c.r, c.g, c.b, ghostAlpha) : new Color(1, 0, 0, ghostAlpha);
                 }
 
                 if (Input.GetAxisRaw("Mouse ScrollWheel") != 0 && Spawning.rotatable)
                 {
-                    if (Input.GetButton("Fire3"))
-                    {
-                        RotatePlacing(90 * Input.GetAxisRaw("Mouse ScrollWheel"));
-                    }
-                    else
-                    {
-                        int rounded = Mathf.RoundToInt(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
+                    int rounded = Mathf.RoundToInt(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
 
-                        Mathf.Clamp(rounded, -1, 1);
+                    Mathf.Clamp(rounded, -1, 1);
 
-                        RotatePlacing(90 * rounded);
-                    }
+                    RotatePlacing(90 * rounded);
                 }
 
                 if (Input.GetButtonDown("Fire1") & okayToPlace)
@@ -156,24 +161,33 @@ namespace LowEngine
                     spr.sortingOrder = 100;
                     spr.sprite = bulldozer;
                     spr.color = new Color(1, 0, 0, ghostAlpha);
-
-                    ghostObject.transform.position = GridLockedMousePos;
                 }
+
+                ghostObject.transform.position = GridLockedMousePos;
 
                 if (ghostObject.overlapping != null)
                 {
                     SpriteRenderer spr = ghostObject.gameObject.GetComponent<SpriteRenderer>();
-                    spr.color = (ghostObject.overlapping[ghostObject.overlapping.Length - 1] != null && ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>().obj.type != ObjectType.Abstract) ? new Color(1, 0, 0, ghostAlpha) : new Color(0, 0, 0, ghostAlpha);
+                    spr.color = new Color(0, 0, 0, ghostAlpha);
 
-                    ghostObject.transform.position = GridLockedMousePos;
-
-
-                    if (ghostObject.overlapping.Length > 0 && ghostObject.overlapping[ghostObject.overlapping.Length - 1] != null)
+                    if (ghostObject.overlapping[ghostObject.overlapping.Length - 1] != null && ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>() != null)
                     {
-                        if (ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>().obj.type != ObjectType.Abstract)
+                        if (ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>().objectData.type != ObjectType.Abstract)
                         {
+                            spr.color = new Color(1, 0, 0, ghostAlpha);
+
                             if (Input.GetButton("Fire1"))
                             {
+                                foreach (var obj in ghostObject.overlapping)
+                                {
+                                    if (obj.GetComponent<PlacedObject>() == null || obj.GetComponent<PlacedObject>().objectData == null) continue;
+
+                                    if (obj.GetComponent<PlacedObject>().objectData.value > 0)
+                                    {
+                                        GameHandler.instance.Money += obj.GetComponent<PlacedObject>().objectData.value;
+                                    }
+                                }
+
                                 Destroy(ghostObject.overlapping[ghostObject.overlapping.Length - 1]);
                             }
                         }
@@ -185,14 +199,7 @@ namespace LowEngine
 
         void SetSpawningObject(PlaceableObject obj)
         {
-            if (GameHandler.instance.Money >= obj.itemCost)
-            {
-                Spawning = obj;
-            }
-            else
-            {
-                NotificationManager.instance.ShowNotification($"You don't have enought money for that!\n${obj.itemCost}");
-            }
+            Spawning = obj;
         }
 
         private void SpawnObject()
@@ -202,9 +209,9 @@ namespace LowEngine
                 return;
             }
 
-            if (GameHandler.instance.Money < Spawning.itemCost)
+            if (GameHandler.instance.Money < Spawning.ObjectData.value)
             {
-                NotificationManager.instance.ShowNotification($"You don't have enought money for that!\n${Spawning.itemCost}");
+                NotificationManager.instance.ShowNotification($"You don't have enought money for that!\n${Spawning.ObjectData.value}");
 
                 return;
             }
@@ -217,11 +224,14 @@ namespace LowEngine
                 worldObjectParent = new GameObject("Building");
             }
 
-            GameObject go = Instantiate(Spawning.prefab, GridLockedMousePos, ghostObject.transform.rotation, worldObjectParent.transform);
+            Spawning.ObjectData.position = GridLockedMousePos;
+            Spawning.ObjectData.rotation = ghostObject.transform.rotation;
+
+            GameObject go = Constructor.GetObject(Spawning.ObjectData, worldObjectParent.transform);
 
             if (ghostObject.overlapping != null)
             {
-                if (ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>().obj.type == ObjectType.Abstract)
+                if (ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>().objectData.type == ObjectType.Abstract)
                 {
                     Destroy(ghostObject.overlapping[ghostObject.overlapping.Length - 1]);
 
@@ -233,11 +243,11 @@ namespace LowEngine
 
             if (Spawning.ChangableColor) go.GetComponent<SpriteRenderer>().color = PlacingColor;
 
-            go.name = Spawning.prefab.name;
+            go.name = Spawning.ObjectData.name;
 
-            GameHandler.instance.Money -= Spawning.itemCost;
+            GameHandler.instance.Money -= Spawning.ObjectData.value;
 
-            if (Spawning.itemCost > 0 && !Input.GetButton("Fire3"))
+            if (Spawning.ObjectData.value > 0 && !Input.GetButton("Fire3"))
             {
                 ClearObject();
             }

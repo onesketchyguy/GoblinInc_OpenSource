@@ -55,5 +55,23 @@ namespace LowEngine
 
             AudioSource.PlayClipAtPoint(KillWorkerSounds[Random.Range(0, KillWorkerSounds.Length)], transform.position, distToCam); //Replace wioth SFX volume
         }
+
+        public AudioClip[] OpeningSounds;
+
+        public void PlayOpenSound(Vector3 fromPoint)
+        {
+            float distToCam = Mathf.Clamp(Vector3.Distance(Camera.main.transform.position, fromPoint) - Camera.main.orthographicSize, 0, 1f);
+
+            AudioSource.PlayClipAtPoint(OpeningSounds[Random.Range(0, OpeningSounds.Length)], transform.position, distToCam); //Replace wioth SFX volume
+        }
+
+        public AudioClip[] ClosingSounds;
+
+        public void PlayClosingSound(Vector3 fromPoint)
+        {
+            float distToCam = Mathf.Clamp(Vector3.Distance(Camera.main.transform.position, fromPoint) - Camera.main.orthographicSize, 0, 1f);
+
+            AudioSource.PlayClipAtPoint(ClosingSounds[Random.Range(0, ClosingSounds.Length)], transform.position, distToCam); //Replace wioth SFX volume
+        }
     }
 }

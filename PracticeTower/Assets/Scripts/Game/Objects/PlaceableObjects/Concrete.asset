@@ -12,8 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb00671fb2dc9642bdd3cebcdb79f58, type: 3}
   m_Name: Concrete
   m_EditorClassIdentifier: 
-  itemCost: 0
-  prefab: {fileID: 4872626429924488133, guid: 47accb72966a75e4d8c44e3f4a4f0ce9, type: 3}
-  type: 0
   ChangableColor: 0
   rotatable: 0
+  ObjectData:
+    value: 0
+    position: {x: 19, y: 9}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    name: Concrete
+    color: {r: 1, g: 1, b: 1, a: 1}
+    sprite: {fileID: 21300000, guid: 2b8bda31db3a2b9489f8753f54f471a7, type: 3}
+    spriteSortingLayer: -10
+    childPos: {x: 0, y: 0}
+    objectType: 0
+    type: 0
+    fulFills: 0

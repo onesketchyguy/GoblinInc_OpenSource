@@ -1,14 +1,33 @@
 fileFormatVersion: 2
 guid: 85570dae26d43794abc73309ed541649
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: Worker_Eyes_0
-    21300002: Worker_Eyes_1
-    21300004: Worker_Eyes_2
-    21300006: Worker_Eyes_3
-    21300008: Worker_Eyes_4
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: Worker_Eyes_0
+  - first:
+      213: 21300002
+    second: Worker_Eyes_1
+  - first:
+      213: 21300004
+    second: Worker_Eyes_2
+  - first:
+      213: 21300006
+    second: Worker_Eyes_3
+  - first:
+      213: 21300008
+    second: Worker_Eyes_4
+  - first:
+      213: -617252887220072824
+    second: Worker_Eyes_5
+  - first:
+      213: -7607257892462346997
+    second: Worker_Eyes_6
+  - first:
+      213: -2719083376325828853
+    second: Worker_Eyes_7
   externalObjects: {}
-  serializedVersion: 9
+  serializedVersion: 10
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -125,7 +144,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 88a571d8efd0f834dbe5d09f41324741
+      spriteID: 76cf6c9966df8bc4ca16786eab612787
+      internalID: 21300000
       vertices: []
       indices: 
       edges: []
@@ -145,7 +165,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 265cc09ba7dd8634c9242d26f5f7b4b7
+      spriteID: b4039b0a34e7b4f49be32bbef5c3867b
+      internalID: 21300002
       vertices: []
       indices: 
       edges: []
@@ -165,7 +186,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0411e5b91b8a0ef438e11439a415dc16
+      spriteID: 2496ef54a30b9334ba35ac0a5d765f90
+      internalID: 21300004
       vertices: []
       indices: 
       edges: []
@@ -185,7 +207,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 99b0781deecb59349b35da5297b8a6fe
+      spriteID: 4d0c9fee6c429254b8dafbc7961a0d6a
+      internalID: 21300006
       vertices: []
       indices: 
       edges: []
@@ -205,7 +228,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c9573c3162467dd4aa2a88073d5d0cf7
+      spriteID: 6c2f989b1b50ba14f99efafbf590d92a
+      internalID: 21300008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Eyes_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21c64f3d554557640a910be99547c5b0
+      internalID: -617252887220072824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Eyes_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9396a192f8bc3e846bb7884965a01948
+      internalID: -7607257892462346997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Eyes_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7226b7af42c5ec4d83ffe5f3359952a
+      internalID: -2719083376325828853
       vertices: []
       indices: 
       edges: []
@@ -214,10 +301,12 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 109d4477645e47640a2baa5bea5e4a73
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
+    secondaryTextures: []
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

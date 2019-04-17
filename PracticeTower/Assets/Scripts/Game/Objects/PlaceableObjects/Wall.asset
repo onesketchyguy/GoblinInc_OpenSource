@@ -12,7 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb00671fb2dc9642bdd3cebcdb79f58, type: 3}
   m_Name: Wall
   m_EditorClassIdentifier: 
-  itemCost: 0
-  prefab: {fileID: 9200827960079704126, guid: 5493755787c1738459f965f6bb28274c, type: 3}
-  type: 3
   ChangableColor: 1
+  rotatable: 0
+  ObjectData:
+    value: 0
+    position: {x: 0, y: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    name: 
+    color: {r: 1, g: 1, b: 1, a: 1}
+    sprite: {fileID: 21300002, guid: fb0b2c1c57780fc4d8b9cb43b85ef389, type: 3}
+    spriteSortingLayer: 0
+    childPos: {x: 0, y: 0}
+    objectType: 0
+    type: 3
+    fulFills: 0
