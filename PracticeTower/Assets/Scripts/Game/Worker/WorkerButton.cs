@@ -4,9 +4,9 @@ using LowEngine.Saving;
 
 namespace LowEngine
 {
-    public class WorkerButton : MonoBehaviour, ISaveableObject
+    public class WorkerButton : MonoBehaviour
     {
-        public int moneyToAdd = 1;
+        public float moneyToAdd = 1;
 
         public Transform chair;
 
@@ -16,8 +16,6 @@ namespace LowEngine
         {
             if (currentWorker == null || Vector2.Distance(transform.position, currentWorker.transform.position) > 2)
             {
-                Debug.Log($"Some one is trying to click {gameObject.name} but I dont have any workers assigned to do that!");
-
                 return;
             }
 
@@ -48,30 +46,8 @@ namespace LowEngine
             }
         }
 
-        public void SetupSaveableObject()
-        {
-            if (GetComponent<PlacedObject>())
-            {
-                GetComponent<PlacedObject>().objectData = new Saving.SaveManager.SavableObject.WorldObject
-                {
-                    type = ObjectType.Table,
-                    objectType = PlacedObjectType.Desk,
-                    position = transform.position,
-                    rotation = transform.rotation,
-                    name = $"{gameObject.name}.{transform.position}",
-                    childPos = chair.localPosition,
-                    sprite = GetComponent<SpriteRenderer>().sprite,
-                    color = Color.white
-                };
-            }
-        }
-
-        float inactiveTime;
-
         private void Update()
         {
-            SetupSaveableObject();
-
             if (currentWorker != null)
             {
                 float distanceToWorker = Vector2.Distance(currentWorker.transform.position, transform.position);
@@ -81,6 +57,13 @@ namespace LowEngine
                     currentWorker.worker.Face(transform.position);
                 }
             }
+
+            if (GetComponent<PlacedObject>().objectData.wVal > 0)
+            {
+                moneyToAdd = GetComponent<PlacedObject>().objectData.wVal;
+            }
+
+            GetComponent<PlacedObject>().objectData.wVal = moneyToAdd;
         }
 
         public void SetWorker(TaskWorkerAI worker)

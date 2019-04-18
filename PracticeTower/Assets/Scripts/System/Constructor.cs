@@ -33,12 +33,9 @@ namespace LowEngine.Saving
                 obj.transform.position = spawnPoint;
                 obj.transform.rotation = Quaternion.identity;
 
-                Vector3 pos = FindObjectOfType<MapLayoutManager>().NodeFromWorldPosition(Vector3.zero).position;
-
-                
                 TaskSystem.Task comeToview = new TaskSystem.Task
                 {
-                    moveToPosition = new TaskSystem.Task.MoveTo(pos, Random.Range(0, 2f))
+                    moveToPosition = new TaskSystem.Task.MoveTo(Vector3.zero, Random.Range(0, 2f))
                 };
 
                 workerAI.taskManager.tasks.Enqueue(comeToview);
@@ -51,15 +48,23 @@ namespace LowEngine.Saving
         {
             GameObject obj = new GameObject(data.name);
 
+            GameObject parent = GameObject.Find("Building");
+
+            if (parent == null)
+            {
+                parent = new GameObject("Building");
+            }
+
             SpriteRenderer spr = obj.AddComponent<SpriteRenderer>();
-            spr.sprite = data.sprite;
+            spr.sprite = Modding.ModLoader.GetSprite(data.spriteName);
             spr.sortingOrder = data.spriteSortingLayer;
             spr.material = GameHandler.instance.gameObjectMaterial;
 
             obj.AddComponent<BoxCollider2D>();
 
+            obj.transform.SetParent(parent.transform);
+
             Color savedColor = data.color;
-            Debug.Log(savedColor);
             spr.color = savedColor;
 
             obj.transform.position = data.position;
@@ -104,10 +109,30 @@ namespace LowEngine.Saving
 
             return obj;
         }
-    }
 
-    public interface ISaveableObject
-    {
-        void SetupSaveableObject();
+        public static SaveManager.SavableObject.WorldObject CloneObjectData(SaveManager.SavableObject.WorldObject data, Vector3 position, Quaternion rotation, Color color)
+        {
+            SaveManager.SavableObject.WorldObject r = new SaveManager.SavableObject.WorldObject { };
+
+            r = new SaveManager.SavableObject.WorldObject
+            {
+                pVal = data.pVal,
+                type = data.type,
+                objectType = data.objectType,
+                fulFills = data.fulFills,
+                childPos = data.childPos,
+                name = data.name,
+                spriteName = data.spriteName,
+                spriteSortingLayer = data.spriteSortingLayer,
+                color = color,
+                rotatable = data.rotatable,
+                ChangableColor = data.ChangableColor
+            };
+
+            r.position = position;
+            r.rotation = rotation;
+
+            return r;
+        }
     }
 }

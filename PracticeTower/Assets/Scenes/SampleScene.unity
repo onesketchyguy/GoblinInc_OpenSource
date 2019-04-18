@@ -5758,7 +5758,6 @@ MonoBehaviour:
   Concrete: {fileID: 11400000, guid: b631c41bd5db6804eaf7a68fac82276a, type: 2}
   PlayAreaSize: {x: 20, y: 10}
   nodeRadius: 0.5
-  Distance: 0
 --- !u!1 &929615468
 GameObject:
   m_ObjectHideFlags: 0

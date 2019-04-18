@@ -17,13 +17,13 @@ namespace LowEngine.Navigation
                 TargetNode = grid.GetNeightboringNodes(StartNode)[0];
             }
 
-            if (TargetNode.IsWall)
+            if (TargetNode.obstrucion)
             {
                 float DistToTarget = Vector2.Distance(StartNode.position, TargetNode.position);
 
                 foreach (var node in grid.GetNeightboringNodes(TargetNode))
                 {
-                    if (node.IsWall) continue;
+                    if (node.obstrucion) continue;
 
                     float DistToNode = Vector2.Distance(node.position, TargetNode.position);
 
@@ -45,7 +45,7 @@ namespace LowEngine.Navigation
 
                 for (int i = 1; i < OpenList.Count; i++)
                 {
-                    if ((OpenList[i].Cost < currentNode.Cost || OpenList[i].Cost == currentNode.Cost) && (OpenList[i].CostFromEnd < currentNode.CostFromEnd || OpenList[i].CostFromEnd == currentNode.CostFromEnd))
+                    if ((OpenList[i].Cost < currentNode.Cost || OpenList[i].Cost == currentNode.Cost) || (OpenList[i].CostFromStart < currentNode.CostFromStart || OpenList[i].CostFromStart == currentNode.CostFromStart) || (OpenList[i].CostFromEnd < currentNode.CostFromEnd || OpenList[i].CostFromEnd == currentNode.CostFromEnd))
                     {
                         currentNode = OpenList[i];
                     }
@@ -61,7 +61,7 @@ namespace LowEngine.Navigation
 
                 foreach (var neighborNode in grid.GetNeightboringNodes(currentNode))
                 {
-                    if (neighborNode == null || neighborNode.IsWall || ClosedList.Contains(neighborNode)) continue;
+                    if (neighborNode == null || neighborNode.obstrucion || ClosedList.Contains(neighborNode)) continue;
 
                     int MoveCost = currentNode.CostFromStart + Node.GetManhattanDistance(currentNode, neighborNode);
 
@@ -102,6 +102,11 @@ namespace LowEngine.Navigation
             finalPath.Reverse();
 
             Path = finalPath;
+
+            if (Path == null || Path.Count < 1)
+            {
+                Debug.Log("Unable to create path!");
+            }
         }
     }
 }

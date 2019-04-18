@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace LowEngine
 {
@@ -25,13 +26,22 @@ namespace LowEngine
 
         private void Start()
         {
-            Vector3 stored = FindObjectOfType<MapLayoutManager>().PlayAreaSize;
+            Vector3 stored = FindObjectOfType<MapLayoutManager>().PlayAreaSize/4;
+
+            maxZoom = (stored.x > stored.y) ? stored.x : stored.y;
+
+            if (maxZoom < 5)
+            {
+                maxZoom = 5;
+            }
 
             MaxCam = transform.position + stored;
         }
 
         void Update()
         {
+            if (EventSystem.current.IsPointerOverGameObject()) return;
+
             float camCap = maxZoom - currentZoom;
 
             currentMaxCam = new Vector2(camCap + MaxCam.x, camCap + MaxCam.y);

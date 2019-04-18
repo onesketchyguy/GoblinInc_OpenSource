@@ -14,7 +14,7 @@ namespace LowEngine.Navigation
 
         public Vector2Int gridPosition;
 
-        public bool IsWall;
+        public bool obstrucion;
         public Vector3 position;
 
         public Node parent;
@@ -29,10 +29,10 @@ namespace LowEngine.Navigation
         public int CostFromEnd;
         public int Cost { get { return CostFromStart + CostFromEnd; } } // The total cost of movment
 
-        public Node(Vector2 gridPosition, bool isWall, Vector3 position)
+        public Node(Vector2 gridPosition, bool obstrucion, Vector3 position)
         {
             this.gridPosition = new Vector2Int((int)gridPosition.x, (int)gridPosition.y);
-            IsWall = isWall;
+            this.obstrucion = obstrucion;
             this.position = position;
         }
     }

@@ -262,7 +262,7 @@ namespace LowEngine.Saving
         //Functions
         private static void SaveWorker(SavableObject.Worker worker, out string data)
         {
-            data = $"{DATA_SEPERATOR}{JsonUtility.ToJson(worker)}";
+            data = $"{DATA_SEPERATOR}{JsonUtility.ToJson(worker)}\n";
         }
 
         private static SavableObject.Worker LoadWorker(string saveString)
@@ -274,7 +274,7 @@ namespace LowEngine.Saving
 
         private static void SaveGameObject(SavableObject.WorldObject obj, out string data)
         {
-            data = $"{DATA_SEPERATOR}{JsonUtility.ToJson(obj)}";
+            data = $"{DATA_SEPERATOR}{JsonUtility.ToJson(obj)}\n";
         }
 
         private static SavableObject.WorldObject LoadObject(string saveString)
@@ -285,15 +285,10 @@ namespace LowEngine.Saving
         }
 
 
-        public class SavedSprite
-        {
-            public Sprite sprite;
-        }
-
         [System.Serializable]
         public class SavableObject
         {
-            public float value;
+            public float pVal;
             public Vector2 position;
             public Quaternion rotation;
             public string name;
@@ -303,10 +298,15 @@ namespace LowEngine.Saving
             [System.Serializable]
             public class WorldObject : SavableObject
             {
-                public Sprite sprite;
+                public bool ChangableColor;
+                public bool rotatable;
+
+                public string spriteName;
                 public int spriteSortingLayer;
 
                 public Vector2 childPos;
+
+                public float wVal;
 
                 public PlacedObjectType objectType;
 

@@ -4,7 +4,7 @@ namespace LowEngine.Tasks.Needs
 {
     public enum NeedDefinition { Hunger, Thirst }
 
-    public class NeedFulfiller : MonoBehaviour, ISaveableObject
+    public class NeedFulfiller : MonoBehaviour
     {
         public NeedDefinition Fulfills;
 
@@ -21,29 +21,6 @@ namespace LowEngine.Tasks.Needs
                     AudioManager.instance.PlayDrink(transform.position);
                     break;
             }
-        }
-
-        public void SetupSaveableObject()
-        {
-            if (GetComponent<PlacedObject>())
-            {
-                GetComponent<PlacedObject>().objectData = new SaveManager.SavableObject.WorldObject
-                {
-                    type = ObjectType.Table,
-                    objectType = PlacedObjectType.Need,
-                    fulFills = Fulfills,
-                    position = transform.position,
-                    rotation = transform.rotation,
-                    name = $"{gameObject.name}.{transform.position}",
-                    sprite = GetComponent<SpriteRenderer>().sprite,
-                    color = Color.white
-                };
-            }
-        }
-
-        private void Update()
-        {
-            SetupSaveableObject();
         }
     }
 

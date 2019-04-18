@@ -5,7 +5,7 @@ namespace LowEngine
 {
     public class GhostObject : MonoBehaviour
     {
-        public PlaceableObject placing;
+        public SaveManager.SavableObject.WorldObject placing;
 
         public GameObject[] overlapping;
 
@@ -20,14 +20,14 @@ namespace LowEngine
                 return;
             }
 
-            okayToPlace = (placing.ObjectData.type == ObjectType.Ground || placing.ObjectData.type == ObjectType.Wall);
+            okayToPlace = (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
         }
 
         private void FixedUpdate()
         {
             if (placing != null)
             {
-                okayToPlace = (placing.ObjectData.type == ObjectType.Ground || placing.ObjectData.type == ObjectType.Wall);
+                okayToPlace = (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
             }
 
             Collider2D[] collisions = null;
@@ -78,7 +78,7 @@ namespace LowEngine
 
         bool NothingBlocking(PlacedObject placedObject)
         {
-            if (placing == null || placedObject.objectData.type == placing.ObjectData.type)
+            if (placing == null || placedObject.objectData.type == placing.type)
             {
                 return false;
             }
@@ -86,11 +86,11 @@ namespace LowEngine
             switch (placedObject.objectData.type)
             {
                 case ObjectType.Abstract:
-                    return (placing.ObjectData.type == ObjectType.Ground || placing.ObjectData.type == ObjectType.Wall);
+                    return (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
                 case ObjectType.Table:
-                    return (placing.ObjectData.type == ObjectType.Ground);
+                    return (placing.type == ObjectType.Ground);
                 case ObjectType.Ground:
-                    return (placing.ObjectData.type == ObjectType.Table);
+                    return (placing.type == ObjectType.Table);
                 case ObjectType.Wall:
                     return false;
                 default:

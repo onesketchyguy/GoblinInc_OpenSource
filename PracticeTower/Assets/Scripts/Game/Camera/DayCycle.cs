@@ -4,7 +4,7 @@ namespace LowEngine.TimeManagement
 {
     public class DayCycle : MonoBehaviour
     {
-        private float timeScale = 60;
+        internal static float timeScale = 60;
 
         private void Start()
         {

@@ -15,28 +15,19 @@ namespace LowEngine
         public Vector2 PlayAreaSize = new Vector2(20, 20);
 
         public float nodeRadius = 1;
-        public float Distance;
 
         GameObject ConcreteParent;
 
-        static Dictionary<Vector2, GameObject> concreteTiles = new Dictionary<Vector2, GameObject>() { };
+        static Dictionary<Vector2, GameObject> gameTiles = new Dictionary<Vector2, GameObject>() { };
 
         public Node NodeFromWorldPosition(Vector3 target)
         {
-            //      float xPoint = Mathf.Clamp01((target.x + PlayAreaSize.x) / PlayAreaSize.x);
-            //        float yPoint = Mathf.Clamp01((target.y + PlayAreaSize.y) / PlayAreaSize.y);
-
-            //            int x = Mathf.RoundToInt((gridSize.x - 1) * xPoint);
-            //          int y = Mathf.RoundToInt((gridSize.y - 1) * yPoint);
-
-            //            return grid[x, y];
-
-            float nearestdist = 2;
+            float nearestdist = nodeDiameter * 2;
             Node nearestToTarget = null;
 
             foreach (var node in grid)
             {
-                if (Vector2.Distance(node.position, target) < nearestdist && node.IsWall != true)
+                if (Vector2.Distance(node.position, target) < nearestdist && node.obstrucion != true)
                 {
                     nearestToTarget = node;
                     nearestdist = Vector2.Distance(node.position, target);
@@ -48,18 +39,15 @@ namespace LowEngine
 
         Node[,] grid;
 
-        float nodeDiameter;
-        Vector2Int gridSize;
+        float nodeDiameter { get { return nodeRadius * 2; } }
+        Vector2Int gridSize { get { return new Vector2Int(Mathf.RoundToInt((PlayAreaSize.x * 2) / nodeDiameter), Mathf.RoundToInt((PlayAreaSize.y * 2) / nodeDiameter)); } }
 
         // Start is called before the first frame update
         void Start()
         {
-            nodeDiameter = nodeRadius * 2;
-
-            gridSize.x = Mathf.RoundToInt((PlayAreaSize.x * 2) / nodeDiameter);
-            gridSize.y = Mathf.RoundToInt((PlayAreaSize.y * 2) / nodeDiameter);
-
             ConcreteParent = new GameObject("ConcreteParent");
+
+            UpdateGrid();
 
             for (int x = (int)-PlayAreaSize.x; x < PlayAreaSize.x; x++)
             {
@@ -70,8 +58,6 @@ namespace LowEngine
                     ReplaceTile(pos);
                 }
             }
-
-            UpdateGrid();
         }
 
         public List<Node> GetNeightboringNodes(Node homeNode)
@@ -114,11 +100,11 @@ namespace LowEngine
 
                     GameObject obj;
 
-                    concreteTiles.TryGetValue(pos, out obj);
+                    gameTiles.TryGetValue(pos, out obj);
 
                     if (obj == null)
                     {
-                        concreteTiles.Remove(pos);
+                        gameTiles.Remove(pos);
 
                         ReplaceTile(pos);
                     }
@@ -134,62 +120,82 @@ namespace LowEngine
             {
                 for (int y = 0; y < gridSize.y; y++)
                 {
-                    float padding = (nodeDiameter + Distance);
-
-                    Vector3 worldPoint = Vector2.one + new Vector2(((x - 1) - (gridSize.x / 2)) * padding, ((y - 1) - gridSize.y / 2) * padding);
-                    bool wall = false;
+                    Vector3 worldPoint = new Vector2((x - (gridSize.x / 2)) * nodeDiameter, (y - (gridSize.y / 2)) * nodeDiameter);
+                    bool obstruction = false;
 
                     Collider2D collision = Physics2D.OverlapCircle(worldPoint, nodeRadius/2);
 
-                    if (collision != null && collision.GetComponent<PlacedObject>() && collision.GetComponent<PlacedObject>().objectData != null)
+                    if (collision != null)
                     {
-                        if (collision.GetComponent<PlacedObject>().objectData.type == ObjectType.Wall)
+                        PlacedObject placedObject = collision.GetComponent<PlacedObject>();
+
+                        if (placedObject && placedObject.objectData != null)
                         {
-                            wall = true;
+                            if (placedObject.objectData.type == ObjectType.Wall)
+                            {
+                                obstruction = true;
+                            }
                         }
                     }
 
-                    grid[x, y] = new Node(new Vector2(x, y), wall, worldPoint);
+                    grid[x, y] = new Node(new Vector2(x, y), obstruction, worldPoint);
                 }
             }
-
-            Vector3 topRight = transform.position + Vector3.right * (PlayAreaSize.x / 2) + Vector3.forward * (PlayAreaSize.y / 2);
-
         }
 
         private void OnDrawGizmos()
         {
-            Gizmos.DrawWireCube(transform.position, new Vector3(PlayAreaSize.x * 2, PlayAreaSize.y * 2));
+            Gizmos.DrawWireCube(Vector2.zero, new Vector2(gridSize.x * 2, gridSize.y * 2) - (Vector2.one * nodeRadius));
 
             if (grid != null)
             {
                 foreach (var node in grid)
                 {
-                    Gizmos.color = (node.IsWall) ? Color.red : Color.white;
+                    Gizmos.color = (node.obstrucion) ? Color.red : Color.white;
 
-                    Gizmos.DrawWireCube(node.position, Vector2.one * (nodeDiameter - Distance));
+                    Gizmos.DrawWireCube(node.position, Vector2.one * nodeDiameter);
                 }
             }
         }
 
         public static void ReplaceTileInDictionary(Vector2 pos, GameObject go)
         {
+            RemoveFromDictionary(pos);
+
+            gameTiles.Remove(pos);
+
+            gameTiles.Add(pos, go);
+
+            if (go.name != "Concrete")
+                Debug.Log($"Replaced tile at {pos} with {go.name}");
+        }
+
+        private static void RemoveFromDictionary(Vector2 pos)
+        {
             GameObject toRemove;
+            gameTiles.TryGetValue(pos, out toRemove);
 
-            concreteTiles.TryGetValue(pos, out toRemove);
-
-            Destroy(toRemove);
-
-            concreteTiles.Remove(pos);
-
-            concreteTiles.Add(pos, go);
+            if (toRemove != null)
+            {
+                if (toRemove.GetComponent<PlacedObject>() != null)
+                {
+                    if (toRemove.GetComponent<PlacedObject>().objectData.objectType == PlacedObjectType.Static)
+                    {
+                        Destroy(toRemove);
+                    }
+                }
+                else
+                {
+                    Destroy(toRemove);
+                }
+            }
         }
 
         public void ReplaceTile(Vector2 tilePos)
         {
-            Concrete.ObjectData.position = tilePos;
+            SaveManager.SavableObject.WorldObject objectData = Constructor.CloneObjectData(Concrete.ObjectData, tilePos, Quaternion.identity, Color.white);
 
-            GameObject n_concrete = Constructor.GetObject(Concrete.ObjectData, ConcreteParent.transform);
+            GameObject n_concrete = Constructor.GetObject(objectData, ConcreteParent.transform);
 
             n_concrete.GetComponent<SpriteRenderer>().material = GameHandler.instance.gameObjectMaterial;
 

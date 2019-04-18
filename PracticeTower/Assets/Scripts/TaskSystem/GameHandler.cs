@@ -49,7 +49,7 @@ namespace LowEngine
 
         private void Start()
         {
-            TimeManagement.TimeScale.DayChanged += NewDay;
+            TimeScale.DayChanged += NewDay;
         }
 
         public void NewDay()
@@ -136,8 +136,6 @@ namespace LowEngine
         {
             MapLayoutManager map = FindObjectOfType<MapLayoutManager>();
 
-            map.enabled = false;
-
             SetupSaves();
 
             ActivePlayerData = savesData[index];
@@ -193,11 +191,9 @@ namespace LowEngine
                 {
                     if (data == null) continue;
 
-                    Constructor.GetObject(data);
+                    MapLayoutManager.ReplaceTileInDictionary(data.position, Constructor.GetObject(data));
                 }
             }
-
-            map.enabled = true;
 
             NotificationManager.instance.ShowNotification("Game Loaded!");
         }
