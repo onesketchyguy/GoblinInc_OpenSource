@@ -14,7 +14,7 @@ namespace LowEngine.TimeManagement
 
         void UpdateDay()
         {
-            int currentDay = TimeScale.days % 7;
+            float currentDay = TimeScale.days;
 
             string DayName = "";
 

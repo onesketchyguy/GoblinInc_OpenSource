@@ -26,7 +26,7 @@ namespace LowEngine
 
         private void Start()
         {
-            Vector3 stored = FindObjectOfType<MapLayoutManager>().PlayAreaSize/4;
+            Vector3 stored = FindObjectOfType<MapLayoutManager>().PlayAreaSize/2;
 
             maxZoom = (stored.x > stored.y) ? stored.x : stored.y;
 

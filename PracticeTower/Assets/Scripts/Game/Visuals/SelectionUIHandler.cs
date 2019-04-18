@@ -74,6 +74,8 @@ namespace LowEngine
             {
                 ParticleManager.instance.StartEffect_FireWorker(SelectedWorker.transform.position);
 
+                SelectedWorker.worker.Desk.currentWorker = null;
+
                 Destroy(SelectedWorker.gameObject);
 
                 DeselectWorker();

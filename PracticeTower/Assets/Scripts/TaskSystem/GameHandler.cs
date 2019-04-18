@@ -69,7 +69,14 @@ namespace LowEngine
             }
             else
             {
-                NotificationManager.instance.ShowNotification($"{daysUntilPayDay} left until pay day!");
+                if (daysUntilPayDay > 1)
+                {
+                    NotificationManager.instance.ShowNotification($"{daysUntilPayDay} days left until pay day!");
+                }
+                else
+                {
+                    NotificationManager.instance.ShowNotification($"Payday is tomorrow!");
+                }
             }
 
             if (Money < 0)

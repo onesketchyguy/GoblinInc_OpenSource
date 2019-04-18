@@ -3,6 +3,7 @@ using UnityEngine;
 using LowEngine.Saving;
 using LowEngine.Tasks.Needs;
 using LowEngine.Navigation;
+using LowEngine.TimeManagement;
 
 namespace LowEngine.Tasks
 {
@@ -89,7 +90,7 @@ namespace LowEngine.Tasks
         {
             float totalHappiness = Mathf.Clamp(GetAllNeeds(), 0, 100);
 
-            speed = 5 + Mathf.Abs(TimeManagement.DayCycle.timeScale - 5);
+            speed = 5 + Mathf.Abs(DayCycle.timeScale);
 
             unhappiness = 100 - totalHappiness;
 
@@ -105,8 +106,14 @@ namespace LowEngine.Tasks
                 PathToPoint();
             }
 
-            GetNeed(NeedDefinition.Hunger).Modify(-UnityEngine.Random.Range(0f, 1f) * Time.deltaTime);
-            GetNeed(NeedDefinition.Thirst).Modify(-UnityEngine.Random.Range(0f, 2f) * Time.deltaTime);
+            if (TimeScale.isDayTime())
+            {
+                float hungerRate = 0.25f * DayCycle.timeScale;
+                float thirstRate = 0.5f * DayCycle.timeScale;
+
+                GetNeed(NeedDefinition.Hunger).Modify(-UnityEngine.Random.Range(0f, hungerRate * Time.deltaTime));
+                GetNeed(NeedDefinition.Thirst).Modify(-UnityEngine.Random.Range(0f, thirstRate * Time.deltaTime));
+            }
 
             workerData.hunger = GetNeed(NeedDefinition.Hunger).value;
             workerData.thirst = GetNeed(NeedDefinition.Thirst).value;
@@ -139,7 +146,7 @@ namespace LowEngine.Tasks
             {
                 moveTo.pathIndex = 0;
 
-                if (moveTo.pathingAttempts < 100)
+                if (moveTo.pathingAttempts < 20)
                 {
                     moveTo.pathFinding.FindPath(transform.position, moveTo.position, FindObjectOfType<MapLayoutManager>());
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using LowEngine.Tasks.Needs;
+using LowEngine.TimeManagement;
 
 namespace LowEngine.Tasks
 {
@@ -105,34 +106,25 @@ namespace LowEngine.Tasks
             boxCollider.isTrigger = true;
         }
 
-        float timeSinceLastTask;
-
         private void Update()
         {
-            if (timeSinceLastTask > 101 * Time.deltaTime)
-            {
-                RequestNextTask();
-
+            if (DayCycle.timeScale == 0)
                 return;
-            }
 
             switch (state)
             {
                 case State.WaitingForNewTask:
                     //Wait to request a new task
-                    WaitingTimer -= Time.deltaTime;
+                    WaitingTimer -= (DayCycle.timeScale) * Time.deltaTime;
 
                     if (WaitingTimer <= 0)
                     {
-                        timeSinceLastTask += WaitingTimer;
-
                         WaitingTimer = worker.ineffiency * Time.deltaTime;
 
                         RequestNextTask();
                     }
                     break;
                 case State.ExecutingTask:
-                    timeSinceLastTask = 0;
                     break;
             }
         }
@@ -149,17 +141,17 @@ namespace LowEngine.Tasks
 
                 currentThought = "Need a break.";
 
-                float skill = 150 - worker.workerData.skill;
+                float skill = 200 - worker.workerData.skill;
 
-                if (worker.GetNeed(NeedDefinition.Hunger).value <= skill)
+                if (worker.GetNeed(NeedDefinition.Thirst).value <= skill)
                 {
-                    currentThought = "Hungry";
+                    currentThought = "Thirsty";
 
-                    TaskSystem.Task hunger = FulfilNeed(NeedDefinition.Hunger);
+                    TaskSystem.Task thirst = FulfilNeed(NeedDefinition.Thirst);
 
-                    if (hunger != null)
+                    if (thirst != null)
                     {
-                        taskManager.tasks.Enqueue(hunger);
+                        taskManager.tasks.Enqueue(thirst);
                     }
                     else
                     {
@@ -173,15 +165,15 @@ namespace LowEngine.Tasks
                     }
                 }
 
-                if (worker.GetNeed(NeedDefinition.Thirst).value <= skill)
+                if (worker.GetNeed(NeedDefinition.Hunger).value <= skill)
                 {
-                    currentThought = "Thirsty";
+                    currentThought = "Hungry";
 
-                    TaskSystem.Task thirst = FulfilNeed(NeedDefinition.Thirst);
+                    TaskSystem.Task hunger = FulfilNeed(NeedDefinition.Hunger);
 
-                    if (thirst != null)
+                    if (hunger != null)
                     {
-                        taskManager.tasks.Enqueue(thirst);
+                        taskManager.tasks.Enqueue(hunger);
                     }
                     else
                     {
@@ -312,7 +304,9 @@ namespace LowEngine.Tasks
             WorkerButton button = null;
             WorkerButton[] workerButtons = FindObjectsOfType<WorkerButton>();
 
-            float nearest = 20;
+            Vector2 vector2 = FindObjectOfType<MapLayoutManager>().PlayAreaSize;
+
+            float nearest = (vector2.x > vector2.y) ? vector2.x: vector2.y;
 
             foreach (var desk in workerButtons)
             {

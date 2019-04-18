@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace LowEngine
@@ -51,6 +52,18 @@ namespace LowEngine
 
         private void Update()
         {
+            if (EventSystem.current.IsPointerOverGameObject() == false && Input.GetButtonDown("Fire2"))
+            {
+                PlaceObjectMenu placeObjectMenu = FindObjectOfType<PlaceObjectMenu>();
+
+                if (placeObjectMenu)
+                    placeObjectMenu.ClearObject();
+
+                Cursor.visible = true;
+
+                UpdateShowing(Show.none);
+            }
+
             if (GameHandler.MoneyToPayOnPayDay() > 0) DebtText.text = $"$:{GameHandler.MoneyToPayOnPayDay()} due on payday"; else DebtText.text = "";
 
             MoneyText.text = $"$:{GameHandler.instance.Money}";

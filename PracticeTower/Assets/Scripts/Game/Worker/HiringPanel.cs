@@ -7,13 +7,31 @@ namespace LowEngine
 {
     public class HiringPanel : MonoBehaviour
     {
+        public Toggle ToggleHiring;
+        private bool hiring = true;
+
+        public Text ContextButtonText;
+        public Button contextButton;
+
+        [Header("Hired")]
+        public GameObject hiredRegion;
+
+        public static List<SaveManager.SavableObject.Worker> hiredEmployees = new List<SaveManager.SavableObject.Worker>() { };
+
+        public Transform HiredSpawningParent;
+
+        public Sprite FireIcon;
+
+        [Header("Hiring")]
+        public GameObject hiringRegion;
         int Hirable = 3;
+        public Transform HiringSpawningParent;
 
-        public Transform spawningParent;
-
-        SaveManager.SavableObject.Worker selectedEmployee;
+        public Sprite HireIcon;
 
         List<SaveManager.SavableObject.Worker> todaysEmployees = new List<SaveManager.SavableObject.Worker>() { };
+
+        SaveManager.SavableObject.Worker selectedEmployee;
 
         public Text selectedEmployeeBio;
 
@@ -46,15 +64,45 @@ namespace LowEngine
 
         private void Start()
         {
+            ToggleHiring.onValueChanged.AddListener(ToggleHiringValue);
             TimeManagement.TimeScale.DayChanged += UpdateApplicants;
+        }
+
+        public void ToggleHiringValue(bool newVal)
+        {
+            hiring = newVal;
+
+            UpdateView();
         }
 
         private void OnEnable()
         {
-            UpdateButtons();
+            UpdateView();
         }
 
-        private void UpdateButtons()
+        private void UpdateView()
+        {
+            ContextButtonText.text = (hiring) ? "Hire worker" : "Fire worker";
+            contextButton.image.sprite = (hiring) ? HireIcon : FireIcon;
+
+            contextButton.onClick.RemoveAllListeners();
+
+            hiringRegion.SetActive(hiring);
+            hiredRegion.SetActive(!hiring);
+
+            if (hiring)
+            {
+                contextButton.onClick.AddListener(() => Hire());
+                UpdateHireButtons();
+            }
+            else
+            {
+                contextButton.onClick.AddListener(() => Fire());
+                UpdateHiredButtons();
+            }
+        }
+
+        private void UpdateHireButtons()
         {
             Display("Select an employee...");
 
@@ -62,24 +110,20 @@ namespace LowEngine
             {
                 for (int i = 0; i < Hirable; i++)
                 {
-                    SpawnButton(null);
+                    SpawnHireButton(null);
                 }
 
                 Hirable = 0;
             }
 
-            foreach (var item in spawningParent.GetComponentsInChildren<Transform>())
-            {
-                if (item.transform == spawningParent.transform) continue;
-
-                Destroy(item.gameObject);
-            }
+            DestroyChildren(HiringSpawningParent);
+            DestroyChildren(HiredSpawningParent);
 
             if (todaysEmployees.Count > 0)
             {
                 foreach (var worker in todaysEmployees)
                 {
-                    SpawnButton(worker);
+                    SpawnHireButton(worker);
                 }
             }
 
@@ -89,7 +133,48 @@ namespace LowEngine
             }
         }
 
-        void SpawnButton(SaveManager.SavableObject.Worker worker)
+
+        private void UpdateHiredButtons()
+        {
+            Display("Select an employee...");
+
+            hiredEmployees = new List<SaveManager.SavableObject.Worker>() { };
+
+            Tasks.Worker[] workers = FindObjectsOfType<Tasks.Worker>();
+
+            for (int i = 0; i < workers.Length; i++)
+            {
+                hiredEmployees.Add(workers[i].workerData);
+            }
+
+            DestroyChildren(HiringSpawningParent);
+            DestroyChildren(HiredSpawningParent);
+
+            if (hiredEmployees.Count > 0)
+            {
+                foreach (var worker in hiredEmployees)
+                {
+                    SpawnHiredButton(worker);
+                }
+            }
+
+            if (hiredEmployees.Count == 0)
+            {
+                Display("You don't have any employees.");
+            }
+        }
+
+        private void DestroyChildren(Transform parent)
+        {
+            foreach (var item in parent.GetComponentsInChildren<Transform>())
+            {
+                if (item.transform == parent) continue;
+
+                Destroy(item.gameObject);
+            }
+        }
+
+        void SpawnHireButton(SaveManager.SavableObject.Worker worker)
         {
             Sprite[] images;
 
@@ -112,7 +197,7 @@ namespace LowEngine
             GameObject spawnable = new GameObject(worker.name); //Create a temporary object to spawn
             spawnable.AddComponent<Image>();
 
-            GameObject go = Instantiate(spawnable, spawningParent);
+            GameObject go = Instantiate(spawnable, HiringSpawningParent);
             Button button = go.AddComponent<Button>();
             GameObject[] children = new GameObject[images.Length];
 
@@ -167,6 +252,68 @@ namespace LowEngine
             Destroy(spawnable); //Clean up temp object
         }
 
+        void SpawnHiredButton(SaveManager.SavableObject.Worker worker)
+        {
+            Sprite[] images = WorkerSpriteGenerator.instance.GetWorkerSprites(worker);
+
+            GameObject spawnable = new GameObject(worker.name); //Create a temporary object to spawn
+            spawnable.AddComponent<Image>();
+
+            GameObject go = Instantiate(spawnable, HiredSpawningParent);
+            Button button = go.AddComponent<Button>();
+            GameObject[] children = new GameObject[images.Length];
+
+            for (int i = 0; i < images.Length; i++)
+            {
+                var child = children[i];
+
+                if (i == 0)
+                {
+                    child = go;
+
+                    child.GetComponent<Image>().raycastTarget = true;
+
+                    button.targetGraphic = child.GetComponent<Image>();
+                }
+                else
+                {
+                    child = Instantiate(spawnable, go.transform);
+                    child.GetComponent<RectTransform>().localScale = go.GetComponent<RectTransform>().localScale / 2;
+
+                    child.GetComponent<Image>().raycastTarget = false;
+                }
+
+                child.name = $"{worker.name}.Layer{i}";
+
+
+                child.GetComponent<Image>().sprite = images[i];
+
+                if (images[i] == null)
+                {
+                    Destroy(child.gameObject);
+
+                    continue;
+                }
+
+                if (i == 4) //Hair
+                {
+                    child.GetComponent<Image>().color = worker.color;
+                }
+
+                child.transform.SetSiblingIndex(i);
+            }
+
+            button.onClick.AddListener(delegate ()
+            {
+                float eff = worker.skill;
+
+                Display($"{worker.name}\nEfficiency:{eff}%\nWorks for: ${worker.pay}(Due on payday)");
+                selectedEmployee = worker;
+            });
+
+            Destroy(spawnable); //Clean up temp object
+        }
+
         void Display(string showText)
         {
             selectedEmployeeBio.text = showText;
@@ -180,7 +327,34 @@ namespace LowEngine
 
             todaysEmployees.Remove(selectedEmployee);
 
-            UpdateButtons();
+            UpdateHireButtons();
+        }
+
+        public void Fire()
+        {
+            if (selectedEmployee == null) return;
+
+            Tasks.Worker[] workers = FindObjectsOfType<Tasks.Worker>();
+
+            for (int i = 0; i < workers.Length; i++)
+            {
+                if (workers[i].workerData == selectedEmployee)
+                {
+                    if (workers[i].Desk != null)
+                    {
+                        workers[i].Desk.currentWorker = null;
+                        workers[i].Desk = null;
+                    }
+
+                    ParticleManager.instance.StartEffect_FireWorker(workers[i].transform.position);
+
+                    hiredEmployees.Remove(workers[i].workerData);
+
+                    Destroy(workers[i].gameObject);
+                }
+            }
+
+            UpdateHireButtons();
         }
     }
 }

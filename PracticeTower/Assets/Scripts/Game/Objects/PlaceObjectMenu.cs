@@ -11,7 +11,7 @@ namespace LowEngine
 
         public Text Descriptiontext;
 
-        SaveManager.SavableObject.WorldObject Spawning;
+        public static SaveManager.SavableObject.WorldObject Spawning;
         GhostObject ghostObject;
 
         [Range(0.1f, 0.9f)]
@@ -202,6 +202,8 @@ namespace LowEngine
 
         void SetSpawningObject(SaveManager.SavableObject.WorldObject obj)
         {
+            ClearObject();
+
             Spawning = obj;
         }
 
@@ -253,9 +255,11 @@ namespace LowEngine
             ghostObject.transform.Rotate(Vector3.forward * degrees);
         }
 
-        private void ClearObject()
+        public void ClearObject()
         {
             Spawning = null;
+
+            bullDozing = false;
 
             if (ghostObject != null)
                 Destroy(ghostObject.gameObject);

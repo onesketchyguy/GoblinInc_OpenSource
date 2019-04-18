@@ -62,7 +62,15 @@ namespace LowEngine
 
             t.font = notificationFont;
 
+            t.color = Color.white;
+
             t.text = textToShow;
+
+            t.resizeTextForBestFit = true;
+
+            Outline o = t.gameObject.AddComponent<Outline>();
+
+            o.effectColor = Color.black;
 
             b.targetGraphic = t;
 

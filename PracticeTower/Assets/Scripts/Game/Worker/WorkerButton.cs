@@ -32,7 +32,7 @@ namespace LowEngine
 
         private void OnMouseDown()
         {
-            if (PlaceObjectMenu.bullDozing) return;
+            if (PlaceObjectMenu.bullDozing || PlaceObjectMenu.Spawning != null) return;
 
 
             if (currentWorker != null)
@@ -55,6 +55,11 @@ namespace LowEngine
                 if (distanceToWorker < 1)
                 {
                     currentWorker.worker.Face(transform.position);
+                }
+
+                if (currentWorker.worker.Desk != this)
+                {
+                    currentWorker = null;
                 }
             }
 
