@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using LowEngine.Saving;
 
 namespace LowEngine
@@ -10,21 +9,6 @@ namespace LowEngine
         public Transform spawningParent;
 
         public Text Descriptiontext;
-
-        public static SaveManager.SavableObject.WorldObject Spawning;
-        GhostObject ghostObject;
-
-        [Range(0.1f, 0.9f)]
-        public float ghostAlpha = 0.5f;
-
-        Vector2 GridLockedMousePos => (Utilities.GridLockedMousePosition());
-
-        public Sprite bulldozer;
-        public static bool bullDozing;
-
-        private Color PlacingColor;
-
-        private GameObject worldObjectParent;
 
         private void Start()
         {
@@ -37,6 +21,8 @@ namespace LowEngine
                     SpawnButton(item);
                 }
             }
+
+            ClearObject();
         }
 
         void SpawnButton(SaveManager.SavableObject.WorldObject obj)
@@ -57,226 +43,22 @@ namespace LowEngine
             button.onClick.AddListener(() => SetSpawningObject(obj));
         }
 
-        private void Update()
-        {
-            if (Spawning != null)
-            {
-                Descriptiontext.text = $"{Spawning.name}\n${Spawning.pVal}";
-            }
-            else
-            {
-                Descriptiontext.text = "Select an object.";
-            }
-
-            if (EventSystem.current.IsPointerOverGameObject())
-            {
-                CancelInvoke("SpawnObject");
-
-                Cursor.visible = true;
-
-                if (Input.GetButtonDown("Fire1"))
-                {
-                    if (Spawning != null)
-                    {
-                        ClearObject();
-                    }
-                }
-
-                if (ghostObject != null)
-                {
-                    ghostObject.transform.position = Utilities.GetMousePosition();
-                }
-                
-                return;
-            }
-
-            Cursor.visible = Spawning == null && bullDozing == false;
-
-            PlacingColor = FindObjectOfType<ColorPicker>().SelectedColor;
-
-            if (Spawning != null)
-            {
-                GameHandler.gameState = GameHandler.GameState.Placing;
-
-                bool okayToPlace = (GameHandler.instance.Money >= Spawning.pVal);
-
-                if (ghostObject == null)
-                {
-                    ghostObject = new GameObject($"{Spawning.name}.GhostObject").AddComponent<GhostObject>();
-
-                    ghostObject.placing = Spawning;
-
-                    ghostObject.enabled = false;
-
-                    SpriteRenderer spr = ghostObject.gameObject.AddComponent<SpriteRenderer>();
-                    spr.sortingOrder = 100;
-                    Color c = (Spawning.ChangableColor) ? PlacingColor : Spawning.color;
-                    spr.sprite = Modding.ModLoader.GetSprite(Spawning.spriteName);
-                    spr.color = new Color(c.r, c.g, c.b, ghostAlpha);
-
-                    ghostObject.transform.position = GridLockedMousePos;
-                }
-                else
-                {
-                    if (ghostObject.okayToPlace == false) okayToPlace = false;
-                    ghostObject.enabled = true;
-                    ghostObject.transform.position = GridLockedMousePos;
-
-                    SpriteRenderer spr = ghostObject.gameObject.GetComponent<SpriteRenderer>();
-                    Color c = (Spawning.ChangableColor) ? PlacingColor : Spawning.color;
-
-                    spr.sprite = Modding.ModLoader.GetSprite(Spawning.spriteName);
-                    spr.color = okayToPlace ? new Color(c.r, c.g, c.b, ghostAlpha) : new Color(1, 0, 0, ghostAlpha);
-                }
-
-                if (Input.GetAxisRaw("Mouse ScrollWheel") != 0 && Spawning.rotatable)
-                {
-                    int rounded = Mathf.RoundToInt(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
-
-                    Mathf.Clamp(rounded, -1, 1);
-
-                    RotatePlacing(90 * rounded);
-                }
-
-                if (Input.GetButtonDown("Fire1") & okayToPlace)
-                {
-                    InvokeRepeating("SpawnObject", 0, Time.deltaTime * 8);
-                }
-                else 
-                if (Input.GetButtonUp("Fire1"))
-                {
-                    CancelInvoke("SpawnObject");
-                }
-
-                if (Input.GetButton("Fire2"))
-                {
-                    ClearObject();
-                }
-            }
-
-            if (bullDozing)
-            {
-                if (ghostObject == null)
-                {
-                    ghostObject = new GameObject($"bulldozer.GhostObject").AddComponent<GhostObject>();
-
-                    SpriteRenderer spr = ghostObject.gameObject.AddComponent<SpriteRenderer>();
-                    spr.sortingOrder = 100;
-                    spr.sprite = bulldozer;
-                    spr.color = new Color(1, 0, 0, ghostAlpha);
-                }
-
-                ghostObject.transform.position = GridLockedMousePos;
-
-                if (ghostObject.overlapping != null)
-                {
-                    SpriteRenderer spr = ghostObject.gameObject.GetComponent<SpriteRenderer>();
-                    spr.color = new Color(0, 0, 0, ghostAlpha);
-
-                    if (ghostObject.overlapping[ghostObject.overlapping.Length - 1] != null && ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>() != null)
-                    {
-                        if (ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>().objectData.type != ObjectType.Abstract)
-                        {
-                            spr.color = new Color(1, 0, 0, ghostAlpha);
-
-                            if (Input.GetButton("Fire1"))
-                            {
-                                foreach (var obj in ghostObject.overlapping)
-                                {
-                                    if (obj.GetComponent<PlacedObject>() == null || obj.GetComponent<PlacedObject>().objectData == null) continue;
-
-                                    if (obj.GetComponent<PlacedObject>().objectData.pVal > 0)
-                                    {
-                                        GameHandler.instance.Money += obj.GetComponent<PlacedObject>().objectData.pVal;
-                                    }
-                                }
-
-                                Destroy(ghostObject.overlapping[ghostObject.overlapping.Length - 1]);
-                            }
-                        }
-                    }
-                }
-                if (Input.GetButton("Fire2")) ToggleBulldozer();
-            }
-        }
-
         void SetSpawningObject(SaveManager.SavableObject.WorldObject obj)
         {
             ClearObject();
 
-            Spawning = obj;
-        }
+            ObjectPlacingManager.Spawning = obj;
 
-        private void SpawnObject()
-        {
-            if (Spawning == null || ghostObject == null || ghostObject.okayToPlace == false)
-            {
-                return;
-            }
+            CursorManager.instance.UpdateCursor(Modding.ModLoader.GetTexture(ObjectPlacingManager.Spawning.spriteName));
 
-            if (GameHandler.instance.Money < Spawning.pVal)
-            {
-                NotificationManager.instance.ShowNotification($"You don't have enought money for that!\n${Spawning.pVal}");
-
-                return;
-            }
-
-
-            AudioManager.instance.PlayBuildSound(ghostObject.transform.position);
-
-            if (worldObjectParent == null)
-            {
-                worldObjectParent = new GameObject("Building");
-            }
-
-            Color newColor = (Spawning.ChangableColor) ? PlacingColor : Spawning.color;
-
-            GameObject go = Constructor.GetObject(Constructor.CloneObjectData(Spawning, GridLockedMousePos, ghostObject.transform.rotation, newColor), worldObjectParent.transform);
-
-            if (ghostObject.overlapping != null)
-            {
-                if (ghostObject.overlapping[ghostObject.overlapping.Length - 1].GetComponent<PlacedObject>().objectData.type == ObjectType.Abstract)
-                {
-                    MapLayoutManager.ReplaceTileInDictionary(GridLockedMousePos, go);
-                }
-                    
-            }
-
-            GameHandler.instance.Money -= Spawning.pVal;
-
-            if (Spawning.pVal > 0 && !Input.GetButton("Fire3"))
-            {
-                ClearObject();
-            }
-        }
-
-        void RotatePlacing(float degrees)
-        {
-            ghostObject.transform.Rotate(Vector3.forward * degrees);
+            Descriptiontext.text = $"{obj.name}\n${obj.pVal}";
         }
 
         public void ClearObject()
         {
-            Spawning = null;
+            FindObjectOfType<ObjectPlacingManager>().ClearObject();
 
-            bullDozing = false;
-
-            if (ghostObject != null)
-                Destroy(ghostObject.gameObject);
-
-            ghostObject = null;
-
-            GameHandler.gameState = GameHandler.GameState.Default;
-        }
-
-        public void ToggleBulldozer()
-        {
-            if (bullDozing)
-            {
-                ClearObject();
-            }
-
-            bullDozing = !bullDozing;
+            Descriptiontext.text = "Select an object.";
         }
     }
 }

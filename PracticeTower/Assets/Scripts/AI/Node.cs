@@ -2,14 +2,44 @@
 
 namespace LowEngine.Navigation
 {
-    public class Node
+    public class Node : IHeapItem<Node>
     {
+
+        public int HeapIndex
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Returns the distance between two nodes.
+        /// </summary>
+        /// <param name="node_a"></param>
+        /// <param name="node_b"></param>
+        /// <returns></returns>
         public static int GetManhattanDistance(Node node_a, Node node_b)
         {
-            int iX = Mathf.Abs(node_a.gridPosition.x - node_b.gridPosition.x);
-            int iY = Mathf.Abs(node_a.gridPosition.y - node_b.gridPosition.y);
+            int distX = Mathf.Abs(node_a.gridPosition.x - node_b.gridPosition.x);
+            int distY = Mathf.Abs(node_a.gridPosition.y - node_b.gridPosition.y);
 
-            return iX + iY;
+            if (distX > distY)
+            {
+                return 14 * distY + 10*(distX - distY);
+            }
+
+            return 14 * distX + 10 * (distY - distX);
+        }
+
+        public int CompareTo(Node other)
+        {
+            int compare = fCost.CompareTo(other.fCost);
+            if (compare == 0)
+            {
+                //Int.Compare
+                compare = fCost.CompareTo(other.hCost);
+            }
+
+            return -compare;
         }
 
         public Vector2Int gridPosition;
@@ -22,12 +52,16 @@ namespace LowEngine.Navigation
         /// <summary>
         /// Distance from the starting node.
         /// </summary>
-        public int CostFromStart;
+        public int gCost;
         /// <summary>
         /// Distance from the last node
         /// </summary>
-        public int CostFromEnd;
-        public int Cost { get { return CostFromStart + CostFromEnd; } } // The total cost of movment
+        public int hCost;
+
+        /// <summary>
+        /// The total cost of movment.
+        /// </summary>
+        public int fCost { get { return gCost + hCost; } }
 
         public Node(Vector2 gridPosition, bool obstrucion, Vector3 position)
         {

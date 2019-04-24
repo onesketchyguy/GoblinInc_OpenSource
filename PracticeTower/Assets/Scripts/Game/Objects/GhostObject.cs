@@ -1,49 +1,48 @@
 ﻿using UnityEngine;
+using Unity.Entities;
 using LowEngine.Saving;
 
 namespace LowEngine
 {
     public class GhostObject : MonoBehaviour
     {
-        public SaveManager.SavableObject.WorldObject placing;
-
-        public GameObject[] overlapping;
-
-        public bool okayToPlace = true;
+        public GhostData ghostData;
 
         private void OnEnable()
         {
-            if (placing == null)
+            if (ghostData.placing == null)
             {
-                okayToPlace = false;
+                ghostData.okayToPlace = false;
 
                 return;
             }
 
-            okayToPlace = (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
+            ghostData.okayToPlace = (ghostData.placing.type == ObjectType.Ground || ghostData.placing.type == ObjectType.Wall);
+
+            CheckForCollisions();
         }
 
-        private void FixedUpdate()
+        public void CheckForCollisions()
         {
-            if (placing != null)
+            if (ghostData.placing != null)
             {
-                okayToPlace = (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
+                ghostData.okayToPlace = (ghostData.placing.type == ObjectType.Ground || ghostData.placing.type == ObjectType.Wall);
             }
 
             Collider2D[] collisions = null;
 
-            collisions = Physics2D.OverlapCircleAll(transform.position, 0.4f);
+            collisions = Physics2D.OverlapCircleAll(transform.position, 0.25f);
 
             if (collisions == null || collisions.Length == 0)
             {
-                okayToPlace = false;
+                ghostData.okayToPlace = false;
 
                 return;
             }
 
-            overlapping = new GameObject[collisions.Length];
+            ghostData.overlapping = new PlacedObject[collisions.Length];
 
-            okayToPlace = true;
+            ghostData.okayToPlace = true;
 
             for (int i = 0; i < collisions.Length; i++)
             {
@@ -51,50 +50,39 @@ namespace LowEngine
 
                 if (PlacedObject)
                 {
-                    overlapping[i] = collisions[i].gameObject;
+                    ghostData.overlapping[i] = collisions[i].gameObject.GetComponent<PlacedObject>();
 
-                    if (placing != null)
+                    if (ghostData.placing != null)
                     {
                         if (i > 0)
                         {
-                            if (okayToPlace)
+                            if (ghostData.okayToPlace)
                             {
-                                okayToPlace = NothingBlocking(PlacedObject);
+                                ghostData.okayToPlace = Constructor.NothingBlocking(ghostData.placing, PlacedObject.objectData);
                             }
                         }
                         else
                         {
-                            okayToPlace = NothingBlocking(PlacedObject);
+                            ghostData.okayToPlace = Constructor.NothingBlocking(ghostData.placing, PlacedObject.objectData);
                         }
                     }
                     else
                     {
-                        okayToPlace = false;
+                        ghostData.okayToPlace = false;
                     }
                 }
             }
 
-        }
+            SpriteRenderer spr = GetComponent<SpriteRenderer>();
 
-        bool NothingBlocking(PlacedObject placedObject)
-        {
-            if (placing == null || placedObject.objectData.type == placing.type)
+            if (spr)
             {
-                return false;
-            }
+                float ghostAlpha = FindObjectOfType<ObjectPlacingManager>().ghostAlpha;
 
-            switch (placedObject.objectData.type)
-            {
-                case ObjectType.Abstract:
-                    return (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
-                case ObjectType.Table:
-                    return (placing.type == ObjectType.Ground);
-                case ObjectType.Ground:
-                    return (placing.type == ObjectType.Table);
-                case ObjectType.Wall:
-                    return false;
-                default:
-                    return false;
+                Color c = (ObjectPlacingManager.Spawning.ChangableColor) ? ObjectPlacingManager.PlacingColor : ObjectPlacingManager.Spawning.color;
+
+                spr.sprite = ObjectPlacingManager.ghostSprite;
+                spr.color = ghostData.okayToPlace ? new Color(c.r, c.g, c.b, ghostAlpha) : new Color(1, 0, 0, ghostAlpha);
             }
         }
     }

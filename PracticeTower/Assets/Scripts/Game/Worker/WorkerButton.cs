@@ -32,7 +32,7 @@ namespace LowEngine
 
         private void OnMouseDown()
         {
-            if (PlaceObjectMenu.bullDozing || PlaceObjectMenu.Spawning != null) return;
+            if (ObjectPlacingManager.bullDozing || ObjectPlacingManager.Spawning != null) return;
 
 
             if (currentWorker != null)

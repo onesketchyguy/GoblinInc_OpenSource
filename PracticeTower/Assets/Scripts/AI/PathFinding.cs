@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LowEngine.Navigation
 {
@@ -7,14 +8,22 @@ namespace LowEngine.Navigation
     {
         public List<Node> Path = new List<Node>();
 
+        public Stopwatch stopwatch;
+
         public void FindPath(Vector3 start, Vector3 end, MapLayoutManager grid)
         {
+            stopwatch = new Stopwatch();
+
+            stopwatch.Start();
+
+            grid.UpdateGrid();
+
             Node StartNode = grid.NodeFromWorldPosition(start);
             Node TargetNode = grid.NodeFromWorldPosition(end);
 
-            if (TargetNode == StartNode)
+            if (TargetNode == StartNode || TargetNode == null)
             {
-                TargetNode = grid.GetNeightboringNodes(StartNode)[0];
+                TargetNode = grid.GetClosestNodeToWorldPosition(end);
             }
 
             if (TargetNode.obstrucion)
@@ -36,39 +45,37 @@ namespace LowEngine.Navigation
                 }
             }
 
-            List<Node> OpenList = new List<Node>() { StartNode };
+            Heap<Node> OpenList = new Heap<Node>(grid.GridMaxSize);
             HashSet<Node> ClosedList = new HashSet<Node>();
+
+            OpenList.Add(StartNode);
 
             while (OpenList.Count > 0)
             {
-                Node currentNode = OpenList[0];
+                Node currentNode = OpenList.RemoveFirst();
 
-                for (int i = 1; i < OpenList.Count; i++)
-                {
-                    if ((OpenList[i].Cost < currentNode.Cost || OpenList[i].Cost == currentNode.Cost) || (OpenList[i].CostFromStart < currentNode.CostFromStart || OpenList[i].CostFromStart == currentNode.CostFromStart) || (OpenList[i].CostFromEnd < currentNode.CostFromEnd || OpenList[i].CostFromEnd == currentNode.CostFromEnd))
-                    {
-                        currentNode = OpenList[i];
-                    }
-                }
-
-                OpenList.Remove(currentNode);
                 ClosedList.Add(currentNode);
 
                 if (currentNode == TargetNode)
                 {
+                    stopwatch.Stop();
+
+                    UnityEngine.Debug.Log($"Stopped search at: {stopwatch.ElapsedMilliseconds}");
+
                     GetFinalPath(StartNode, TargetNode);
+                    return;
                 }
 
                 foreach (var neighborNode in grid.GetNeightboringNodes(currentNode))
                 {
-                    if (neighborNode == null || neighborNode.obstrucion || ClosedList.Contains(neighborNode)) continue;
+                    if (neighborNode.obstrucion || ClosedList.Contains(neighborNode)) continue;
 
-                    int MoveCost = currentNode.CostFromStart + Node.GetManhattanDistance(currentNode, neighborNode);
+                    int MoveCostToNeighbor = currentNode.gCost + Node.GetManhattanDistance(currentNode, neighborNode);
 
-                    if (MoveCost <= neighborNode.CostFromStart || !OpenList.Contains(neighborNode))
+                    if (MoveCostToNeighbor < neighborNode.gCost || !OpenList.Contains(neighborNode))
                     {
-                        neighborNode.CostFromStart = MoveCost;
-                        neighborNode.CostFromEnd = Node.GetManhattanDistance(neighborNode, TargetNode);
+                        neighborNode.gCost = MoveCostToNeighbor;
+                        neighborNode.hCost = Node.GetManhattanDistance(neighborNode, TargetNode);
                         neighborNode.parent = currentNode;
 
                         if (!OpenList.Contains(neighborNode))
@@ -91,7 +98,7 @@ namespace LowEngine.Navigation
 
                 if (CurrentNode.parent == null)
                 {
-                    Debug.Log("No parent");
+                    UnityEngine.Debug.Log("No parent");
 
                     break;
                 }
@@ -105,7 +112,7 @@ namespace LowEngine.Navigation
 
             if (Path == null || Path.Count < 1)
             {
-                Debug.Log("Unable to create path!");
+                UnityEngine.Debug.Log("Unable to create path!");
             }
         }
     }

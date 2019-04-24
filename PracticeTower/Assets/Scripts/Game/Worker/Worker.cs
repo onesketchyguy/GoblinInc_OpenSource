@@ -61,6 +61,8 @@ namespace LowEngine.Tasks
                 onArrivedAtPosition = onArrivedAtPosition,
                 pathFinding = new PathFinding()
             };
+
+            moveTo.pathFinding.FindPath(transform.position, moveTo.position, FindObjectOfType<MapLayoutManager>());
         }
 
         MoveToPosition moveTo;
@@ -136,67 +138,98 @@ namespace LowEngine.Tasks
                     workerData.experience = 0.99f;
                 }
             }
+
+            SetVisable(Vector2.Distance(transform.position, TaskWorkerAI.home) > 5);
         }
 
         void PathToPoint()
         {
             float distanceToTarget = Vector3.Distance(transform.position, moveTo.position);
 
-            if (moveTo.pathFinding.Path.Count == 0 || moveTo.pathFinding.Path == null)
+            if (distanceToTarget < 2f + moveTo.stoppingDistance)
             {
-                moveTo.pathIndex = 0;
+                transform.position = Vector3.MoveTowards(transform.position, moveTo.position, speed * Time.deltaTime);
 
-                if (moveTo.pathingAttempts < 20)
+                if (distanceToTarget <= moveTo.stoppingDistance)
                 {
-                    moveTo.pathFinding.FindPath(transform.position, moveTo.position, FindObjectOfType<MapLayoutManager>());
+                    if (moveTo.onArrivedAtPosition != null)
+                    {
+                        moveTo.onArrivedAtPosition.Invoke();
+                    }
 
-                    moveTo.pathingAttempts++;
+                    moveTo = null;
                 }
                 else
                 {
-                    transform.position = Vector3.MoveTowards(transform.position, moveTo.position, speed * Time.deltaTime);
+                    Face(moveTo.position);
                 }
             }
             else
             {
-                //----------------------------------------Node movement-------------------------------
-                for (int first = 0; first < moveTo.pathFinding.Path.Count; first++)
+                if (moveTo.pathFinding.Path.Count == 0 || moveTo.pathFinding.Path == null)
                 {
-                    for (int second = 1; second < moveTo.pathFinding.Path.Count + 1; second++)
+                    moveTo.pathIndex = 0;
+
+                    if (moveTo.pathFinding.stopwatch.IsRunning == false)
                     {
-                        if (second < moveTo.pathFinding.Path.Count)
+                        if (moveTo.pathingAttempts < moveTo.maxAttempts)
                         {
-                            Debug.DrawLine(moveTo.pathFinding.Path[first].position, moveTo.pathFinding.Path[second].position, Color.red);
+                            moveTo.pathFinding.FindPath(transform.position, moveTo.position, FindObjectOfType<MapLayoutManager>());
+
+                            moveTo.pathingAttempts++;
                         }
                         else
                         {
-                            Debug.DrawLine(moveTo.pathFinding.Path[first].position, transform.position, Color.blue);
+                            transform.position = Vector3.MoveTowards(transform.position, moveTo.position, speed * Time.deltaTime);
                         }
                     }
-                }
+                    else
+                    {
+                        if (moveTo.pathFinding.stopwatch.ElapsedMilliseconds > 1000)
+                        {
+                            moveTo.pathingAttempts++;
 
-                Node currentNode = null;
+                            moveTo.pathFinding.stopwatch.Stop();
+                        }
+                    }
 
-                if (moveTo.pathIndex < moveTo.pathFinding.Path.Count)
-                {
-                    currentNode = moveTo.pathFinding.Path[moveTo.pathIndex];
-                }
-                else
-                {
-                    int val = moveTo.pathFinding.Path.Count - 1 >= 0 ? moveTo.pathFinding.Path.Count - 1 : 0;
-                    currentNode = moveTo.pathFinding.Path[val];
-                }
-
-                if (currentNode == null) return;
-
-                float distanceToNode = Vector3.Distance(transform.position, currentNode.position);
-
-                if (distanceToTarget < 2f + moveTo.stoppingDistance)
-                {
-                    transform.position = Vector3.MoveTowards(transform.position, moveTo.position, speed * Time.deltaTime);
                 }
                 else
                 {
+                    MapLayoutManager.ChosenNodes = moveTo.pathFinding.Path;
+
+                    //----------------------------------------Node movement-------------------------------
+                    for (int first = 0; first < moveTo.pathFinding.Path.Count; first++)
+                    {
+                        for (int second = 1; second < moveTo.pathFinding.Path.Count + 1; second++)
+                        {
+                            if (second < moveTo.pathFinding.Path.Count)
+                            {
+                                Debug.DrawLine(moveTo.pathFinding.Path[first].position, moveTo.pathFinding.Path[second].position, Color.red);
+                            }
+                            else
+                            {
+                                Debug.DrawLine(moveTo.pathFinding.Path[first].position, transform.position, Color.blue);
+                            }
+                        }
+                    }
+
+                    Node currentNode = null;
+
+                    if (moveTo.pathIndex < moveTo.pathFinding.Path.Count)
+                    {
+                        currentNode = moveTo.pathFinding.Path[moveTo.pathIndex];
+                    }
+                    else
+                    {
+                        int val = moveTo.pathFinding.Path.Count - 1 >= 0 ? moveTo.pathFinding.Path.Count - 1 : 0;
+                        currentNode = moveTo.pathFinding.Path[val];
+                    }
+
+                    if (currentNode == null) return;
+
+                    float distanceToNode = Vector3.Distance(transform.position, currentNode.position);
+
                     transform.position = Vector3.MoveTowards(transform.position, currentNode.position, speed * Time.deltaTime);
 
                     if (distanceToNode < 0.5f + moveTo.stoppingDistance)
@@ -204,22 +237,8 @@ namespace LowEngine.Tasks
                         if (moveTo.pathIndex < moveTo.pathFinding.Path.Count)
                             moveTo.pathIndex++;
                     }
+                    //----------------------------------------end Node movement-------------------------------
                 }
-                //----------------------------------------end Node movement-------------------------------
-            }
-
-            if (distanceToTarget <= moveTo.stoppingDistance)
-            {
-                if (moveTo.onArrivedAtPosition != null)
-                {
-                    moveTo.onArrivedAtPosition.Invoke();
-                }
-
-                moveTo = null;
-            }
-            else
-            {
-                Face(moveTo.position);
             }
         }
 
@@ -238,6 +257,14 @@ namespace LowEngine.Tasks
                 }
             }
         }
+
+        public void SetVisable(bool visability)
+        {
+            foreach (var spriteRenderer in GetComponentsInChildren<SpriteRenderer>())
+            {
+                spriteRenderer.enabled = visability;
+            }
+        }
     }
 
     public class MoveToPosition
@@ -245,6 +272,13 @@ namespace LowEngine.Tasks
         public PathFinding pathFinding;
         public int pathIndex = 0;
 
+        public int maxAttempts
+        {
+            get
+            {
+                return 2;
+            }
+        }
         public int pathingAttempts;
 
         public Vector3 position;

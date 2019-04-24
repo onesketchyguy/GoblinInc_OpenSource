@@ -19,6 +19,7 @@ namespace LowEngine.Modding
         public static readonly string ModImagesDirectory = $"{Application.dataPath}/LocalData/Mods/images";
 
         public static Dictionary<string, Sprite> LoadedSprites = new Dictionary<string, Sprite>();
+        public static Dictionary<string, Texture2D> LoadedTextures = new Dictionary<string, Texture2D>();
 
         public static List<SaveManager.SavableObject.WorldObject> objectMods;
 
@@ -53,11 +54,6 @@ namespace LowEngine.Modding
             foreach (var file in Directory.EnumerateFiles(ModImagesDirectory, "*.PNG"))
             {
                 var sprite = GenerateSprite(file);
-
-                string name = Path.GetFileNameWithoutExtension(file);
-
-                if (sprite != null)
-                    LoadedSprites.Add(name, sprite);
             }
         }
 
@@ -113,17 +109,45 @@ namespace LowEngine.Modding
             return loadedSprite;
         }
 
+        public static Texture2D GetTexture(string textureName)
+        {
+            LoadInImages();
+
+            Texture2D loadedTexture;
+
+            LoadedTextures.TryGetValue(textureName, out loadedTexture);
+
+            string success = loadedTexture != null ? $"Successfully retrieved texture: {textureName}" : $"Failed to retrieve texture: {textureName}";
+            Debug.Log(success);
+
+            return loadedTexture;
+        }
+
         private static Sprite GenerateSprite(string path)
         {
             byte[] SpriteData = File.ReadAllBytes(path);
             Texture2D texture = new Texture2D(32, 32, TextureFormat.RGBA32, false, false);
             texture.LoadImage(SpriteData);
+            texture.alphaIsTransparency = true;
             texture.filterMode = FilterMode.Point;
             texture.name = Path.GetFileNameWithoutExtension(path);
 
-            Sprite spr = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f, 32, 0, SpriteMeshType.FullRect);
+            string name = Path.GetFileNameWithoutExtension(path);
 
-            return spr;
+
+            if (texture != null)
+            {
+                LoadedTextures.Add(name, texture);
+
+                Sprite spr = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f, 32, 0, SpriteMeshType.FullRect);
+
+                if (spr != null)
+                    LoadedSprites.Add(name, spr);
+
+                return spr;
+            }
+
+            return null;
         }
     }
 }

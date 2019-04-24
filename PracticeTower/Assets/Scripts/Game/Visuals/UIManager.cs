@@ -54,12 +54,18 @@ namespace LowEngine
         {
             if (EventSystem.current.IsPointerOverGameObject() == false && Input.GetButtonDown("Fire2"))
             {
-                PlaceObjectMenu placeObjectMenu = FindObjectOfType<PlaceObjectMenu>();
+                if (ObjectPlacingManager.Spawning != null || ObjectPlacingManager.bullDozing)
+                {
+                    FindObjectOfType<ObjectPlacingManager>().ClearObject();
 
-                if (placeObjectMenu)
-                    placeObjectMenu.ClearObject();
+                    CursorManager.instance.UpdateCursor();
+
+                    return;
+                }
 
                 Cursor.visible = true;
+
+                CursorManager.instance.UpdateCursor();
 
                 UpdateShowing(Show.none);
             }

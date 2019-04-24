@@ -7,7 +7,9 @@ namespace LowEngine
 {
     public class MapLayoutManager : MonoBehaviour
     {
-        public PlaceableObject Concrete;
+        public static List<Node> ChosenNodes = new List<Node>();
+
+        private static readonly SaveManager.SavableObject.WorldObject Concrete = new SaveManager.SavableObject.WorldObject { name = "Concrete", spriteName = "Concrete", spriteSortingLayer = -50, objectType = PlacedObjectType.Static, type = ObjectType.Abstract};
 
         /// <summary>
         /// Display half the size you want here.
@@ -22,6 +24,21 @@ namespace LowEngine
 
         public Node NodeFromWorldPosition(Vector3 target)
         {
+            Vector2 gridSpace = new Vector2((PlayAreaSize.x * 2), (PlayAreaSize.y * 2));
+
+            float percentX = (target.x + PlayAreaSize.x) / gridSpace.x;
+            float percentY = (target.y + PlayAreaSize.y) / gridSpace.y;
+            percentX = Mathf.Clamp01(percentX);
+            percentY = Mathf.Clamp01(percentY);
+
+            int x = Mathf.RoundToInt((gridSpace.x - 1) * percentX);
+            int y = Mathf.RoundToInt((gridSpace.y - 1) * percentY);
+
+            return grid[x, y];
+        }
+
+        public Node GetClosestNodeToWorldPosition(Vector3 target)
+        {
             float nearestdist = nodeDiameter * 2;
             Node nearestToTarget = null;
 
@@ -35,6 +52,14 @@ namespace LowEngine
             }
 
             return nearestToTarget;
+        }
+
+        public int GridMaxSize
+        {
+            get
+            {
+                return ((int)PlayAreaSize.x * 2) * ((int)PlayAreaSize.y * 2);
+            }
         }
 
         Node[,] grid;
@@ -64,25 +89,21 @@ namespace LowEngine
         {
             List<Node> neighboringNodes = new List<Node>();
 
-            int xCheck;
-            int yCheck;
-
             for (int x = -1; x < 1; x++)
             {
                 for (int y = -1; y < 1; y++)
                 {
-                    xCheck = homeNode.gridPosition.x + x;
-                    yCheck = homeNode.gridPosition.y + y;
+                    if (x == 0 && y == 0) continue;
 
-                    if (xCheck >= 0 && xCheck < gridSize.x)
+                    int xCheck = homeNode.gridPosition.x + x;
+                    int yCheck = homeNode.gridPosition.y + y;
+
+                    if (xCheck >= 0 && yCheck >= 0 && xCheck < gridSize.x && xCheck < gridSize.y)
                     {
-                        if (yCheck >= 0 && yCheck < gridSize.y)
-                        {
-                            Node neighbor = grid[xCheck, yCheck];
+                        Node neighbor = grid[xCheck, yCheck];
 
-                            if (neighbor != null)
-                                neighboringNodes.Add(neighbor);
-                        }
+                        if (neighbor != null)
+                            neighboringNodes.Add(neighbor);
                     }
                 }
             }
@@ -116,11 +137,13 @@ namespace LowEngine
         {
             grid = new Node[gridSize.x, gridSize.y];
 
+            Vector2 worldBottomLeft = transform.position - new Vector3(PlayAreaSize.x, PlayAreaSize.y);
+
             for (int x = 0; x < gridSize.x; x++)
             {
                 for (int y = 0; y < gridSize.y; y++)
                 {
-                    Vector3 worldPoint = new Vector2((x - (gridSize.x / 2)) * nodeDiameter, (y - (gridSize.y / 2)) * nodeDiameter);
+                    Vector3 worldPoint = worldBottomLeft + new Vector2(x * nodeDiameter, y * nodeDiameter);
                     bool obstruction = false;
 
                     Collider2D collision = Physics2D.OverlapCircle(worldPoint, nodeRadius/2);
@@ -143,21 +166,6 @@ namespace LowEngine
             }
         }
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.DrawWireCube(Vector2.zero, new Vector2(gridSize.x * 2, gridSize.y * 2) - (Vector2.one * nodeRadius));
-
-            if (grid != null)
-            {
-                foreach (var node in grid)
-                {
-                    Gizmos.color = (node.obstrucion) ? Color.red : Color.white;
-
-                    Gizmos.DrawWireCube(node.position, Vector2.one * nodeDiameter);
-                }
-            }
-        }
-
         public static void ReplaceTileInDictionary(Vector2 pos, GameObject go)
         {
             RemoveFromDictionary(pos);
@@ -165,9 +173,6 @@ namespace LowEngine
             gameTiles.Remove(pos);
 
             gameTiles.Add(pos, go);
-
-            if (go.name != "Concrete")
-                Debug.Log($"Replaced tile at {pos} with {go.name}");
         }
 
         private static void RemoveFromDictionary(Vector2 pos)
@@ -193,15 +198,47 @@ namespace LowEngine
 
         public void ReplaceTile(Vector2 tilePos)
         {
-            SaveManager.SavableObject.WorldObject objectData = Constructor.CloneObjectData(Concrete.ObjectData, tilePos, Quaternion.identity, Color.white);
+            SaveManager.SavableObject.WorldObject objectData = Constructor.CloneObjectData(Concrete, tilePos, Quaternion.identity, Color.white);
 
             GameObject n_concrete = Constructor.GetObject(objectData, ConcreteParent.transform);
 
-            n_concrete.GetComponent<SpriteRenderer>().material = GameHandler.instance.gameObjectMaterial;
-
             ReplaceTileInDictionary(tilePos, n_concrete);
 
-            UpdateGrid();
+            if (Time.timeSinceLevelLoad > 1)
+                UpdateGrid();
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawWireCube(Vector2.zero, new Vector2(gridSize.x * 2, gridSize.y * 2) - (Vector2.one * nodeRadius));
+
+            if (grid != null)
+            {
+                foreach (var node in grid)
+                {
+                    if (ChosenNodes.Count > 0)
+                    {
+                        if (ChosenNodes.Contains(node))
+                        {
+                            Gizmos.color = Color.blue;
+                            Gizmos.DrawCube(node.position, Vector2.one * nodeDiameter);
+
+                            continue;
+                        }
+                    }
+
+                    Gizmos.color = (node.obstrucion) ? Color.red : Color.white;
+
+                    if (node.obstrucion)
+                    {
+                        Gizmos.DrawCube(node.position, Vector2.one * nodeDiameter);
+                    }
+                    else
+                    {
+                        Gizmos.DrawWireCube(node.position, Vector2.one * nodeDiameter);
+                    }
+                }
+            }
         }
     }
 }

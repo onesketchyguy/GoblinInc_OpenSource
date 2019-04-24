@@ -26,6 +26,12 @@ TextureImporter:
   - first:
       213: -6316337438190477699
     second: Worker_Hair_7
+  - first:
+      213: -9177578611929306129
+    second: Worker_Hair_8
+  - first:
+      213: -6417510442508288616
+    second: Worker_Hair_9
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -84,7 +90,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 2
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 512
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: 4
     textureCompression: 0
@@ -95,7 +101,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: Standalone
-    maxTextureSize: 512
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: 4
     textureCompression: 0
@@ -144,7 +150,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b67285942f85aba49a81d4b5cd52dd52
+      spriteID: febb4eb0559351a4ca2383c74b1ef14c
       internalID: 21300000
       vertices: []
       indices: 
@@ -165,7 +171,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 45b026a6bb082544c9a4ef17803890db
+      spriteID: f60edae0008897d40b153a739377576c
       internalID: 21300002
       vertices: []
       indices: 
@@ -186,7 +192,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ac031cb6a47dc7d438651db6bd2a17f9
+      spriteID: ba738693291896343938642b53de9e00
       internalID: 21300004
       vertices: []
       indices: 
@@ -207,7 +213,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 652dfea999f087641b5c39f2b185658e
+      spriteID: 24ad87c84250cf2479178976a3ab1cfa
       internalID: 21300006
       vertices: []
       indices: 
@@ -228,7 +234,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb09758bba1ff2c428e58c830716b2a9
+      spriteID: 915bd3ff405439949832407ff714dc8f
       internalID: 21300008
       vertices: []
       indices: 
@@ -249,7 +255,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b083d0d457d74e34eb56dff89834a371
+      spriteID: a81153522030be34bac95a5e223aa02d
       internalID: 8730818618775066302
       vertices: []
       indices: 
@@ -270,7 +276,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6e6a003080791a247b2431aef5340689
+      spriteID: b2dc56fa4a016624a8bb6f0005faee9d
       internalID: -7624175870961239284
       vertices: []
       indices: 
@@ -291,8 +297,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0d9f90feee732344f856f5da06ba6bce
+      spriteID: 2cd6d365f8af1b144b1cc3a79ee55b50
       internalID: -6316337438190477699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Hair_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24b5b4e4718f977418fdfc2a2fd0c916
+      internalID: -9177578611929306129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Hair_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c80b530abb773244f92b03a08963f4ef
+      internalID: -6417510442508288616
       vertices: []
       indices: 
       edges: []

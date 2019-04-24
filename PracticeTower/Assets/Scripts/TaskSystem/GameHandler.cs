@@ -9,16 +9,18 @@ namespace LowEngine
 {
     public class GameHandler : MonoBehaviour
     {
-        #region Public instance
-        public static GameHandler instance;
+        public static GameHandler instance
+        {
+            get
+            {
+                return FindObjectOfType<GameHandler>();
+            }
+        }
 
         private void Awake()
         {
-            instance = this;
-
             SetupApplicationVersion();
         }
-        #endregion
 
         public static float MoneyToPayOnPayDay()
         {

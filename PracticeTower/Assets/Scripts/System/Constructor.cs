@@ -32,13 +32,6 @@ namespace LowEngine.Saving
                 //New worker
                 obj.transform.position = spawnPoint;
                 obj.transform.rotation = Quaternion.identity;
-
-                TaskSystem.Task comeToview = new TaskSystem.Task
-                {
-                    moveToPosition = new TaskSystem.Task.MoveTo(Vector3.zero, Random.Range(0, 2f))
-                };
-
-                workerAI.taskManager.tasks.Enqueue(comeToview);
             }
 
             return obj;
@@ -133,6 +126,28 @@ namespace LowEngine.Saving
             r.rotation = rotation;
 
             return r;
+        }
+
+        public static bool NothingBlocking(SaveManager.SavableObject.WorldObject placing, SaveManager.SavableObject.WorldObject placedObject)
+        {
+            if (placing == null || placedObject.type == placing.type)
+            {
+                return false;
+            }
+
+            switch (placedObject.type)
+            {
+                case ObjectType.Abstract:
+                    return (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
+                case ObjectType.Table:
+                    return (placing.type == ObjectType.Ground);
+                case ObjectType.Ground:
+                    return (placing.type == ObjectType.Table);
+                case ObjectType.Wall:
+                    return false;
+                default:
+                    return false;
+            }
         }
     }
 }

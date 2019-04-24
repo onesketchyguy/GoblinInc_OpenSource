@@ -26,6 +26,12 @@ TextureImporter:
   - first:
       213: 2161406567361219383
     second: Worker_Nose_7
+  - first:
+      213: 2152492815972993376
+    second: Worker_Nose_8
+  - first:
+      213: -8349361361265933758
+    second: Worker_Nose_9
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -84,7 +90,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 2
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 512
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: 4
     textureCompression: 0
@@ -95,7 +101,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: Standalone
-    maxTextureSize: 512
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: 4
     textureCompression: 0
@@ -144,7 +150,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e7cad027793347e468a5cfc0205b23e3
+      spriteID: b26b4099f9798a04faa71538234c2e2b
       internalID: 21300000
       vertices: []
       indices: 
@@ -165,7 +171,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7ce3066783ec12543bb72734f3a3d84c
+      spriteID: 8fb441e69817ad146b921f5bf1edb3eb
       internalID: 21300002
       vertices: []
       indices: 
@@ -186,7 +192,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 33cf04ae2a1ad80489e20aeb1801e17e
+      spriteID: 790ec9a6e127a9c43b1c038bd9a6e16d
       internalID: 21300004
       vertices: []
       indices: 
@@ -207,7 +213,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 335f5de2795d6ea4fa406282832cca00
+      spriteID: ec9b1c921ecc5d54993bcddc7dec491f
       internalID: 21300006
       vertices: []
       indices: 
@@ -228,7 +234,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2d154cba07c0ca049860a2ca0f8b7581
+      spriteID: 36ed0fe762f7abc42aa7d5995844b26b
       internalID: 21300008
       vertices: []
       indices: 
@@ -249,7 +255,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47d9e88a0a716d541a4dc1562fd883f1
+      spriteID: eafeeb0b3f1d31845807d0a306c52da7
       internalID: -659093701411717752
       vertices: []
       indices: 
@@ -270,7 +276,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c9fbbeae2e64be344bbd6877437d6724
+      spriteID: 2a1b2473ece7867469fe21f4a8d011bc
       internalID: 3873742493738102672
       vertices: []
       indices: 
@@ -291,8 +297,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c236ec467b8a0e042b8cc42f201c0e3a
+      spriteID: ba98a17aacbca8b48821e41d6c89b820
       internalID: 2161406567361219383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Nose_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c8f15307c52d2a45a56784082dc8f07
+      internalID: 2152492815972993376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Nose_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bb159ffcc19cc345a27effff1d5d12f
+      internalID: -8349361361265933758
       vertices: []
       indices: 
       edges: []

@@ -26,6 +26,12 @@ TextureImporter:
   - first:
       213: -2719083376325828853
     second: Worker_Eyes_7
+  - first:
+      213: 5422711136461472355
+    second: Worker_Eyes_8
+  - first:
+      213: 693271073130647893
+    second: Worker_Eyes_9
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -84,7 +90,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 2
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 512
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: 4
     textureCompression: 0
@@ -95,7 +101,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: Standalone
-    maxTextureSize: 512
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: 4
     textureCompression: 0
@@ -144,7 +150,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 76cf6c9966df8bc4ca16786eab612787
+      spriteID: 3020b47c48bda634892b96cab6619b05
       internalID: 21300000
       vertices: []
       indices: 
@@ -165,7 +171,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b4039b0a34e7b4f49be32bbef5c3867b
+      spriteID: aa4c4d2f4f3b96a46b2b628d44630ad1
       internalID: 21300002
       vertices: []
       indices: 
@@ -186,7 +192,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2496ef54a30b9334ba35ac0a5d765f90
+      spriteID: 73810763fc78c7e4f9f47ae92a0d8961
       internalID: 21300004
       vertices: []
       indices: 
@@ -207,7 +213,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4d0c9fee6c429254b8dafbc7961a0d6a
+      spriteID: 76ff229244d090948a5a367968462dfe
       internalID: 21300006
       vertices: []
       indices: 
@@ -228,7 +234,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c2f989b1b50ba14f99efafbf590d92a
+      spriteID: dab6c45404dee0744902d250d52139f9
       internalID: 21300008
       vertices: []
       indices: 
@@ -249,7 +255,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 21c64f3d554557640a910be99547c5b0
+      spriteID: c2751b25ea179f943ada28587febce01
       internalID: -617252887220072824
       vertices: []
       indices: 
@@ -270,7 +276,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9396a192f8bc3e846bb7884965a01948
+      spriteID: 99d32a498112109438f3908e201d0924
       internalID: -7607257892462346997
       vertices: []
       indices: 
@@ -291,8 +297,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f7226b7af42c5ec4d83ffe5f3359952a
+      spriteID: caab69d39594bc147a438a2a1e013611
       internalID: -2719083376325828853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Eyes_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 591b078f92e001f4690987bc73232d8b
+      internalID: 5422711136461472355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Worker_Eyes_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18d6f15e43eb02e4a8c0cb12e2e01799
+      internalID: 693271073130647893
       vertices: []
       indices: 
       edges: []

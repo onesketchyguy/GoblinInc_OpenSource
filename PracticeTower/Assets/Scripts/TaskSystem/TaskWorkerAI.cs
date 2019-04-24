@@ -20,7 +20,15 @@ namespace LowEngine.Tasks
 
         public TaskSystem taskManager;
 
-        public bool AtHome { get { return Vector2.Distance(transform.position, FindObjectOfType<MapLayoutManager>().PlayAreaSize - Vector2.one) < 2; } }
+        public static Vector3 home
+        {
+            get
+            {
+                return FindObjectOfType<MapLayoutManager>().PlayAreaSize + Vector2.one;
+            }
+        }
+
+        public bool AtHome { get { return Vector2.Distance(transform.position, home) < 10; } }
 
         public TaskSystem.Task GetNearestDesk => new TaskSystem.Task
         {
@@ -53,7 +61,7 @@ namespace LowEngine.Tasks
                     {
                         GetNearestNeed(need).FulFillneed(worker);
 
-                        currentThought = "That's better";
+                        currentThought = DialogueSys.GetCelebration();
 
                         state = State.WaitingForNewTask;
                     }),
@@ -67,7 +75,7 @@ namespace LowEngine.Tasks
 
         public TaskSystem.Task GoHome => new TaskSystem.Task
         {
-            moveToPosition = new TaskSystem.Task.MoveTo(FindObjectOfType<MapLayoutManager>().PlayAreaSize - Vector2.one, 0, () => 
+            moveToPosition = new TaskSystem.Task.MoveTo(home, 0, () => 
             {
                 worker.GetNeed(NeedDefinition.Hunger).Set(100);
                 worker.GetNeed(NeedDefinition.Thirst).Set(100);
@@ -119,7 +127,7 @@ namespace LowEngine.Tasks
 
                     if (WaitingTimer <= 0)
                     {
-                        WaitingTimer = worker.ineffiency * Time.deltaTime;
+                        WaitingTimer = (worker.ineffiency + (DayCycle.timeScale)) * Time.deltaTime;
 
                         RequestNextTask();
                     }
@@ -304,7 +312,7 @@ namespace LowEngine.Tasks
             WorkerButton button = null;
             WorkerButton[] workerButtons = FindObjectsOfType<WorkerButton>();
 
-            Vector2 vector2 = FindObjectOfType<MapLayoutManager>().PlayAreaSize;
+            Vector2 vector2 = FindObjectOfType<MapLayoutManager>().PlayAreaSize*2;
 
             float nearest = (vector2.x > vector2.y) ? vector2.x: vector2.y;
 
