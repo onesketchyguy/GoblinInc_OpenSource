@@ -6173,7 +6173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ghostAlpha: 0.5
-  bulldozer: {fileID: 2800000, guid: d55381aa3a73da14085f7bc2e5d1063c, type: 3}
+  bulldozer: {fileID: 2800000, guid: 791e22b85aecd1f4297fb695a113af39, type: 3}
 --- !u!114 &924507029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13332,7 +13332,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1140474471}
+      - m_Target: {fileID: 924507028}
         m_MethodName: ToggleBulldozer
         m_Mode: 1
         m_Arguments:

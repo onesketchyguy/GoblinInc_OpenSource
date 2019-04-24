@@ -128,7 +128,6 @@ namespace LowEngine.Modding
             byte[] SpriteData = File.ReadAllBytes(path);
             Texture2D texture = new Texture2D(32, 32, TextureFormat.RGBA32, false, false);
             texture.LoadImage(SpriteData);
-            texture.alphaIsTransparency = true;
             texture.filterMode = FilterMode.Point;
             texture.name = Path.GetFileNameWithoutExtension(path);
 
