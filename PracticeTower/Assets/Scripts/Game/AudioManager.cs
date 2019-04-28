@@ -31,7 +31,7 @@ namespace LowEngine
                 volume = 0.5f;
             }
 
-            AudioSource.PlayClipAtPoint(clip, position, volume); //Replace wioth SFX volume
+            AudioSource.PlayClipAtPoint(clip, position, volume * PlayerPrefsManager.SFXVolume);
         }
 
         public AudioClip[] onPressedSounds;

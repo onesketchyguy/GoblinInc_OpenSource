@@ -13,7 +13,7 @@ namespace LowEngine.Modding
     /// <summary>
     /// Provides methods for loading the mods.
     /// </summary>
-    internal static class ModLoader
+    public static class ModLoader
     {
         public static readonly string ModsDirectory = $"{Application.dataPath}/LocalData/Mods";
         public static readonly string ModImagesDirectory = $"{Application.dataPath}/LocalData/Mods/images";

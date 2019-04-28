@@ -8,6 +8,8 @@ namespace LowEngine
     {
         public GhostData ghostData;
 
+        SpriteRenderer spr;
+
         private void OnEnable()
         {
             if (ghostData.placing == null)
@@ -18,6 +20,8 @@ namespace LowEngine
             }
 
             ghostData.okayToPlace = (ghostData.placing.type == ObjectType.Ground || ghostData.placing.type == ObjectType.Wall);
+
+            spr = GetComponent<SpriteRenderer>();
 
             CheckForCollisions();
         }
@@ -73,17 +77,20 @@ namespace LowEngine
                 }
             }
 
-            SpriteRenderer spr = GetComponent<SpriteRenderer>();
+            if (ghostData.placing != null)
+                UpdateColor();
+        }
 
-            if (spr)
-            {
-                float ghostAlpha = FindObjectOfType<ObjectPlacingManager>().ghostAlpha;
+        private void UpdateColor()
+        {
+            float ghostAlpha = ObjectPlacingManager.Reference.ghostAlpha;
 
-                Color c = (ObjectPlacingManager.Spawning.ChangableColor) ? ObjectPlacingManager.PlacingColor : ObjectPlacingManager.Spawning.color;
+            Color c = (ghostData.placing.ChangableColor) ? ObjectPlacingManager.PlacingColor : ghostData.placing.color;
 
-                spr.sprite = ObjectPlacingManager.ghostSprite;
-                spr.color = ghostData.okayToPlace ? new Color(c.r, c.g, c.b, ghostAlpha) : new Color(1, 0, 0, ghostAlpha);
-            }
+            if (spr == null) spr = GetComponent<SpriteRenderer>();
+
+            spr.sprite = ObjectPlacingManager.ghostSprite;
+            spr.color = ghostData.okayToPlace ? new Color(c.r, c.g, c.b, ghostAlpha) : new Color(1, 0, 0, ghostAlpha);
         }
     }
 }

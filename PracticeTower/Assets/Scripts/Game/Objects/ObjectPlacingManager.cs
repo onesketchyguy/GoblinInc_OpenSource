@@ -10,9 +10,17 @@ namespace LowEngine
 
     public class ObjectPlacingManager : MonoBehaviour
     {
+        public static ObjectPlacingManager Reference
+        {
+            get
+            {
+                return FindObjectOfType<ObjectPlacingManager>();
+            }
+        }
+
         public static SaveManager.SavableObject.WorldObject Spawning;
         GhostObject ghostObject;
-        List<GameObject> Ghosts = new List<GameObject>();
+        List<GhostObject> Ghosts = new List<GhostObject>();
         [Range(0.1f, 0.9f)]
         public float ghostAlpha = 0.5f;
 
@@ -59,8 +67,7 @@ namespace LowEngine
                 //If the user requests a new item, clear the existing one.
                 if (Spawning != null || bullDozing == true)
                 {
-                    //Continue following the cursor so that the ghost doesn't just sit there.
-                    if (ghostObject != null)
+                    if (Spawning != null)
                     {
                         CursorManager cursorManager = CursorManager.instance;
 
@@ -68,7 +75,11 @@ namespace LowEngine
 
                         if (cursorManager != null && texture != null)
                             cursorManager.UpdateCursor(texture);
+                    }
 
+                    //Continue following the cursor so that the ghost doesn't just sit there.
+                    if (ghostObject != null)
+                    {
                         ghostObject.transform.position = MousePos;
                     }
 
@@ -79,9 +90,6 @@ namespace LowEngine
                 //Stop reading.
                 return;
             }
-
-            //If we are working, do not show the cursor.
-            //Cursor.visible = Spawning == null && bullDozing == false;
 
             if (colorPicker != null) PlacingColor = colorPicker.SelectedColor;
 
@@ -186,18 +194,22 @@ namespace LowEngine
                             }
                         }
 
+                        AudioManager.instance.PlayBuildSound(ghostObject.transform.position);
+
                         foreach (var item in Ghosts)
                         {
-                            Destroy(item);
+                            item.gameObject.SetActive(false);
                         }
 
-                        Ghosts = new List<GameObject>();
+                        Ghosts = new List<GhostObject>();
                     }
                     else
                     {
                         if (ghostObject.ghostData.okayToPlace)
                         {
                             SpawnObject(ghostObject.transform.position);
+
+                            AudioManager.instance.PlayBuildSound(ghostObject.transform.position);
                         }
                     }
 
@@ -273,44 +285,43 @@ namespace LowEngine
             {
                 Debug.Log($"Placing ghost at {position}");
 
-                var Ghost = new GameObject($"{objectName}.GhostObject").AddComponent<GhostObject>();
-                SpriteRenderer spr = Ghost.gameObject.AddComponent<SpriteRenderer>();
-
-                spr.sprite = sprite;
-                spr.color = Color.white - new Color(0, 0, 0, ghostAlpha);
-            
-                Ghost.ghostData.placing = placing;
-                spr.sortingOrder = 100;
+                var Ghost = Tasks.GhostManager.GetGhost(placing);
+           
                 Ghost.transform.position = position;
 
-                Ghosts.Add(Ghost.gameObject);
+                Ghost.CheckForCollisions();
 
+                Ghosts.Add(Ghost);
             }
 
             if (Ghosts.Count > 0)
             {
+                bool itemExistsAtPosition = false;
+
                 for (int i = 0; i < Ghosts.Count; i++)
                 {
-                    GameObject item = Ghosts[i];
+                    var item = Ghosts[i];
 
                     if (item == null) continue;
 
-                    if (positionExists(Ghosts[i].transform.position) == false)
+                    if (positionExists(item.transform.position) == false)
                     {
-                        Destroy(Ghosts[i].gameObject);
-                    }
-
-                    if (item.transform.position == position)
-                    {
-                        item.GetComponent<GhostObject>().CheckForCollisions();
-
-                        return;
+                        Ghosts[i].gameObject.SetActive(false);
+                        continue;
                     }
                     else
+                    if (item.transform.position == position)
                     {
-                        CreateObject();
-                        return;
+                        item.CheckForCollisions();
+
+                        itemExistsAtPosition = true;
+                        continue;
                     }
+                }
+
+                if (itemExistsAtPosition == false)
+                {
+                    CreateObject();
                 }
             }
             else
@@ -321,34 +332,26 @@ namespace LowEngine
 
         void UpdateGhostCount()
         {
-            foreach (var item in FindObjectsOfType<GhostObject>())
-            {
-                if (Ghosts.Contains(item.gameObject) == false)
-                {
-                    Ghosts.Add(item.gameObject);
-                }
-            }
-
             while (Ghosts.Count > positions.Length)
             {
                 for (int i = 0; i < Ghosts.Count; i++)
                 {
-                    GameObject item = Ghosts[i];
+                    var item = Ghosts[i];
 
-                    if (item == null)
+                    if (item == null || item.gameObject.activeSelf == false)
                     {
                         Ghosts.Remove(item);
 
-                        return;
+                        break;
                     }
 
                     if (positionExists(item.transform.position) == false)
                     {
-                        Destroy(item);
+                        item.gameObject.SetActive(false);
 
                         Ghosts.Remove(item);
 
-                        return;
+                        break;
                     }
                 }
 
@@ -395,9 +398,6 @@ namespace LowEngine
 
                 return;
             }
-
-
-            AudioManager.instance.PlayBuildSound(ghostObject.transform.position);
 
             if (worldObjectParent == null)
             {
