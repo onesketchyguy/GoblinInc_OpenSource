@@ -1,1 +1,1 @@
-{"userName":"game","money":2684.199951171875,"minute":10,"hour":14,"day":2}
+{"userName":"game","money":50.0,"minute":0,"hour":8,"day":1}

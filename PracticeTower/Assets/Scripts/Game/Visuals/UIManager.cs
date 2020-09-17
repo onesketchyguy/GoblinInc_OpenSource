@@ -13,7 +13,7 @@ namespace LowEngine
             instance = this;
         }
 
-        public enum Show { none, crafting, hiring, workerInfo, options, calender }
+        public enum Show { none, crafting, hiring, workerInfo, options, calender, contracts }
 
         public Show CurrentlyDisplaying;
 
@@ -43,6 +43,13 @@ namespace LowEngine
         public void ToggleCalenderPanel()
         {
             UpdateShowing(Show.calender);
+        }
+
+        public GameObject ContractsPanel;
+
+        public void ToggleContractsPanel()
+        {
+            UpdateShowing(Show.contracts);
         }
 
         public GameObject WorkerInfoPanel;
@@ -91,6 +98,7 @@ namespace LowEngine
             OptionsPanel.SetActive(CurrentlyDisplaying == Show.options);
             WorkerInfoPanel.SetActive(CurrentlyDisplaying == Show.workerInfo);
             CalenderPanel.SetActive(CurrentlyDisplaying == Show.calender);
+            ContractsPanel.SetActive(CurrentlyDisplaying == Show.contracts);
         }
     }
 }
