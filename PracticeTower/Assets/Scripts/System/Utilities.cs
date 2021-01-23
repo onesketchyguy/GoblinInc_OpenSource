@@ -41,5 +41,19 @@ namespace LowEngine
 
             return new Color(r, g, b, 1);
         }
+
+        public static T[] Add<T>(T toAdd, T[] array)
+        {
+            var old = array;
+            array = new T[old.Length + 1];
+
+            for (int i = 0; i < old.Length; i++)
+            {
+                array[i] = old[i];
+            }
+
+            array[old.Length] = toAdd;
+            return array;
+        }
     }
 }

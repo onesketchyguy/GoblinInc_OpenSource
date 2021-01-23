@@ -19,21 +19,24 @@ namespace LowEngine
         }
 
         public static SaveManager.SavableObject.WorldObject Spawning;
-        GhostObject ghostObject;
-        List<GhostObject> Ghosts = new List<GhostObject>();
+        private GhostObject ghostObject;
+        private List<GhostObject> Ghosts = new List<GhostObject>();
+
         [Range(0.1f, 0.9f)]
         public float ghostAlpha = 0.5f;
 
         public static Sprite ghostSprite;
 
-        Vector2 MousePos => (Utilities.GridLockedMousePosition());
+        private CursorManager cursorManager;
+
+        private Vector2 MousePos => (Utilities.GridLockedMousePosition());
 
         public Texture2D bulldozer;
         public static bool bullDozing;
 
         public static Color PlacingColor;
 
-        ColorPicker colorPicker
+        private ColorPicker colorPicker
         {
             get
             {
@@ -45,8 +48,9 @@ namespace LowEngine
 
         private Vector3 start = Vector3.forward;
         private Vector2 lastPos;
-        Vector3[] positions = null;
-        bool positionExists(Vector3 pos)
+        private Vector3[] positions = null;
+
+        private bool positionExists(Vector3 pos)
         {
             for (int i = 0; i < positions.Length; i++)
             {
@@ -58,6 +62,8 @@ namespace LowEngine
 
         private void Update()
         {
+            if (cursorManager == null) cursorManager = CursorManager.instance;
+
             //Handle UI
             if (EventSystem.current.IsPointerOverGameObject())
             {
@@ -69,8 +75,6 @@ namespace LowEngine
                 {
                     if (Spawning != null)
                     {
-                        CursorManager cursorManager = CursorManager.instance;
-
                         Texture2D texture = Modding.ModLoader.GetTexture(Spawning.spriteName);
 
                         if (cursorManager != null && texture != null)
@@ -106,7 +110,7 @@ namespace LowEngine
             }
         }
 
-        void HandlePlacing()
+        private void HandlePlacing()
         {
             GameHandler.gameState = GameHandler.GameState.Placing;
 
@@ -177,7 +181,7 @@ namespace LowEngine
             {
                 if (positions != null)
                 {
-                    if  (Ghosts.Count > 0)
+                    if (Ghosts.Count > 0)
                     {
                         foreach (var ghost in Ghosts)
                         {
@@ -197,11 +201,9 @@ namespace LowEngine
                         AudioManager.instance.PlayBuildSound(ghostObject.transform.position);
 
                         foreach (var item in Ghosts)
-                        {
                             item.gameObject.SetActive(false);
-                        }
 
-                        Ghosts = new List<GhostObject>();
+                        Ghosts.Clear();
                     }
                     else
                     {
@@ -227,7 +229,7 @@ namespace LowEngine
             }
         }
 
-        void HandleBulldozing()
+        private void HandleBulldozing()
         {
             if (ghostObject == null)
             {
@@ -250,13 +252,13 @@ namespace LowEngine
 
             if (ghostObject.ghostData.overlapping != null)
             {
-               // spr.color = new Color(0, 0, 0, ghostAlpha);
+                // spr.color = new Color(0, 0, 0, ghostAlpha);
 
                 if (ghostObject.ghostData.overlapping[ghostObject.ghostData.overlapping.Length - 1] != null && ghostObject.ghostData.overlapping[ghostObject.ghostData.overlapping.Length - 1].GetComponent<PlacedObject>() != null)
                 {
                     if (ghostObject.ghostData.overlapping[ghostObject.ghostData.overlapping.Length - 1].GetComponent<PlacedObject>().objectData.type != ObjectType.Abstract)
                     {
-                     //   spr.color = new Color(1, 0, 0, ghostAlpha);
+                        //   spr.color = new Color(1, 0, 0, ghostAlpha);
 
                         if (Input.GetButton("Fire1"))
                         {
@@ -286,7 +288,7 @@ namespace LowEngine
                 Debug.Log($"Placing ghost at {position}");
 
                 var Ghost = Tasks.GhostManager.GetGhost(placing);
-           
+
                 Ghost.transform.position = position;
 
                 Ghost.CheckForCollisions();
@@ -330,7 +332,7 @@ namespace LowEngine
             }
         }
 
-        void UpdateGhostCount()
+        private void UpdateGhostCount()
         {
             while (Ghosts.Count > positions.Length)
             {
@@ -376,7 +378,7 @@ namespace LowEngine
             ghostObject.enabled = false;
         }
 
-        void SetSpawningObject(SaveManager.SavableObject.WorldObject obj)
+        private void SetSpawningObject(SaveManager.SavableObject.WorldObject obj)
         {
             ClearObject();
 
@@ -424,7 +426,7 @@ namespace LowEngine
             Debug.Log($"Spawned {Spawning.name} at {spawnPoint}");
         }
 
-        void RotatePlacing(float degrees)
+        private void RotatePlacing(float degrees)
         {
             ghostObject.transform.Rotate(Vector3.forward * degrees);
         }

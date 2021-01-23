@@ -4,12 +4,11 @@ namespace LowEngine
 {
     public class CursorManager : MonoBehaviour
     {
-        public static CursorManager instance
+        public static CursorManager instance;
+
+        private void Awake()
         {
-            get
-            {
-                return FindObjectOfType<CursorManager>();
-            }
+            instance = this;
         }
 
         private void Start()

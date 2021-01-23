@@ -17,10 +17,10 @@ namespace LowEngine
 
         public void SaveAndQuit()
         {
-            StartCoroutine("SaveAndQuit_");
+            StartCoroutine(SaveAndQuitAction());
         }
 
-        IEnumerator SaveAndQuit_()
+        private IEnumerator SaveAndQuitAction()
         {
             GameHandler.instance.SaveGame();
 

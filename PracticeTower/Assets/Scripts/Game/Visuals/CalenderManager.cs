@@ -31,6 +31,7 @@ namespace LowEngine.TimeManagement
                 int CurrentDay = TimeScale.days % 7;
 
                 obj.checkBox.gameObject.SetActive(CurrentDay > day);
+                obj.circle.gameObject.SetActive(CurrentDay == day);
 
                 obj.PayDayDisplay.gameObject.SetActive(CurrentDay + GameHandler.daysUntilPayDay == day);
             }

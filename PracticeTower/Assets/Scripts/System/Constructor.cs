@@ -43,10 +43,7 @@ namespace LowEngine.Saving
 
             GameObject parent = GameObject.Find("Building");
 
-            if (parent == null)
-            {
-                parent = new GameObject("Building");
-            }
+            if (parent == null) parent = new GameObject("Building");
 
             SpriteRenderer spr = obj.AddComponent<SpriteRenderer>();
             spr.sprite = Modding.ModLoader.GetSprite(data.spriteName);
@@ -82,11 +79,13 @@ namespace LowEngine.Saving
 
                     obj.GetComponent<WorkerButton>().chair = child;
                     break;
+
                 case PlacedObjectType.Need:
                     NeedFulfiller need = obj.AddComponent<NeedFulfiller>();
 
                     need.Fulfills = data.fulFills;
                     break;
+
                 default:
                     break;
             }
@@ -139,12 +138,16 @@ namespace LowEngine.Saving
             {
                 case ObjectType.Abstract:
                     return (placing.type == ObjectType.Ground || placing.type == ObjectType.Wall);
+
                 case ObjectType.Table:
                     return (placing.type == ObjectType.Ground);
+
                 case ObjectType.Ground:
                     return (placing.type == ObjectType.Table);
+
                 case ObjectType.Wall:
                     return false;
+
                 default:
                     return false;
             }

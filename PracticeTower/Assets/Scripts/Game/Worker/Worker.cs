@@ -13,7 +13,7 @@ namespace LowEngine.Tasks
 
         public float unhappiness { get; set; }
 
-        GameObject body;
+        private GameObject body;
 
         public WorkerButton Desk { get; set; }
 
@@ -21,6 +21,7 @@ namespace LowEngine.Tasks
 
         public SaveManager.SavableObject.Worker workerData { get; set; }
         public Need[] needs { get; set; } = new Need[] { new Need { thisNeed = NeedDefinition.Hunger }, new Need { thisNeed = NeedDefinition.Thirst } };
+
         public Need GetNeed(NeedDefinition needToGet)
         {
             foreach (var need in needs)
@@ -32,13 +33,23 @@ namespace LowEngine.Tasks
             return null;
         }
 
+        private void OnEnable()
+        {
+            GameHandler.RegisterWorker(this);
+        }
+
+        private void OnDisable()
+        {
+            GameHandler.DeregisterWorker(this);
+        }
+
         public float GetAllNeeds()
         {
             float total = 0;
 
             foreach (var need in needs)
             {
-                total += Mathf.Round(need.value/needs.Length);
+                total += Mathf.Round(need.value / needs.Length);
             }
 
             return total;
@@ -65,7 +76,7 @@ namespace LowEngine.Tasks
             moveTo.pathFinding.FindPath(transform.position, moveTo.position, FindObjectOfType<MapLayoutManager>());
         }
 
-        MoveToPosition moveTo;
+        private MoveToPosition moveTo;
 
         public void InitializeWorker(SaveManager.SavableObject.Worker bodyData)
         {
@@ -142,7 +153,7 @@ namespace LowEngine.Tasks
             SetVisable(Vector2.Distance(transform.position, TaskWorkerAI.home) > 5);
         }
 
-        void PathToPoint()
+        private void PathToPoint()
         {
             float distanceToTarget = Vector3.Distance(transform.position, moveTo.position);
 
@@ -192,7 +203,6 @@ namespace LowEngine.Tasks
                             moveTo.pathFinding.stopwatch.Stop();
                         }
                     }
-
                 }
                 else
                 {
@@ -279,6 +289,7 @@ namespace LowEngine.Tasks
                 return 2;
             }
         }
+
         public int pathingAttempts;
 
         public Vector3 position;

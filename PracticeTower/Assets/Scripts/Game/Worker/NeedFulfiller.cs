@@ -1,5 +1,6 @@
 ﻿using LowEngine.Saving;
 using UnityEngine;
+
 namespace LowEngine.Tasks.Needs
 {
     public enum NeedDefinition { Hunger, Thirst }
@@ -15,10 +16,11 @@ namespace LowEngine.Tasks.Needs
             switch (Fulfills)
             {
                 case NeedDefinition.Hunger:
-                    AudioManager.instance.PlayEat(transform.position);
+                    AudioManager.instance.PlaySound("Eating", transform.position);
                     break;
+
                 case NeedDefinition.Thirst:
-                    AudioManager.instance.PlayDrink(transform.position);
+                    AudioManager.instance.PlaySound("Drink potion", transform.position);
                     break;
             }
         }

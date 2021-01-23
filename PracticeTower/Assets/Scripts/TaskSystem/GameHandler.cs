@@ -4,6 +4,7 @@ using LowEngine.Saving;
 using System.IO;
 using LowEngine.TimeManagement;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace LowEngine
 {
@@ -26,7 +27,7 @@ namespace LowEngine
         {
             float val = 0;
 
-            foreach (var worker in FindObjectsOfType<Worker>())
+            foreach (var worker in instance.workers)
             {
                 val += worker.workerData.pay;
             }
@@ -36,12 +37,16 @@ namespace LowEngine
 
         public static int daysUntilPayDay = 6;
 
+        private List<Worker> workers = new List<Worker>();
+
         public Material gameObjectMaterial;
 
-        SaveManager.SaveData ActivePlayerData;
+        private SaveManager.SaveData ActivePlayerData;
         public SaveManager.SaveData[] savesData;
 
-        public string saveName = "Forrest";
+        private MapLayoutManager mapLayoutManager;
+
+        public string saveName = "AutoSave";
 
         public enum GameState { Default, Placing, Paused }
 
@@ -51,7 +56,22 @@ namespace LowEngine
 
         private void Start()
         {
+            mapLayoutManager = FindObjectOfType<MapLayoutManager>();
             TimeScale.DayChanged += NewDay;
+        }
+
+        public static void RegisterWorker(Worker worker)
+        {
+            if (instance.workers.Contains(worker) == false)
+                instance.workers.Add(worker);
+        }
+
+        public static void DeregisterWorker(Worker worker)
+        {
+            if (instance == null) return;
+
+            if (instance.workers.Contains(worker) == true)
+                instance.workers.Add(worker);
         }
 
         public void NewDay()
@@ -73,7 +93,7 @@ namespace LowEngine
             {
                 if (daysUntilPayDay > 1)
                 {
-                    NotificationManager.instance.ShowNotification($"{daysUntilPayDay} days left until pay day!");
+                    NotificationManager.instance.ShowNotification($"{daysUntilPayDay + 1} days left until pay day!");
                 }
                 else
                 {
@@ -84,10 +104,12 @@ namespace LowEngine
             if (Money < 0)
             {
                 NotificationManager.instance.ShowNotification("You've gone broke!");
+
+                // Trigger Game over
             }
         }
 
-        void SetupApplicationVersion()
+        private void SetupApplicationVersion()
         {
             string currentVersion = Application.version;
 
@@ -106,19 +128,16 @@ namespace LowEngine
             SaveManager.SavePlayerData(ActivePlayerData);
 
             // -----------------Save workers---------------
-            Worker[] workers = FindObjectsOfType<Worker>();
-            SaveManager.SavableObject.Worker[] savedWorkers = new SaveManager.SavableObject.Worker[workers.Length];
+            var savedWorkers = new SaveManager.SavableObject.Worker[workers.Count];
 
-            for (int i = 0; i < workers.Length; i++)
-            {
+            for (int i = 0; i < workers.Count; i++)
                 savedWorkers[i] = workers[i].workerData;
-            }
 
             SaveManager.SaveWorkers(ActivePlayerData.userName, savedWorkers);
 
             // -----------------Save Objects---------------
-            PlacedObject[] objects = FindObjectsOfType<PlacedObject>();
-            List<SaveManager.SavableObject.WorldObject> savedObjects = new List<SaveManager.SavableObject.WorldObject>() { };
+            var objects = FindObjectsOfType<PlacedObject>();
+            var savedObjects = new List<SaveManager.SavableObject.WorldObject>() { };
 
             for (int i = 0; i < objects.Length; i++)
             {
@@ -141,11 +160,9 @@ namespace LowEngine
             SaveManager.LoadPlayerData(out savesData);
         }
 
-        public void LoadGame(int index)
+        public IEnumerator LoadGame(int index)
         {
-            MapLayoutManager map = FindObjectOfType<MapLayoutManager>();
-
-            SetupSaves();
+            yield return null;
 
             ActivePlayerData = savesData[index];
 
@@ -156,23 +173,28 @@ namespace LowEngine
             TimeScale.hours = ActivePlayerData.hour;
             TimeScale.days = ActivePlayerData.day;
 
+            yield return null;
+
+            // Destroy existing workers
+            var workersObjects = instance.workers.ToArray();
+
+            for (int i = workersObjects.Length - 1; i >= 0; i--)
+                Destroy(workersObjects[i].gameObject);
+
+            yield return null;
+
             // -----------------Load workers---------------
-            foreach (var item in FindObjectsOfType<Worker>())
-            {
-                Destroy(item.gameObject);
-            }
 
-            SaveManager.SavableObject.Worker[] workers;
+            SaveManager.SavableObject.Worker[] loadedWorkers;
+            SaveManager.LoadWorkers(ActivePlayerData.userName, out loadedWorkers);
 
-            SaveManager.LoadWorkers(ActivePlayerData.userName, out workers);
-
-            if (workers == null || workers.Length == 0)
+            if (loadedWorkers == null || loadedWorkers.Length == 0)
             {
                 Debug.Log("No workers to load!");
             }
             else
             {
-                foreach (var data in workers)
+                foreach (var data in loadedWorkers)
                 {
                     if (data == null) continue;
 
@@ -180,11 +202,11 @@ namespace LowEngine
                 }
             }
 
+            yield return null;
+
             // -----------------Load objects---------------
             foreach (var item in FindObjectsOfType<PlacedObject>())
-            {
                 Destroy(item.gameObject);
-            }
 
             SaveManager.SavableObject.WorldObject[] objects;
 
@@ -203,6 +225,8 @@ namespace LowEngine
                     MapLayoutManager.ReplaceTileInDictionary(data.position, Constructor.GetObject(data));
                 }
             }
+
+            yield return null;
 
             NotificationManager.instance.ShowNotification("Game Loaded!");
         }

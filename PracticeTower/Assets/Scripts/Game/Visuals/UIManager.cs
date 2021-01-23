@@ -13,7 +13,7 @@ namespace LowEngine
             instance = this;
         }
 
-        public enum Show { none, crafting, hiring, workerInfo, options, calender, contracts }
+        public enum Show { none, crafting, hiring, workerInfo, options, contracts }
 
         public Show CurrentlyDisplaying;
 
@@ -40,9 +40,9 @@ namespace LowEngine
 
         public GameObject CalenderPanel;
 
-        public void ToggleCalenderPanel()
+        public void ToggleObject(GameObject @object)
         {
-            UpdateShowing(Show.calender);
+            @object.SetActive(!@object.activeSelf);
         }
 
         public GameObject ContractsPanel;
@@ -77,9 +77,9 @@ namespace LowEngine
                 UpdateShowing(Show.none);
             }
 
-            if (GameHandler.MoneyToPayOnPayDay() > 0) DebtText.text = $"$:{GameHandler.MoneyToPayOnPayDay()} due on payday"; else DebtText.text = "";
+            if (GameHandler.MoneyToPayOnPayDay() > 0) DebtText.text = $"{GameHandler.MoneyToPayOnPayDay()} due on payday"; else DebtText.text = "";
 
-            MoneyText.text = $"$:{GameHandler.instance.Money}";
+            MoneyText.text = $"{GameHandler.instance.Money}";
         }
 
         public void UpdateShowing(Show show)
@@ -97,7 +97,6 @@ namespace LowEngine
             HiringMenu.SetActive(CurrentlyDisplaying == Show.hiring);
             OptionsPanel.SetActive(CurrentlyDisplaying == Show.options);
             WorkerInfoPanel.SetActive(CurrentlyDisplaying == Show.workerInfo);
-            CalenderPanel.SetActive(CurrentlyDisplaying == Show.calender);
             ContractsPanel.SetActive(CurrentlyDisplaying == Show.contracts);
         }
     }

@@ -6,17 +6,44 @@ namespace LowEngine.TimeManagement
     {
         internal static float timeScale = 60;
 
+        public UnityEngine.UI.Slider timeScaleSlider;
+
+        private byte playedSound = 0;
+
+        private void TryPlaySound(string sound)
+        {
+            if (playedSound > 1) return;
+
+            if (sound == "Open")
+            {
+                AudioManager.instance.PlayOpenSound(transform.position);
+            }
+            else
+            {
+                AudioManager.instance.PlayClosingSound(transform.position);
+            }
+
+            playedSound = 255;
+        }
+
         private void Start()
         {
             SetTime();
             TimeScale.HourChanged += SetTime;
+
+            timeScaleSlider.onValueChanged.AddListener((float value) =>
+            {
+                // Evaluate time
+                daySpeed = Mathf.RoundToInt(value);
+                SetTime();
+            });
         }
 
-        float accum;
+        private float accum;
 
-        int daySpeed = 1;
+        private int daySpeed = 1;
 
-        void LateUpdate()
+        private void LateUpdate()
         {
             Tasks.TaskWorkerAI[] workers = FindObjectsOfType<Tasks.TaskWorkerAI>();
 
@@ -33,26 +60,31 @@ namespace LowEngine.TimeManagement
             if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad0))
             {
                 daySpeed = 0;
+                timeScaleSlider.value = daySpeed;
             }
             else
             if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad1))
             {
                 daySpeed = 1;
+                timeScaleSlider.value = daySpeed;
             }
             else
             if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad2))
             {
                 daySpeed = 5;
+                timeScaleSlider.value = daySpeed;
             }
-            else 
+            else
             if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad3))
             {
                 daySpeed = 7;
+                timeScaleSlider.value = daySpeed;
             }
             else
             if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Keypad4))
             {
                 daySpeed = 10;
+                timeScaleSlider.value = daySpeed;
             }
 
             timeScale = (TimeScale.isDayTime() == false && numberOfWorkersStillAtWork < 1) ? 50 : (FindObjectsOfType<Tasks.TaskWorkerAI>().Length < 1) ? 0 : daySpeed;
@@ -75,14 +107,16 @@ namespace LowEngine.TimeManagement
             if (TimeScale.hours == 8)
             {
                 //Play awake sound
-                AudioManager.instance.PlayOpenSound(transform.position);
+                TryPlaySound("Open");
             }
-
+            else
             if (TimeScale.hours == 17)
             {
                 //Play closingtime sound
-                AudioManager.instance.PlayClosingSound(transform.position);
+                TryPlaySound("Close");
             }
+
+            playedSound--;
 
             int rot = (15 * (time % 24)) % 360;
 
@@ -93,6 +127,8 @@ namespace LowEngine.TimeManagement
     public class TimeScale
     {
         public static int minutes = 0, hours = 6, days = 1;
+        private static int lastDay = 0;
+        private static int lastHour = 0;
 
         public static TimeChangedEvent DayChanged;
         public static TimeChangedEvent HourChanged;
@@ -104,9 +140,10 @@ namespace LowEngine.TimeManagement
                 hours += 1;
                 minutes = 0;
 
-                if (HourChanged != null)
+                if (lastHour != hours)
                 {
-                    HourChanged.Invoke();
+                    HourChanged?.Invoke();
+                    lastHour = hours;
                 }
             }
             if (hours > 24)
@@ -119,9 +156,10 @@ namespace LowEngine.TimeManagement
                     days = 1;
                 }
 
-                if (DayChanged != null)
+                if (lastDay != days)
                 {
-                    DayChanged.Invoke();
+                    DayChanged?.Invoke();
+                    lastDay = days;
                 }
             }
         }

@@ -18,6 +18,8 @@ namespace LowEngine
         public Sprite[] Mouths;
         public Sprite[] Hairs;
 
+        public Sprite[] Bodies;
+
         public GameObject GetWorker(string name, out SaveManager.SavableObject.Worker worker)
         {
             GameObject toReturn = new GameObject($"{name}.Base");
@@ -37,6 +39,10 @@ namespace LowEngine
             int mouthIndex;
             GameObject mouth = CreateNewPart($"{name}.mouth", Mouths, 2, out mouthIndex);
             mouth.transform.SetParent(toReturn.transform);
+
+            int bodyIndex;
+            GameObject body = CreateNewPart($"{name}.body", Bodies, 0, out bodyIndex);
+            body.transform.SetParent(toReturn.transform);
 
             float hasHairLoss = Random.Range(0, 1f);
 
@@ -125,7 +131,7 @@ namespace LowEngine
 
             int hairIndex = -1;
             Color hairColor = Color.black;
-            if (hasHairLoss) 
+            if (hasHairLoss)
             {
                 GameObject hair = CreateNewPart($"{name}.hair", Hairs, 3, out hairIndex);
                 toReturn[4] = hair.GetComponent<SpriteRenderer>().sprite;
@@ -179,7 +185,7 @@ namespace LowEngine
             return toReturn;
         }
 
-        GameObject CreateNewPart(string name, Sprite[] sprites, int order, out int val)
+        private GameObject CreateNewPart(string name, Sprite[] sprites, int order, out int val)
         {
             GameObject head = new GameObject($"{name}.head");
 
@@ -195,7 +201,7 @@ namespace LowEngine
             return head;
         }
 
-        GameObject CreateNewPart(string name, Sprite[] sprites, int index, int order)
+        private GameObject CreateNewPart(string name, Sprite[] sprites, int index, int order)
         {
             GameObject part = new GameObject($"{name}.head");
 
@@ -211,7 +217,7 @@ namespace LowEngine
             return part;
         }
 
-        Sprite GetSpriteFromArray(Sprite[] sprites, out int val)
+        private Sprite GetSpriteFromArray(Sprite[] sprites, out int val)
         {
             val = Random.Range(0, sprites.Length);
 

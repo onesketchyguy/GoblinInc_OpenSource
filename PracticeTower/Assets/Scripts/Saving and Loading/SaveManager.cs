@@ -8,14 +8,15 @@ namespace LowEngine.Saving
 {
     public static class SaveManager
     {
-        const char DATA_SEPERATOR = '~';
+        private const char DATA_SEPERATOR = '~';
+        private const char NAME_DATA_SEPERATOR = ',';
 
-        static readonly string PLAYER_DATA_FOLDER = $"{Application.dataPath}/LocalData/Saves/PlayerData/";
-        static readonly string OBJECT_FOLDER = $"{Application.dataPath}/LocalData/Saves/BuildingData/";
-        static readonly string WORKER_FOLDER = $"{Application.dataPath}/LocalData/Saves/Workers/";
-        static readonly string NAMES_DIRECTORY = $"{Application.dataPath}/LocalData/Names/";
+        private static readonly string PLAYER_DATA_FOLDER = $"{Application.dataPath}/LocalData/Saves/PlayerData/";
+        private static readonly string OBJECT_FOLDER = $"{Application.dataPath}/LocalData/Saves/BuildingData/";
+        private static readonly string WORKER_FOLDER = $"{Application.dataPath}/LocalData/Saves/Workers/";
+        private static readonly string NAMES_DIRECTORY = $"{Application.dataPath}/LocalData/Names/";
 
-        private static void initialize()
+        private static void VerifyDirectories()
         {
             if (!Directory.Exists(PLAYER_DATA_FOLDER))
             {
@@ -40,28 +41,23 @@ namespace LowEngine.Saving
 
         public static void SaveNames(string[] FirstNames, string[] LastNames)
         {
-            initialize();
+            VerifyDirectories();
 
-            string seperator = ":";
+            string seperator = $"{NAME_DATA_SEPERATOR}";
 
             string firstNames = string.Join(seperator, FirstNames);
-
             File.WriteAllText($"{NAMES_DIRECTORY}/FirstNames.txt", firstNames);
 
             string lastNames = string.Join(seperator, LastNames);
-
             File.WriteAllText($"{NAMES_DIRECTORY}/LastNames.txt", lastNames);
         }
 
         public static void LoadNames(out string[] FirstNames, out string[] LastNames)
         {
-            initialize();
+            VerifyDirectories();
 
             FirstNames = null;
             LastNames = null;
-
-            List<string> fnames = new List<string>() { };
-            List<string> lnames = new List<string>() { };
 
             foreach (string filePath in Directory.EnumerateFiles(NAMES_DIRECTORY, "*.txt"))
             {
@@ -69,29 +65,16 @@ namespace LowEngine.Saving
                 {
                     string contents = File.ReadAllText(filePath);
 
-                    string[] names = contents.Split(':');
-
-                    foreach (var name in names)
-                    {
-                        fnames.Add(name);
-                    }
+                    FirstNames = contents.Split(NAME_DATA_SEPERATOR);
                 }
 
                 if (filePath.Contains("LastNames"))
                 {
                     string contents = File.ReadAllText(filePath);
 
-                    string[] names = contents.Split(':');
-
-                    foreach (var name in names)
-                    {
-                        lnames.Add(name);
-                    }
+                    LastNames = contents.Split(NAME_DATA_SEPERATOR);
                 }
             }
-
-            if (fnames.Count > 0) FirstNames = fnames.ToArray();
-            if (lnames.Count > 0) LastNames = lnames.ToArray();
         }
 
         public static void DeleteSavedGame(SaveData playerData)
@@ -134,7 +117,7 @@ namespace LowEngine.Saving
 
         public static void SavePlayerData(SaveData playerData)
         {
-            initialize();
+            VerifyDirectories();
 
             string saveData = JsonUtility.ToJson(playerData);
 
@@ -143,17 +126,13 @@ namespace LowEngine.Saving
 
         public static void LoadPlayerData(out SaveData[] playerData)
         {
-            initialize();
-
-            string saveData = string.Empty;
+            VerifyDirectories();
 
             List<SaveData> saves = new List<SaveData>() { };
 
             foreach (string file in Directory.EnumerateFiles(PLAYER_DATA_FOLDER, "*.txt"))
             {
-                string save_data_string = File.ReadAllText(file);
-
-                SaveData save_data = JsonUtility.FromJson<SaveData>(save_data_string);
+                var save_data = FileManager.Load<SaveData>(file);
 
                 saves.Add(save_data);
             }
@@ -163,25 +142,19 @@ namespace LowEngine.Saving
 
         public static void SaveObjects(string playerData, SavableObject.WorldObject[] Objects)
         {
-            initialize();
+            VerifyDirectories();
 
             string objectsData = "";
 
             foreach (var obj in Objects)
-            {
-                string newData;
-
-                SaveGameObject(obj, out newData);
-
-                objectsData += newData;
-            }
+                objectsData += $"{DATA_SEPERATOR}{FileManager.GetData(obj)}\n";
 
             File.WriteAllText($"{OBJECT_FOLDER}/{playerData}_objects.txt", objectsData);
         }
 
         public static void LoadAllObjects(string playerData, out SavableObject.WorldObject[] Objects)
         {
-            initialize();
+            VerifyDirectories();
 
             Objects = null;
 
@@ -203,7 +176,6 @@ namespace LowEngine.Saving
                             ObjectList.Add(LoadedObject);
                     }
                 }
-
             }
 
             if (ObjectList.Count > 0)
@@ -214,7 +186,7 @@ namespace LowEngine.Saving
 
         public static void SaveWorkers(string playerData, SavableObject.Worker[] workers)
         {
-            initialize();
+            VerifyDirectories();
 
             string workerData = "";
 
@@ -232,7 +204,7 @@ namespace LowEngine.Saving
 
         public static void LoadWorkers(string playerData, out SavableObject.Worker[] workers)
         {
-            initialize();
+            VerifyDirectories();
 
             workers = null;
 
@@ -272,18 +244,12 @@ namespace LowEngine.Saving
             return worker;
         }
 
-        private static void SaveGameObject(SavableObject.WorldObject obj, out string data)
-        {
-            data = $"{DATA_SEPERATOR}{JsonUtility.ToJson(obj)}\n";
-        }
-
         private static SavableObject.WorldObject LoadObject(string saveString)
         {
             SavableObject.WorldObject worldObject = JsonUtility.FromJson<SavableObject.WorldObject>(saveString);
 
             return worldObject;
         }
-
 
         [System.Serializable]
         public class SavableObject
@@ -319,6 +285,7 @@ namespace LowEngine.Saving
             {
                 // --------Visuals----------
                 public int headIndex;
+
                 public int eyeIndex;
                 public int noseIndex;
                 public int mouthIndex;
@@ -326,6 +293,7 @@ namespace LowEngine.Saving
 
                 //-----------Stats------------
                 public float hunger;
+
                 public float thirst;
                 public float skill;
                 public float experience;
@@ -350,7 +318,6 @@ namespace LowEngine.Saving
                     this.pay = pay;
                     this.experience = experience;
                 }
-
             }
         }
 

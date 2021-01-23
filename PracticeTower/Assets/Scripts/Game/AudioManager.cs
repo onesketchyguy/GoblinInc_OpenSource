@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace LowEngine
 {
@@ -6,9 +7,41 @@ namespace LowEngine
     {
         public static AudioManager instance;
 
+        private Transform mainCamera;
+
         private void Awake()
         {
             instance = this;
+            mainCamera = Camera.main.transform;
+        }
+
+        private void Start()
+        {
+            foreach (var item in SFX)
+            {
+                int index = 0;
+
+                for (int i = item.name.Length - 1; i >= 0; i--)
+                {
+                    if (item.name[i] == ' ')
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                var key = item.name.Substring(0, index);
+
+                if (sfxDictionary.ContainsKey(key))
+                {
+                    sfxDictionary[key] = Utilities.Add(item, sfxDictionary[key]);
+                }
+                else
+                {
+                    sfxDictionary.Add(key, new AudioClip[] { item });
+                    Debug.Log($"Created sound effect key: \"{key}\"");
+                }
+            }
         }
 
         private static float lastSoundPlayed;
@@ -34,6 +67,39 @@ namespace LowEngine
             AudioSource.PlayClipAtPoint(clip, position, volume * PlayerPrefsManager.SFXVolume);
         }
 
+        [SerializeField]
+        private AudioClip[] SFX;
+
+        private Dictionary<string, AudioClip[]> sfxDictionary = new Dictionary<string, AudioClip[]>();
+
+        public void PlaySound(string name)
+        {
+            AudioClip[] clips;
+            sfxDictionary.TryGetValue(name, out clips);
+
+            if (clips != null)
+            {
+                int ran = Random.Range(0, clips.Length);
+                PlayClip(clips[ran], mainCamera.position);
+            }
+        }
+
+        public void PlaySound(string name, Vector3 position)
+        {
+            AudioClip[] clips;
+            sfxDictionary.TryGetValue(name, out clips);
+
+            if (clips != null)
+            {
+                int ran = Random.Range(0, clips.Length);
+                PlayClip(clips[ran], position);
+            }
+            else
+            {
+                Debug.LogError($"No sound exists with a name of: {name}");
+            }
+        }
+
         public AudioClip[] onPressedSounds;
 
         public void PlayKeyClick(Vector3 fromPoint)
@@ -41,28 +107,6 @@ namespace LowEngine
             float distToCam = Mathf.Clamp(Vector3.Distance(Camera.main.transform.position, fromPoint) - Camera.main.orthographicSize, 0, 1f);
 
             AudioClip clip = onPressedSounds[Random.Range(0, onPressedSounds.Length)];
-
-            PlayClip(clip, fromPoint, distToCam);
-        }
-
-        public AudioClip[] EatSounds;
-
-        public void PlayEat(Vector3 fromPoint)
-        {
-            float distToCam = Mathf.Clamp(Vector3.Distance(Camera.main.transform.position, fromPoint) - Camera.main.orthographicSize, 0, 1f);
-
-            AudioClip clip = EatSounds[Random.Range(0, EatSounds.Length)];
-
-            PlayClip(clip, fromPoint, distToCam);
-        }
-
-        public AudioClip[] DrinkSounds;
-
-        public void PlayDrink(Vector3 fromPoint)
-        {
-            float distToCam = Mathf.Clamp(Vector3.Distance(Camera.main.transform.position, fromPoint) - Camera.main.orthographicSize, 0, 1f);
-
-            AudioClip clip = DrinkSounds[Random.Range(0, DrinkSounds.Length)];
 
             PlayClip(clip, fromPoint, distToCam);
         }

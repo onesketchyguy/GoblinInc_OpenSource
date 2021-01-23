@@ -24,14 +24,15 @@ namespace LowEngine
 
         [Header("Hiring")]
         public GameObject hiringRegion;
-        int Hirable = 3;
+
+        private int Hirable = 3;
         public Transform HiringSpawningParent;
 
         public Sprite HireIcon;
 
-        List<SaveManager.SavableObject.Worker> todaysEmployees = new List<SaveManager.SavableObject.Worker>() { };
+        private List<SaveManager.SavableObject.Worker> todaysEmployees = new List<SaveManager.SavableObject.Worker>() { };
 
-        SaveManager.SavableObject.Worker selectedEmployee;
+        private SaveManager.SavableObject.Worker selectedEmployee;
 
         public Text selectedEmployeeBio;
 
@@ -133,7 +134,6 @@ namespace LowEngine
             }
         }
 
-
         private void UpdateHiredButtons()
         {
             Display("Select an employee...");
@@ -174,7 +174,7 @@ namespace LowEngine
             }
         }
 
-        void SpawnHireButton(SaveManager.SavableObject.Worker worker)
+        private void SpawnHireButton(SaveManager.SavableObject.Worker worker)
         {
             Sprite[] images;
 
@@ -216,13 +216,12 @@ namespace LowEngine
                 else
                 {
                     child = Instantiate(spawnable, go.transform);
-                    child.GetComponent<RectTransform>().localScale = go.GetComponent<RectTransform>().localScale/2;
+                    child.GetComponent<RectTransform>().localScale = go.GetComponent<RectTransform>().localScale / 2;
 
                     child.GetComponent<Image>().raycastTarget = false;
                 }
 
                 child.name = $"{worker.name}.Layer{i}";
-
 
                 child.GetComponent<Image>().sprite = images[i];
 
@@ -252,7 +251,7 @@ namespace LowEngine
             Destroy(spawnable); //Clean up temp object
         }
 
-        void SpawnHiredButton(SaveManager.SavableObject.Worker worker)
+        private void SpawnHiredButton(SaveManager.SavableObject.Worker worker)
         {
             Sprite[] images = WorkerSpriteGenerator.instance.GetWorkerSprites(worker);
 
@@ -285,7 +284,6 @@ namespace LowEngine
 
                 child.name = $"{worker.name}.Layer{i}";
 
-
                 child.GetComponent<Image>().sprite = images[i];
 
                 if (images[i] == null)
@@ -314,7 +312,7 @@ namespace LowEngine
             Destroy(spawnable); //Clean up temp object
         }
 
-        void Display(string showText)
+        private void Display(string showText)
         {
             selectedEmployeeBio.text = showText;
         }
@@ -326,6 +324,7 @@ namespace LowEngine
             Constructor.GetWorker(selectedEmployee);
 
             todaysEmployees.Remove(selectedEmployee);
+            selectedEmployee = null;
 
             UpdateHireButtons();
         }
@@ -354,6 +353,7 @@ namespace LowEngine
                 }
             }
 
+            selectedEmployee = null;
             UpdateHireButtons();
         }
     }

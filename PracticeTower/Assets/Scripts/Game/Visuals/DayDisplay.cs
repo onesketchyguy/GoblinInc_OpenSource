@@ -12,10 +12,12 @@ namespace LowEngine.TimeManagement
         public Text Title;
         public Text Day;
 
+        public Image circle;
         public Image checkBox;
     }
 
 #if UNITY_EDITOR
+
     [CustomEditor(typeof(DayDisplay))]
     public class DayDisplayCustomtEditor : Editor
     {
@@ -38,5 +40,6 @@ namespace LowEngine.TimeManagement
             DrawDefaultInspector();
         }
     }
+
 #endif
 }

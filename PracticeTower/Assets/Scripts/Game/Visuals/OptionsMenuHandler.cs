@@ -28,13 +28,13 @@ namespace LowEngine
 
         public Transform savesViewContentHold;
 
-        List<GameObject> GameObjects = new List<GameObject>() { };
+        private List<GameObject> GameObjects = new List<GameObject>() { };
 
         public GameObject inputRegion;
 
         public InputField InputField;
 
-        string input = "";
+        private string input = "";
 
         private void TextChanged(string input)
         {
@@ -57,7 +57,6 @@ namespace LowEngine
                 InputField.onValueChanged.RemoveListener(TextChanged);
             }
         }
-        
 
         private void SpawnLoadButton(SaveManager.SaveData data, int index)
         {
@@ -65,7 +64,11 @@ namespace LowEngine
 
             GameObjects.Add(button.gameObject);
 
-            button.onClick.AddListener( () => { GameHandler.instance.LoadGame(index); viewing = Viewing.Main; });
+            button.onClick.AddListener(() =>
+            {
+                GameHandler.instance.StartCoroutine(GameHandler.instance.LoadGame(index));
+                viewing = Viewing.Main;
+            });
         }
 
         private void SpawnDeleteSaveButton(SaveManager.SaveData data, int index)
@@ -83,7 +86,7 @@ namespace LowEngine
 
             GameObjects.Add(button.gameObject);
 
-            button.onClick.AddListener(() => 
+            button.onClick.AddListener(() =>
             {
                 SaveManager.SaveData OldData = GameHandler.instance.GetGameData(index);
 
@@ -122,6 +125,7 @@ namespace LowEngine
 
             viewing = Viewing.LoadView;
         }
+
         public void SaveGame()
         {
             GameHandler.instance.SetupSaves();
@@ -136,6 +140,7 @@ namespace LowEngine
 
             InputField.onValueChanged.AddListener(TextChanged);
         }
+
         public void ClearSaves()
         {
             GameHandler.instance.SetupSaves();
@@ -154,12 +159,13 @@ namespace LowEngine
 
             viewing = Viewing.LoadView;
         }
+
         public void LeaveGame()
         {
             viewing = Viewing.Quit;
         }
 
-        void UpdateView()
+        private void UpdateView()
         {
             MainView.SetActive(currentView == Viewing.Main);
             SavesView.SetActive(currentView == Viewing.SaveView || currentView == Viewing.LoadView);
@@ -181,7 +187,7 @@ namespace LowEngine
             }
         }
 
-        Button CreateButton(SaveManager.SaveData save)
+        private Button CreateButton(SaveManager.SaveData save)
         {
             string name = save != null ? save.userName : "new save file";
 

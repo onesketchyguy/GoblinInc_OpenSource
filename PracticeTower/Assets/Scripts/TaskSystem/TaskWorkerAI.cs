@@ -16,7 +16,7 @@ namespace LowEngine.Tasks
 
         public State state;
 
-        float WaitingTimer;
+        private float WaitingTimer;
 
         public TaskSystem taskManager;
 
@@ -75,12 +75,13 @@ namespace LowEngine.Tasks
 
         public TaskSystem.Task GoHome => new TaskSystem.Task
         {
-            moveToPosition = new TaskSystem.Task.MoveTo(home, 0, () => 
+            moveToPosition = new TaskSystem.Task.MoveTo(home, 0, () =>
             {
                 worker.GetNeed(NeedDefinition.Hunger).Set(100);
                 worker.GetNeed(NeedDefinition.Thirst).Set(100);
 
                 currentTask = "Going home.";
+                currentThought = DialogueSys.GetPitty();
 
                 state = State.WaitingForNewTask;
             }),
@@ -88,7 +89,7 @@ namespace LowEngine.Tasks
 
         public TaskSystem.Task ComeBack => new TaskSystem.Task
         {
-            moveToPosition = new TaskSystem.Task.MoveTo(transform.position, 0, () => 
+            moveToPosition = new TaskSystem.Task.MoveTo(transform.position, 0, () =>
             {
                 state = State.WaitingForNewTask;
             })
@@ -132,6 +133,7 @@ namespace LowEngine.Tasks
                         RequestNextTask();
                     }
                     break;
+
                 case State.ExecutingTask:
                     break;
             }
@@ -147,13 +149,13 @@ namespace LowEngine.Tasks
 
                 taskManager.tasks.Clear();
 
-                currentThought = "Need a break.";
+                currentThought = "Need a break. ";
 
                 float skill = 200 - worker.workerData.skill;
 
                 if (worker.GetNeed(NeedDefinition.Thirst).value <= skill)
                 {
-                    currentThought = "Thirsty";
+                    currentThought += "Thirsty. ";
 
                     TaskSystem.Task thirst = FulfilNeed(NeedDefinition.Thirst);
 
@@ -175,7 +177,7 @@ namespace LowEngine.Tasks
 
                 if (worker.GetNeed(NeedDefinition.Hunger).value <= skill)
                 {
-                    currentThought = "Hungry";
+                    currentThought += "Hungry. ";
 
                     TaskSystem.Task hunger = FulfilNeed(NeedDefinition.Hunger);
 
@@ -209,7 +211,7 @@ namespace LowEngine.Tasks
 
             if (task == null)
             {
-                if (TimeManagement.TimeScale.isDayTime())
+                if (TimeScale.isDayTime())
                 {
                     if (worker.Desk != null)
                     {
@@ -234,7 +236,7 @@ namespace LowEngine.Tasks
             }
             else
             {
-                if (task == ComeBack && TimeManagement.TimeScale.isDayTime() == false && AtHome)
+                if (task == ComeBack && TimeScale.isDayTime() == false && AtHome)
                 {
                     taskManager.tasks.Clear();
 
@@ -280,7 +282,6 @@ namespace LowEngine.Tasks
                         executeActionRecurring = task.executeActionRecurring
                     };
 
-
                     state = State.WaitingForNewTask;
                 }
             }
@@ -312,9 +313,9 @@ namespace LowEngine.Tasks
             WorkerButton button = null;
             WorkerButton[] workerButtons = FindObjectsOfType<WorkerButton>();
 
-            Vector2 vector2 = FindObjectOfType<MapLayoutManager>().PlayAreaSize*2;
+            Vector2 vector2 = FindObjectOfType<MapLayoutManager>().PlayAreaSize * 2;
 
-            float nearest = (vector2.x > vector2.y) ? vector2.x: vector2.y;
+            float nearest = (vector2.x > vector2.y) ? vector2.x : vector2.y;
 
             foreach (var desk in workerButtons)
             {

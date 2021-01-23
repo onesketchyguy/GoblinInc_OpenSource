@@ -34,7 +34,6 @@ namespace LowEngine
         {
             if (ObjectPlacingManager.bullDozing || ObjectPlacingManager.Spawning != null) return;
 
-
             if (currentWorker != null)
             {
                 SelectionUIHandler.SelectWorker(currentWorker);
@@ -80,10 +79,16 @@ namespace LowEngine
 
             TaskSystem.Task StartWorking = new TaskSystem.Task
             {
-                moveToPosition = new TaskSystem.Task.MoveTo(chair.position, 0, () => currentWorker = worker),
+                moveToPosition = new TaskSystem.Task.MoveTo(chair.position, 0, () =>
+                {
+                    currentWorker = worker;
+                    worker.currentThought = DialogueSys.GetWorkPhrase();
+                }),
                 executeActionRecurring = () =>
                 {
                     Clicked();
+                    if (Time.frameCount % 300 == 1)
+                        worker.currentThought = DialogueSys.GetRandomPhrase();
                 }
             };
 

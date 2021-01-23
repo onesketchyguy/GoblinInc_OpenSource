@@ -8,8 +8,9 @@ namespace LowEngine.Tasks
     {
         private static List<GhostObject> Ghosts;
 
-        static int currentIndex;
-        static int firstGhost
+        private static int currentIndex;
+
+        private static int firstGhost
         {
             get
             {
@@ -26,9 +27,10 @@ namespace LowEngine.Tasks
             }
             set
             {
-                firstGhost = value;
+                currentIndex = value;
             }
         }
+
         public static GhostObject GetGhost(Saving.SaveManager.SavableObject.WorldObject placing)
         {
             foreach (var item in Ghosts)
