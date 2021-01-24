@@ -11,7 +11,22 @@ public class OptionsManager : MonoBehaviour
 
     public Slider MusicVolumeSlider;
 
+    [HideInInspector]
     public bool saveChanges = false;
+
+    public UnityEngine.Events.UnityEvent OnSaveAndQuit;
+
+    private bool ChangesExists()
+    {
+        if (MasterVolumeSlider.value != PlayerPrefsManager.MasterVolume)
+            return true;
+        if (MusicVolumeSlider.value != PlayerPrefsManager.MusicVolume)
+            return true;
+        if (SFXVolumeSlider.value != PlayerPrefsManager.SFXVolume)
+            return true;
+
+        return false;
+    }
 
     private void OnEnable()
     {
@@ -53,7 +68,14 @@ public class OptionsManager : MonoBehaviour
 
     public void OpenDiscardMenu()
     {
-        saveOrDiscardMenu.SetActive(true);
+        if (ChangesExists())
+        {
+            saveOrDiscardMenu.SetActive(true);
+        }
+        else
+        {
+            SaveAndQuit(false);
+        }
     }
 
     public void SaveAndQuit(bool save)
@@ -61,5 +83,7 @@ public class OptionsManager : MonoBehaviour
         saveChanges = save;
 
         saveOrDiscardMenu.SetActive(false);
+
+        OnSaveAndQuit?.Invoke();
     }
 }

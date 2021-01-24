@@ -12,7 +12,7 @@ namespace LowEngine.TimeManagement
             TimeScale.DayChanged += UpdateDay;
         }
 
-        void UpdateDay()
+        private void UpdateDay()
         {
             float currentDay = TimeScale.days;
 
@@ -21,25 +21,31 @@ namespace LowEngine.TimeManagement
             switch (currentDay)
             {
                 case 1:
-                    DayName = "Monday";
+                    DayName = "Mondarit";
                     break;
+
                 case 2:
-                    DayName = "Tuesday";
+                    DayName = "Tuesdarit";
                     break;
+
                 case 3:
-                    DayName = "Wednesday";
+                    DayName = "Wednesdarit";
                     break;
+
                 case 4:
-                    DayName = "Thursday";
+                    DayName = "Thursdarit";
                     break;
+
                 case 5:
-                    DayName = "Friday";
+                    DayName = "Fridarit";
                     break;
+
                 case 6:
-                    DayName = "Saturday";
+                    DayName = "Saturdarit";
                     break;
+
                 case 7:
-                    DayName = "Sunday";
+                    DayName = "Sundarit";
                     break;
             }
 

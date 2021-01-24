@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace LowEngine
 {
@@ -12,7 +13,7 @@ namespace LowEngine
 
         public void QuitWithOutSaving()
         {
-            Application.Quit();
+            SceneManager.LoadSceneAsync(0);
         }
 
         public void SaveAndQuit()
@@ -26,7 +27,7 @@ namespace LowEngine
 
             yield return new WaitForSeconds(1);
 
-            Application.Quit();
+            SceneManager.LoadSceneAsync(0);
         }
     }
 }

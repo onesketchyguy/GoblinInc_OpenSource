@@ -7,34 +7,71 @@ namespace LowEngine
 {
     public class OptionsMenuHandler : MonoBehaviour
     {
+        [Header("Sliders")]
+        public Slider MasterVolumeSlider;
+
+        public Slider SFXVolumeSlider;
+
+        public Slider MusicVolumeSlider;
+
         public enum Viewing { Main, LoadView, SaveView, Quit }
 
         private Viewing currentView;
 
         public Viewing viewing { get { return currentView; } set { currentView = value; UpdateView(); } }
 
-        private void OnEnable()
-        {
-            viewing = Viewing.Main;
-        }
-
-        public Font font;
-
+        [Header("Panels")]
         public GameObject MainView;
 
         public GameObject SavesView;
 
         public GameObject QuitView;
 
-        public Transform savesViewContentHold;
-
-        private List<GameObject> GameObjects = new List<GameObject>() { };
-
         public GameObject inputRegion;
+
+        [Header("Saving")]
+        public Font savesFont;
 
         public InputField InputField;
 
+        public Transform savesViewContentHold;
+
+        private List<GameObject> savedGameObjects = new List<GameObject>() { };
+
         private string input = "";
+        private AudioLoader audioLoader;
+
+        private void OnEnable()
+        {
+            //Load the players options onto the items
+            MasterVolumeSlider.value = PlayerPrefsManager.MasterVolume;
+            SFXVolumeSlider.value = PlayerPrefsManager.SFXVolume;
+            MusicVolumeSlider.value = PlayerPrefsManager.MusicVolume;
+
+            audioLoader = FindObjectOfType<AudioLoader>();
+
+            MasterVolumeSlider.onValueChanged.AddListener(audioLoader.UpdateMaster);
+            SFXVolumeSlider.onValueChanged.AddListener(audioLoader.UpdateSFX);
+            MusicVolumeSlider.onValueChanged.AddListener(audioLoader.UpdateMusic);
+
+            // Set the menu we are viewing
+            viewing = Viewing.Main;
+        }
+
+        private void OnDisable()
+        {
+            //Save the players options from the items
+
+            PlayerPrefsManager.MasterVolume = MasterVolumeSlider.value;
+            PlayerPrefsManager.SFXVolume = SFXVolumeSlider.value;
+            PlayerPrefsManager.MusicVolume = MusicVolumeSlider.value;
+
+            MasterVolumeSlider.onValueChanged.RemoveListener(audioLoader.UpdateMaster);
+            SFXVolumeSlider.onValueChanged.RemoveListener(audioLoader.UpdateSFX);
+            MusicVolumeSlider.onValueChanged.RemoveListener(audioLoader.UpdateMusic);
+
+            audioLoader.UpdateValues();
+        }
 
         private void TextChanged(string input)
         {
@@ -62,7 +99,7 @@ namespace LowEngine
         {
             Button button = Instantiate(CreateButton(data), savesViewContentHold);
 
-            GameObjects.Add(button.gameObject);
+            savedGameObjects.Add(button.gameObject);
 
             button.onClick.AddListener(() =>
             {
@@ -75,7 +112,7 @@ namespace LowEngine
         {
             Button button = Instantiate(CreateButton(data), savesViewContentHold);
 
-            GameObjects.Add(button.gameObject);
+            savedGameObjects.Add(button.gameObject);
 
             button.onClick.AddListener(() => { GameHandler.instance.ClearSavedData(index); viewing = Viewing.Main; });
         }
@@ -84,7 +121,7 @@ namespace LowEngine
         {
             Button button = Instantiate(CreateButton(data), savesViewContentHold);
 
-            GameObjects.Add(button.gameObject);
+            savedGameObjects.Add(button.gameObject);
 
             button.onClick.AddListener(() =>
             {
@@ -117,7 +154,7 @@ namespace LowEngine
                 SpawnLoadButton(save, i);
             }
 
-            if (GameObjects.Count == 0)
+            if (savedGameObjects.Count == 0)
             {
                 NotificationManager.instance.ShowNotification("No saves available to load!");
                 return;
@@ -151,7 +188,7 @@ namespace LowEngine
                 SpawnDeleteSaveButton(save, i);
             }
 
-            if (GameObjects.Count == 0)
+            if (savedGameObjects.Count == 0)
             {
                 NotificationManager.instance.ShowNotification("No saves available to delete!");
                 return;
@@ -176,13 +213,13 @@ namespace LowEngine
 
             if (currentView == Viewing.Main)
             {
-                while (GameObjects.Count > 0)
+                while (savedGameObjects.Count > 0)
                 {
-                    GameObject go = GameObjects[0];
+                    GameObject go = savedGameObjects[0];
 
                     Destroy(go);
 
-                    GameObjects.Remove(go);
+                    savedGameObjects.Remove(go);
                 }
             }
         }
@@ -197,7 +234,7 @@ namespace LowEngine
 
             Text t = b.gameObject.AddComponent<Text>();
 
-            t.font = font;
+            t.font = savesFont;
 
             t.supportRichText = true;
 

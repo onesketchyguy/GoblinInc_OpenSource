@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Unity.Entities;
 using LowEngine.Saving;
 
 namespace LowEngine
@@ -8,7 +7,7 @@ namespace LowEngine
     {
         public GhostData ghostData;
 
-        SpriteRenderer spr;
+        private SpriteRenderer spriteRenderer;
 
         private void OnEnable()
         {
@@ -21,22 +20,26 @@ namespace LowEngine
 
             ghostData.okayToPlace = (ghostData.placing.type == ObjectType.Ground || ghostData.placing.type == ObjectType.Wall);
 
-            spr = GetComponent<SpriteRenderer>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
 
             CheckForCollisions();
         }
 
         public void CheckForCollisions()
         {
+            //------------------------THIS WHOLE SYSTEM SHOULD BE SWAPPED OUT
+            //------------------------WE HAVE LITERALLY NO REASON NOT TO JUST
+            //------------------------CREATE OUR OWN COLLISION SYSTEM, INSTEAD OF
+            //------------------------USING ACTUAL PHYSICS. THIS IS SLOW AND
+            //------------------------UNDER-PERFORMANT AND SHOULD BE SHUNNED
             if (ghostData.placing != null)
             {
                 ghostData.okayToPlace = (ghostData.placing.type == ObjectType.Ground || ghostData.placing.type == ObjectType.Wall);
             }
 
-            Collider2D[] collisions = null;
+            Collider2D[] collisions = Physics2D.OverlapCircleAll(transform.position, 0.25f);
 
-            collisions = Physics2D.OverlapCircleAll(transform.position, 0.25f);
-
+            // If no collisions occure then something is terrible and we need to rectify it
             if (collisions == null || collisions.Length == 0)
             {
                 ghostData.okayToPlace = false;
@@ -87,10 +90,10 @@ namespace LowEngine
 
             Color c = (ghostData.placing.ChangableColor) ? ObjectPlacingManager.PlacingColor : ghostData.placing.color;
 
-            if (spr == null) spr = GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
 
-            spr.sprite = ObjectPlacingManager.ghostSprite;
-            spr.color = ghostData.okayToPlace ? new Color(c.r, c.g, c.b, ghostAlpha) : new Color(1, 0, 0, ghostAlpha);
+            spriteRenderer.sprite = ObjectPlacingManager.ghostSprite;
+            spriteRenderer.color = ghostData.okayToPlace ? new Color(c.r, c.g, c.b, ghostAlpha) : new Color(1, 0, 0, ghostAlpha);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FirstLaunchManager : MonoBehaviour
 {
@@ -9,7 +7,7 @@ public class FirstLaunchManager : MonoBehaviour
         if (PlayerPrefs.GetInt("FirstLaunch") != 1)
         {
             PlayerPrefsManager.MasterVolume = 1;
-            PlayerPrefsManager.MusicVolume = 1;
+            PlayerPrefsManager.MusicVolume = 0.9f;
             PlayerPrefsManager.SFXVolume = 1;
 
             PlayerPrefs.SetInt("FirstLaunch", 1);

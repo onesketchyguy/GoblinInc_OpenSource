@@ -1,0 +1,1 @@
+{"userName":"AutoSave","money":127.0,"minute":52,"hour":8,"day":1}

@@ -8,6 +8,8 @@ namespace LowEngine
     {
         public Transform spawningParent;
 
+        public GameObject itemPrefab;
+
         public Text Descriptiontext;
 
         private void Start()
@@ -25,25 +27,20 @@ namespace LowEngine
             ClearObject();
         }
 
-        void SpawnButton(SaveManager.SavableObject.WorldObject obj)
+        private void SpawnButton(SaveManager.SavableObject.WorldObject obj)
         {
-            GameObject newObj = new GameObject($"{obj.name}");
-            GameObject go = Instantiate(newObj, spawningParent);
-            Destroy(newObj);
-
+            GameObject go = Instantiate(itemPrefab, spawningParent);
             go.name = $"{obj.name}.Button";
-            Image img = go.AddComponent<Image>();
 
+            var img = go.GetComponent<Image>();
             img.sprite = Modding.ModLoader.GetSprite(obj.spriteName);
 
-            Button button = go.AddComponent<Button>();
-
+            var button = go.GetComponent<Button>();
             button.targetGraphic = img;
-
             button.onClick.AddListener(() => SetSpawningObject(obj));
         }
 
-        void SetSpawningObject(SaveManager.SavableObject.WorldObject obj)
+        private void SetSpawningObject(SaveManager.SavableObject.WorldObject obj)
         {
             ClearObject();
 

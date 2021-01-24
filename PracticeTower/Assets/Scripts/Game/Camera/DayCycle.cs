@@ -10,22 +10,6 @@ namespace LowEngine.TimeManagement
 
         private byte playedSound = 0;
 
-        private void TryPlaySound(string sound)
-        {
-            if (playedSound > 1) return;
-
-            if (sound == "Open")
-            {
-                AudioManager.instance.PlayOpenSound(transform.position);
-            }
-            else
-            {
-                AudioManager.instance.PlayClosingSound(transform.position);
-            }
-
-            playedSound = 255;
-        }
-
         private void Start()
         {
             SetTime();
@@ -45,6 +29,8 @@ namespace LowEngine.TimeManagement
 
         private void LateUpdate()
         {
+            playedSound--;
+
             Tasks.TaskWorkerAI[] workers = FindObjectsOfType<Tasks.TaskWorkerAI>();
 
             int numberOfWorkersStillAtWork = workers.Length;
@@ -107,16 +93,14 @@ namespace LowEngine.TimeManagement
             if (TimeScale.hours == 8)
             {
                 //Play awake sound
-                TryPlaySound("Open");
+                AudioManager.instance.PlayOpenSound(transform.position);
             }
             else
             if (TimeScale.hours == 17)
             {
                 //Play closingtime sound
-                TryPlaySound("Close");
+                AudioManager.instance.PlayClosingSound(transform.position);
             }
-
-            playedSound--;
 
             int rot = (15 * (time % 24)) % 360;
 

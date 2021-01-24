@@ -10,18 +10,7 @@ namespace LowEngine
 {
     public class GameHandler : MonoBehaviour
     {
-        public static GameHandler instance
-        {
-            get
-            {
-                return FindObjectOfType<GameHandler>();
-            }
-        }
-
-        private void Awake()
-        {
-            SetupApplicationVersion();
-        }
+        public static GameHandler instance;
 
         public static float MoneyToPayOnPayDay()
         {
@@ -53,6 +42,13 @@ namespace LowEngine
         public static GameState gameState = GameState.Default;
 
         public float Money = 50;
+
+        private void Awake()
+        {
+            instance = this;
+
+            SetupApplicationVersion();
+        }
 
         private void Start()
         {
@@ -120,12 +116,20 @@ namespace LowEngine
 
         public void SaveGame()
         {
+            StartCoroutine(SaveGameAction());
+        }
+
+        private IEnumerator SaveGameAction()
+        {
             // -----------------Save Player data---------------
             ActivePlayerData = new SaveManager.SaveData(saveName, Money, TimeScale.minutes, TimeScale.hours, TimeScale.days);
 
             SaveManager.DeleteSavedGame(ActivePlayerData);
 
             SaveManager.SavePlayerData(ActivePlayerData);
+
+            yield return null;
+            Debug.Log("Saving workers...");
 
             // -----------------Save workers---------------
             var savedWorkers = new SaveManager.SavableObject.Worker[workers.Count];
@@ -134,6 +138,9 @@ namespace LowEngine
                 savedWorkers[i] = workers[i].workerData;
 
             SaveManager.SaveWorkers(ActivePlayerData.userName, savedWorkers);
+
+            yield return null;
+            Debug.Log("Saving objects...");
 
             // -----------------Save Objects---------------
             var objects = FindObjectsOfType<PlacedObject>();
@@ -150,6 +157,9 @@ namespace LowEngine
             }
 
             SaveManager.SaveObjects(ActivePlayerData.userName, savedObjects.ToArray());
+
+            yield return null;
+            Debug.Log("Save complete.");
 
             NotificationManager.instance.ShowNotification("Game saved!");
         }

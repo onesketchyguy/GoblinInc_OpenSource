@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-using LowEngine.Saving;
-using Unity.Entities;
+﻿using LowEngine.Saving;
 
 namespace LowEngine
 {
-    public struct GhostData : IComponentData
+    public struct GhostData
     {
         public SaveManager.SavableObject.WorldObject placing;
 
