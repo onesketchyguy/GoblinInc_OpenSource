@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using LowEngine.Saving;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 namespace LowEngine
 {
@@ -14,19 +15,7 @@ namespace LowEngine
 
         public Slider MusicVolumeSlider;
 
-        public enum Viewing { Main, LoadView, SaveView, Quit }
-
-        private Viewing currentView;
-
-        public Viewing viewing { get { return currentView; } set { currentView = value; UpdateView(); } }
-
         [Header("Panels")]
-        public GameObject MainView;
-
-        public GameObject SavesView;
-
-        public GameObject QuitView;
-
         public GameObject inputRegion;
 
         [Header("Saving")]
@@ -41,6 +30,9 @@ namespace LowEngine
         private string input = "";
         private AudioLoader audioLoader;
 
+        public UnityEvent onSavedEvent;
+        public UnityEvent onLoadEvent;
+
         private void OnEnable()
         {
             //Load the players options onto the items
@@ -53,9 +45,6 @@ namespace LowEngine
             MasterVolumeSlider.onValueChanged.AddListener(audioLoader.UpdateMaster);
             SFXVolumeSlider.onValueChanged.AddListener(audioLoader.UpdateSFX);
             MusicVolumeSlider.onValueChanged.AddListener(audioLoader.UpdateMusic);
-
-            // Set the menu we are viewing
-            viewing = Viewing.Main;
         }
 
         private void OnDisable()
@@ -85,11 +74,7 @@ namespace LowEngine
         {
             if (input.ToCharArray().Length > 0)
             {
-                GameHandler.instance.saveName = input;
-
-                GameHandler.instance.SaveGame();
-
-                viewing = Viewing.Main;
+                GameHandler.instance.SaveGame(input);
 
                 InputField.onValueChanged.RemoveListener(TextChanged);
             }
@@ -104,7 +89,6 @@ namespace LowEngine
             button.onClick.AddListener(() =>
             {
                 GameHandler.instance.StartCoroutine(GameHandler.instance.LoadGame(index));
-                viewing = Viewing.Main;
             });
         }
 
@@ -114,7 +98,11 @@ namespace LowEngine
 
             savedGameObjects.Add(button.gameObject);
 
-            button.onClick.AddListener(() => { GameHandler.instance.ClearSavedData(index); viewing = Viewing.Main; });
+            button.onClick.AddListener(() =>
+            {
+                GameHandler.instance.ClearSavedData(index);
+                // Swap tab back to main
+            });
         }
 
         private void SpawnOverriteSaveButton(SaveManager.SaveData data, int index)
@@ -140,12 +128,14 @@ namespace LowEngine
                 GameHandler.instance.saveName = input;
 
                 GameHandler.instance.SaveGame();
-                viewing = Viewing.Main;
+                onSavedEvent?.Invoke();
             });
         }
 
         public void LoadGame()
         {
+            ClearSaveObjects();
+
             GameHandler.instance.SetupSaves();
 
             for (int i = 0; i < GameHandler.instance.savesData.Length; i++)
@@ -160,11 +150,18 @@ namespace LowEngine
                 return;
             }
 
-            viewing = Viewing.LoadView;
+            // Swap to load game tabs
+
+            InputField.gameObject.SetActive(false);
+            InputField.onValueChanged.RemoveAllListeners();
+
+            inputRegion.SetActive(false);
         }
 
         public void SaveGame()
         {
+            ClearSaveObjects();
+
             GameHandler.instance.SetupSaves();
 
             for (int i = 0; i < GameHandler.instance.savesData.Length; i++)
@@ -173,13 +170,18 @@ namespace LowEngine
                 SpawnOverriteSaveButton(save, i);
             }
 
-            viewing = Viewing.SaveView;
+            // Swap to saved game tabs
 
+            InputField.gameObject.SetActive(true);
             InputField.onValueChanged.AddListener(TextChanged);
+
+            inputRegion.SetActive(true);
         }
 
         public void ClearSaves()
         {
+            ClearSaveObjects();
+
             GameHandler.instance.SetupSaves();
 
             for (int i = 0; i < GameHandler.instance.savesData.Length; i++)
@@ -194,33 +196,23 @@ namespace LowEngine
                 return;
             }
 
-            viewing = Viewing.LoadView;
+            // Swap to load game tabs
+
+            InputField.gameObject.SetActive(false);
+            InputField.onValueChanged.RemoveAllListeners();
+
+            inputRegion.SetActive(false);
         }
 
-        public void LeaveGame()
+        private void ClearSaveObjects()
         {
-            viewing = Viewing.Quit;
-        }
-
-        private void UpdateView()
-        {
-            MainView.SetActive(currentView == Viewing.Main);
-            SavesView.SetActive(currentView == Viewing.SaveView || currentView == Viewing.LoadView);
-            QuitView.SetActive(currentView == Viewing.Quit);
-
-            InputField.gameObject.SetActive(currentView == Viewing.SaveView);
-            inputRegion.SetActive(currentView == Viewing.SaveView);
-
-            if (currentView == Viewing.Main)
+            while (savedGameObjects.Count > 0)
             {
-                while (savedGameObjects.Count > 0)
-                {
-                    GameObject go = savedGameObjects[0];
+                GameObject go = savedGameObjects[0];
 
-                    Destroy(go);
+                Destroy(go);
 
-                    savedGameObjects.Remove(go);
-                }
+                savedGameObjects.Remove(go);
             }
         }
 

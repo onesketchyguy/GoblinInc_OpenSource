@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -8,54 +9,20 @@ namespace LowEngine
     {
         public static UIManager instance;
 
+        public Text MoneyText;
+        public Text DebtText;
+
+        public UnityEvent onHideMenus;
+
         private void Awake()
         {
             instance = this;
         }
 
-        public enum Show { none, crafting, hiring, workerInfo, options, contracts }
-
-        public Show CurrentlyDisplaying;
-
-        public GameObject CraftingMenu;
-
-        public void ToggleCraftingMenu()
+        private void Start()
         {
-            UpdateShowing(Show.crafting);
+            HideMenus();
         }
-
-        public GameObject HiringMenu;
-
-        public void ToggleHiringMenu()
-        {
-            UpdateShowing(Show.hiring);
-        }
-
-        public GameObject OptionsPanel;
-
-        public void ToggleOptionsPanel()
-        {
-            UpdateShowing(Show.options);
-        }
-
-        public GameObject CalenderPanel;
-
-        public void ToggleObject(GameObject @object)
-        {
-            @object.SetActive(!@object.activeSelf);
-        }
-
-        public GameObject ContractsPanel;
-
-        public void ToggleContractsPanel()
-        {
-            UpdateShowing(Show.contracts);
-        }
-
-        public GameObject WorkerInfoPanel;
-
-        public Text MoneyText;
-        public Text DebtText;
 
         private void Update()
         {
@@ -74,7 +41,7 @@ namespace LowEngine
 
                 CursorManager.instance.UpdateCursor();
 
-                UpdateShowing(Show.none);
+                HideMenus();
             }
 
             if (GameHandler.MoneyToPayOnPayDay() > 0) DebtText.text = $"{GameHandler.MoneyToPayOnPayDay()} due on payday"; else DebtText.text = "";
@@ -82,22 +49,9 @@ namespace LowEngine
             MoneyText.text = $"{GameHandler.instance.Money}";
         }
 
-        public void UpdateShowing(Show show)
+        public void HideMenus()
         {
-            if (CurrentlyDisplaying == show)
-            {
-                CurrentlyDisplaying = Show.none;
-            }
-            else
-            {
-                CurrentlyDisplaying = show;
-            }
-
-            CraftingMenu.SetActive(CurrentlyDisplaying == Show.crafting);
-            HiringMenu.SetActive(CurrentlyDisplaying == Show.hiring);
-            OptionsPanel.SetActive(CurrentlyDisplaying == Show.options);
-            WorkerInfoPanel.SetActive(CurrentlyDisplaying == Show.workerInfo);
-            ContractsPanel.SetActive(CurrentlyDisplaying == Show.contracts);
+            onHideMenus?.Invoke();
         }
     }
 }

@@ -6,6 +6,8 @@ namespace LowEngine
 {
     public class WorkerButton : MonoBehaviour
     {
+        private SelectionUIHandler selectionUIHandler;
+
         public float moneyToAdd = 1;
 
         public Transform chair;
@@ -36,13 +38,18 @@ namespace LowEngine
 
             if (currentWorker != null)
             {
-                SelectionUIHandler.SelectWorker(currentWorker);
+                selectionUIHandler.SelectWorker(currentWorker);
             }
             else
             if (SelectionUIHandler.SelectedWorker != null && currentWorker == null)
             {
                 SetWorker(SelectionUIHandler.SelectedWorker);
             }
+        }
+
+        private void Start()
+        {
+            selectionUIHandler = FindObjectOfType<SelectionUIHandler>();
         }
 
         private void Update()

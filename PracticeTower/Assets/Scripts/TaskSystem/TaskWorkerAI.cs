@@ -6,6 +6,8 @@ namespace LowEngine.Tasks
 {
     public class TaskWorkerAI : MonoBehaviour
     {
+        private SelectionUIHandler selectionUIHandler;
+
         public string currentTask;
 
         public string currentThought;
@@ -113,6 +115,11 @@ namespace LowEngine.Tasks
 
             BoxCollider2D boxCollider = gameObject.AddComponent<BoxCollider2D>();
             boxCollider.isTrigger = true;
+        }
+
+        private void Start()
+        {
+            selectionUIHandler = FindObjectOfType<SelectionUIHandler>();
         }
 
         private void Update()
@@ -333,7 +340,7 @@ namespace LowEngine.Tasks
 
         private void OnMouseDown()
         {
-            SelectionUIHandler.SelectWorker(this);
+            selectionUIHandler.SelectWorker(this);
         }
     }
 }

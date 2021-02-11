@@ -9,7 +9,7 @@ namespace LowEngine
     {
         public static List<Node> ChosenNodes = new List<Node>();
 
-        private static readonly SaveManager.SavableObject.WorldObject Concrete = new SaveManager.SavableObject.WorldObject { name = "Concrete", spriteName = "Concrete", spriteSortingLayer = -50, objectType = PlacedObjectType.Static, type = ObjectType.Abstract};
+        private static readonly SaveManager.SavableObject.WorldObject Concrete = new SaveManager.SavableObject.WorldObject { name = "Concrete", spriteName = "Concrete", spriteSortingLayer = -50, objectType = PlacedObjectType.Static, type = ObjectType.Abstract };
 
         /// <summary>
         /// Display half the size you want here.
@@ -18,9 +18,9 @@ namespace LowEngine
 
         public float nodeRadius = 1;
 
-        GameObject ConcreteParent;
+        private GameObject ConcreteParent;
 
-        static Dictionary<Vector2, GameObject> gameTiles = new Dictionary<Vector2, GameObject>() { };
+        private static Dictionary<Vector2, GameObject> gameTiles = new Dictionary<Vector2, GameObject>() { };
 
         public Node NodeFromWorldPosition(Vector3 target)
         {
@@ -39,7 +39,7 @@ namespace LowEngine
 
         public Node GetClosestNodeToWorldPosition(Vector3 target)
         {
-            float nearestdist = nodeDiameter * 2;
+            float nearestdist = nodeDiameter * nodeDiameter;
             Node nearestToTarget = null;
 
             foreach (var node in grid)
@@ -62,13 +62,15 @@ namespace LowEngine
             }
         }
 
-        Node[,] grid;
+        private Node[,] grid;
 
-        float nodeDiameter { get { return nodeRadius * 2; } }
-        Vector2Int gridSize { get { return new Vector2Int(Mathf.RoundToInt((PlayAreaSize.x * 2) / nodeDiameter), Mathf.RoundToInt((PlayAreaSize.y * 2) / nodeDiameter)); } }
+        private float nodeDiameter
+        { get { return nodeRadius * 2; } }
+        private Vector2Int gridSize
+        { get { return new Vector2Int(Mathf.RoundToInt((PlayAreaSize.x * 2) / nodeDiameter), Mathf.RoundToInt((PlayAreaSize.y * 2) / nodeDiameter)); } }
 
         // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             ConcreteParent = new GameObject("ConcreteParent");
 
@@ -146,7 +148,7 @@ namespace LowEngine
                     Vector3 worldPoint = worldBottomLeft + new Vector2(x * nodeDiameter, y * nodeDiameter);
                     bool obstruction = false;
 
-                    Collider2D collision = Physics2D.OverlapCircle(worldPoint, nodeRadius/2);
+                    Collider2D collision = Physics2D.OverlapCircle(worldPoint, nodeRadius / 2);
 
                     if (collision != null)
                     {

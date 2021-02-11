@@ -8,7 +8,11 @@ namespace LowEngine.TimeManagement
 
         public UnityEngine.UI.Slider timeScaleSlider;
 
-        private byte playedSound = 0;
+        public GameObject timePausedEffect;
+
+        private float accum;
+
+        private int daySpeed = 1;
 
         private void Start()
         {
@@ -23,14 +27,8 @@ namespace LowEngine.TimeManagement
             });
         }
 
-        private float accum;
-
-        private int daySpeed = 1;
-
         private void LateUpdate()
         {
-            playedSound--;
-
             Tasks.TaskWorkerAI[] workers = FindObjectsOfType<Tasks.TaskWorkerAI>();
 
             int numberOfWorkersStillAtWork = workers.Length;
@@ -84,6 +82,13 @@ namespace LowEngine.TimeManagement
                 TimeScale.minutes += 1;
                 accum = 0;
             }
+
+            timePausedEffect.SetActive(timeScale == 0);
+        }
+
+        public void TogglePauseGame()
+        {
+            daySpeed = daySpeed == 0 ? Mathf.RoundToInt(timeScaleSlider.value) : 0;
         }
 
         public void SetTime()

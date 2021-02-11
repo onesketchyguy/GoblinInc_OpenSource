@@ -6,14 +6,13 @@ namespace LowEngine
 {
     public class QuitManager : MonoBehaviour
     {
-        public void CancelQuit()
-        {
-            FindObjectOfType<OptionsMenuHandler>().viewing = OptionsMenuHandler.Viewing.Main;
-        }
+        private LoadingScreen loadingScreen;
+
+        public string levelToLoad = "";
 
         public void QuitWithOutSaving()
         {
-            SceneManager.LoadSceneAsync(0);
+            Load();
         }
 
         public void SaveAndQuit()
@@ -23,11 +22,23 @@ namespace LowEngine
 
         private IEnumerator SaveAndQuitAction()
         {
-            GameHandler.instance.SaveGame();
+            yield return GameHandler.instance.StartCoroutine(GameHandler.instance.SaveGameAction());
+            yield return new WaitForEndOfFrame();
+            Load();
+        }
 
-            yield return new WaitForSeconds(1);
+        private void Load()
+        {
+            loadingScreen = FindObjectOfType<LoadingScreen>();
 
-            SceneManager.LoadSceneAsync(0);
+            if (loadingScreen != null)
+            {
+                loadingScreen.StartLoad(levelToLoad);
+            }
+            else
+            {
+                SceneManager.LoadSceneAsync(levelToLoad);
+            }
         }
     }
 }

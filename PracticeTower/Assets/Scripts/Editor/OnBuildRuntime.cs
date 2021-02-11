@@ -28,27 +28,37 @@ namespace LowEngine
             Directory.CreateDirectory(folderLoc + "/LocalData");
 
             //Export Mods
-            var modsDir = folderLoc + "/LocalData/Mods";
+            var copyToDir = folderLoc + "/LocalData/";
 
-            Directory.CreateDirectory(modsDir);
-            foreach (var mod in Directory.EnumerateFiles(Modding.ModLoader.ModsDirectory))
+            CopyFiles($"{Application.dataPath}/LocalData/", copyToDir);
+        }
+
+        private static void CopyFiles(string fromDir, string toDir)
+        {
+            Directory.CreateDirectory(toDir);
+
+            foreach (var dir in Directory.EnumerateDirectories(fromDir))
             {
-                if (mod.Contains(".meta")) continue;
-                string modName = mod.Split('\\').LastOrDefault();
+                var dirNames = dir.Split('\\');
+                if (dirNames == null || dirNames.Length == 0) dirNames = dir.Split('/');
 
-                File.Copy(mod, $"{modsDir}\\{modName}");
-            }
+                string dirName = "";
 
-            //Export Mod images
-            var modImagesDir = folderLoc + "/LocalData/Mods/images";
+                for (int i = 0; i < dirNames.Length; i++)
+                    if (dirNames[i].Length > 2) dirName = dirNames[i];
 
-            Directory.CreateDirectory(modImagesDir);
-            foreach (var mod in Directory.EnumerateFiles(Modding.ModLoader.ModImagesDirectory))
-            {
-                if (mod.Contains(".meta")) continue;
-                string modName = mod.Split('\\').LastOrDefault();
+                toDir = $"{toDir}\\{dirName}\\";
 
-                File.Copy(mod, $"{modImagesDir}/{modName}");
+                foreach (var mod in Directory.EnumerateFiles(dir))
+                {
+                    if (mod.Contains(".meta")) continue;
+
+                    string modName = mod.Split('\\').LastOrDefault();
+                    File.Copy(mod, $"{toDir}\\{modName}");
+                }
+
+                // Try to get all the child folders too
+                CopyFiles(dir, toDir);
             }
         }
 

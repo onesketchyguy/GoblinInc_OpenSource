@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using LowEngine.Tasks;
 
@@ -16,13 +14,41 @@ namespace LowEngine
 
         public Slider ExperienceDisplay, HungerSlider, ThirstSlider;
 
-        public static void SelectWorker(TaskWorkerAI worker)
+        public UnityEngine.Events.UnityEvent onSelectEvent;
+
+        private void Update()
+        {
+            if (SelectedWorker == null) return;
+
+            if (Input.GetButton("Fire2")) DeselectWorker();
+
+            if (Time.frameCount % 10 == 0) UpdateInformation();
+        }
+
+        public void SelectWorker(TaskWorkerAI worker)
         {
             DeselectWorker();
 
-            UIManager.instance.UpdateShowing(UIManager.Show.workerInfo);
-
             SelectedWorker = worker;
+
+            UpdateInformation();
+
+            onSelectEvent?.Invoke();
+        }
+
+        private void UpdateInformation()
+        {
+            NameDisplay.text = $"{SelectedWorker.name}";
+
+            CostDisplay.text = $"This worker is costing you: ${SelectedWorker.worker.workerData.pay} per week.";
+            SkillDisplay.text = $"Skill Level: {SelectedWorker.worker.workerData.skill}/100";
+            EfficiencyDisplay.text = $"Efficiency: { 100 - SelectedWorker.worker.ineffiency}%";
+            UnhappinessDisplay.text = $"Unhappiness:{SelectedWorker.worker.unhappiness}%";
+            ThoughtDisplay.text = $"Last thought: \"{SelectedWorker.currentThought}\"";
+
+            ExperienceDisplay.value = SelectedWorker.worker.workerData.experience;
+            HungerSlider.value = 1 - (SelectedWorker.worker.workerData.hunger * 0.01f);
+            ThirstSlider.value = 1 - (SelectedWorker.worker.workerData.thirst * 0.01f);
         }
 
         public static void DeselectWorker()
@@ -31,7 +57,7 @@ namespace LowEngine
             {
                 SelectedWorker = null;
 
-                UIManager.instance.UpdateShowing(UIManager.Show.none);
+                UIManager.instance.HideMenus();
             }
         }
 
@@ -45,27 +71,6 @@ namespace LowEngine
 
                 DeselectWorker();
             }
-        }
-
-        private void Update()
-        {
-            if (Input.GetButton("Fire2"))
-            {
-                DeselectWorker();
-
-                return;
-            }
-
-            NameDisplay.text = $"{SelectedWorker.name}";
-            CostDisplay.text = $"This worker is costing you: ${SelectedWorker.worker.workerData.pay} per week.";
-            SkillDisplay.text = $"Skill Level: {SelectedWorker.worker.workerData.skill}/100";
-            EfficiencyDisplay.text = $"Efficiency: { 100 - SelectedWorker.worker.ineffiency}%";
-            UnhappinessDisplay.text = $"Unhappiness:{SelectedWorker.worker.unhappiness}%";
-            ThoughtDisplay.text = $"Last thought: \"{SelectedWorker.currentThought}\"";
-
-            ExperienceDisplay.value = SelectedWorker.worker.workerData.experience;
-            HungerSlider.value = 1 - (SelectedWorker.worker.workerData.hunger * 0.01f);
-            ThirstSlider.value = 1 - (SelectedWorker.worker.workerData.thirst * 0.01f);
         }
 
         public void FireWorker()

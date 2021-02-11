@@ -3,19 +3,16 @@
 public class MainMenu : MonoBehaviour
 {
     #region Menus
+
     public enum Menus { Title, Options, Quit }
 
     private Menus activeMenu = Menus.Title;
 
     public GameObject[] menus;
 
-    public LoadingScreen loadingScreen;
-
     private void Start()
     {
         SwapMenu(0);
-
-        loadingScreen.gameObject.SetActive(false);
     }
 
     public void SwapMenu(int menuToSwitchTo)
@@ -29,17 +26,11 @@ public class MainMenu : MonoBehaviour
             menu.SetActive(i == (int)activeMenu);
         }
     }
-    #endregion
+
+    #endregion Menus
 
     public void QuitGame()
     {
         Application.Quit();
-    }
-
-    public void LoadScene(string sceneToLoad)
-    {
-        loadingScreen.gameObject.SetActive(true);
-
-        loadingScreen.StartLoad(sceneToLoad);
     }
 }

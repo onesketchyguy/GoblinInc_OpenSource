@@ -23,6 +23,7 @@ public class LoadingScreen : MonoBehaviour
 
     private IEnumerator DisplayLoadingScreen(string level)
     {
+        panel.gameObject.SetActive(true);
         progressBar.gameObject.SetActive(false);
         yield return null;
 

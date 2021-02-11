@@ -114,12 +114,15 @@ namespace LowEngine
             File.WriteAllText($"{dir}/version.txt", $"version:{currentVersion}");
         }
 
-        public void SaveGame()
+        public void SaveGame(string name = "")
         {
+            if (string.IsNullOrEmpty(name) == false)
+                saveName = name;
+
             StartCoroutine(SaveGameAction());
         }
 
-        private IEnumerator SaveGameAction()
+        public IEnumerator SaveGameAction()
         {
             // -----------------Save Player data---------------
             ActivePlayerData = new SaveManager.SaveData(saveName, Money, TimeScale.minutes, TimeScale.hours, TimeScale.days);

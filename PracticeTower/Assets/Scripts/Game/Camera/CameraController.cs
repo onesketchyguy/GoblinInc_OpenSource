@@ -9,49 +9,49 @@ namespace LowEngine
         private Vector3 MouseStart;
         private Vector3 MovedTo;
 
-        float baseMoveSpeed = 1;
-        float maxMoveSpeed = 10;
-        float moveSpeed;
+        private float baseMoveSpeed = 1;
+        private float maxMoveSpeed = 10;
+        private float moveSpeed;
 
         private float currentZoom;
-        float minZoom = 2;
-        float maxZoom = 20;
+        private float minZoom = 2;
+        private float maxZoom = 20;
 
-        float zoomSpeed = 10;
+        private float zoomSpeed = 10;
 
-        bool moving;
-
-        private Vector2 MaxCam;
+        private Vector2 MaxCamPos;
         public Vector2 currentMaxCam;
+
+        private Transform _transform;
 
         private void Start()
         {
-            Vector3 stored = FindObjectOfType<MapLayoutManager>().PlayAreaSize/2;
+            Vector3 stored = FindObjectOfType<MapLayoutManager>().PlayAreaSize / 2;
 
-            maxZoom = (stored.x > stored.y) ? stored.x : stored.y;
+            maxZoom = stored.x * stored.y;
 
-            if (maxZoom < 5)
-            {
-                maxZoom = 5;
-            }
+            if (maxZoom < 5) maxZoom = 5;
 
-            MaxCam = transform.position + stored;
+            currentZoom = 1;
+
+            _transform = transform;
+
+            MaxCamPos = _transform.position + stored;
         }
 
-        void Update()
+        private void Update()
         {
             if (EventSystem.current.IsPointerOverGameObject()) return;
 
             float camCap = maxZoom - currentZoom;
 
-            currentMaxCam = new Vector2(camCap + MaxCam.x, camCap + MaxCam.y);
+            currentMaxCam = new Vector2(camCap + MaxCamPos.x, camCap + MaxCamPos.y);
 
             if (GameHandler.gameState == GameHandler.GameState.Default)
             {
                 currentZoom = GetComponent<Camera>().orthographicSize;
 
                 currentZoom += Input.GetAxisRaw("Mouse ScrollWheel") * zoomSpeed;
-
                 currentZoom += Input.GetAxisRaw("AlternateZoom") * (0.1f * zoomSpeed);
 
                 currentZoom = Mathf.Clamp(currentZoom, minZoom, maxZoom);
@@ -59,7 +59,7 @@ namespace LowEngine
                 GetComponent<Camera>().orthographicSize = currentZoom;
             }
 
-            moving = Input.GetMouseButton(2) || (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0);
+            var moving = Input.GetMouseButton(2) || (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0);
 
             if (moving == false)
             {
@@ -72,14 +72,14 @@ namespace LowEngine
                 if (Input.GetMouseButton(2))
                 {
                     moveSpeed = Vector3.Distance(MouseStart, Utilities.GetMousePosition()) * baseMoveSpeed;
-
                     MovedTo = Utilities.GetMousePosition();
                 }
                 else
                 {
-                    MovedTo = transform.position + new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+                    var moveDirection = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+                    MovedTo = _transform.position + (moveDirection * 10);
 
-                    moveSpeed += 3 * Time.deltaTime;
+                    moveSpeed += 10 * Time.deltaTime;
                 }
 
                 MovedTo.z = -10;
@@ -90,7 +90,7 @@ namespace LowEngine
             MovedTo.x = Mathf.Clamp(MovedTo.x, -currentMaxCam.x, currentMaxCam.x);
             MovedTo.y = Mathf.Clamp(MovedTo.y, -currentMaxCam.y, currentMaxCam.y);
 
-            transform.position = Vector3.MoveTowards(transform.position, MovedTo, moveSpeed * Time.deltaTime);
+            _transform.position = Vector3.MoveTowards(_transform.position, MovedTo, moveSpeed * Time.deltaTime);
         }
     }
 }
