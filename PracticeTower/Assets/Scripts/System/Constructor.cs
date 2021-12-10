@@ -67,7 +67,9 @@ namespace LowEngine.Saving
             switch (data.objectType)
             {
                 case PlacedObjectType.Desk:
-                    obj.AddComponent<WorkerButton>();
+                    var button = obj.AddComponent<WorkerButton>();
+
+                    button.moneyToAdd = data.wVal;
 
                     Transform child = new GameObject("Chair").transform;
 
@@ -77,7 +79,7 @@ namespace LowEngine.Saving
 
                     child.rotation = obj.transform.rotation;
 
-                    obj.GetComponent<WorkerButton>().chair = child;
+                    button.chair = child;                    
                     break;
 
                 case PlacedObjectType.Need:
@@ -113,6 +115,7 @@ namespace LowEngine.Saving
                 objectType = data.objectType,
                 fulFills = data.fulFills,
                 childPos = data.childPos,
+                wVal = data.wVal,
                 name = data.name,
                 spriteName = data.spriteName,
                 spriteSortingLayer = data.spriteSortingLayer,

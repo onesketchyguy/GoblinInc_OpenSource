@@ -35,13 +35,14 @@ namespace LowEngine.Modding
                 {
                     string contents = File.ReadAllText(file);
 
-                    var modInfo = JsonUtility.FromJson<ModInfo>(contents);
+                    var modInfo = JsonUtility.FromJson<SaveManager.SavableObject.WorldObject>(contents);
 
                     if (modInfo != null)
                     {
-                        objectMods.Add(GetObjectData(modInfo));
+                        //objectMods.Add(GetObjectData(modInfo));
+                        objectMods.Add(modInfo);
 
-                        Debug.Log($"Loaded {modInfo.name}");
+                        Debug.Log($"Loaded {modInfo.name}, wVal: {modInfo.wVal}");
                     }
                 }
             }
@@ -65,7 +66,7 @@ namespace LowEngine.Modding
             {
                 name = data.name,
                 pVal = data.price,
-                wVal = data.wValue,
+                wVal = data.wVal,
                 type = data.type,
                 objectType = data.objectType,
                 fulFills = data.fulfilsNeed,

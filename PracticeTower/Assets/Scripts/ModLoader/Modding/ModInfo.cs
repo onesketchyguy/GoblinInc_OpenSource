@@ -24,7 +24,7 @@ namespace LowEngine.Modding
         public Color color;
 
         public float price;
-        public float wValue;
+        public float wVal;
 
         public ObjectType type;
         public PlacedObjectType objectType;
@@ -35,14 +35,14 @@ namespace LowEngine.Modding
         public bool rotatable;
         public bool changableColor;
 
-        public ModInfo(string name, string spriteLocation, int spriteSortingLayer, Color color, float price, float wValue, ObjectType type, PlacedObjectType objectType, NeedDefinition fulfilsNeed, Vector3 childPos, bool rotatable, bool changableColor)
+        public ModInfo(string name, string spriteLocation, int spriteSortingLayer, Color color, float price, float wVal, ObjectType type, PlacedObjectType objectType, NeedDefinition fulfilsNeed, Vector3 childPos, bool rotatable, bool changableColor)
         {
             this.name = name;
             this.spriteName = spriteLocation;
             this.spriteSortingLayer = spriteSortingLayer;
             this.color = color;
             this.price = price;
-            this.wValue = wValue;
+            this.wVal = wVal;
             this.type = type;
             this.objectType = objectType;
             this.fulfilsNeed = fulfilsNeed;

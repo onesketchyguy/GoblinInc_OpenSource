@@ -21,7 +21,7 @@ namespace LowEngine
                 return;
             }
 
-            GameHandler.instance.Money += moneyToAdd;
+            GameHandler.instance.Money += (moneyToAdd * (1 - (currentWorker.worker.ineffiency / 100.0f))) * GameHandler.GetEarnDifficulty();
 
             AudioManager.instance.PlayKeyClick(transform.position);
         }
@@ -67,14 +67,7 @@ namespace LowEngine
                 {
                     currentWorker = null;
                 }
-            }
-
-            if (GetComponent<PlacedObject>().objectData.wVal > 0)
-            {
-                moneyToAdd = GetComponent<PlacedObject>().objectData.wVal;
-            }
-
-            GetComponent<PlacedObject>().objectData.wVal = moneyToAdd;
+            }            
         }
 
         public void SetWorker(TaskWorkerAI worker)

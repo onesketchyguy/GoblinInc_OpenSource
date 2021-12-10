@@ -12,6 +12,8 @@ namespace LowEngine
     {
         public static GameHandler instance;
 
+        public static int GAME_DIFFICULTY = 1;
+
         public static float MoneyToPayOnPayDay()
         {
             float val = 0;
@@ -22,6 +24,11 @@ namespace LowEngine
             }
 
             return val;
+        }
+
+        public static float GetEarnDifficulty()
+        {
+            return 1.0f / GAME_DIFFICULTY;
         }
 
         public static int daysUntilPayDay = 6;
@@ -77,13 +84,34 @@ namespace LowEngine
 
             if (daysUntilPayDay == 0)
             {
-                //It's pay day!
+                // It's pay day!
 
-                Money -= MoneyToPayOnPayDay();
+                int quitWorkers = 0;
+                double amountSpent = 0.0;
+
+                for (int i = instance.workers.Count - 1; i >= 0; i--)
+                {
+                    Worker worker = instance.workers[i];
+                    if (Money > 0)
+                    {
+                        Money -= worker.workerData.pay;
+                        amountSpent += worker.workerData.pay;
+                    }
+                    else
+                    {
+                        quitWorkers++;
+                        Destroy(worker.gameObject);
+                    }
+                }
 
                 daysUntilPayDay = 7;
 
-                NotificationManager.instance.ShowNotification($"You spent: ${MoneyToPayOnPayDay()} on saleries this week.");
+                if (quitWorkers > 0)
+                {
+                    NotificationManager.instance.ShowNotification($"{quitWorkers} workers quit because you couldn't pay them.");
+                }
+
+                NotificationManager.instance.ShowNotification($"You spent: ${System.Math.Round(amountSpent, 2)} on saleries this week.");
             }
             else
             {
