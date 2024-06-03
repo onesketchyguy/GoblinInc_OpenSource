@@ -21,7 +21,8 @@ namespace LowEngine
                 return;
             }
 
-            GameHandler.instance.Money += (moneyToAdd * (1 - (currentWorker.worker.ineffiency / 100.0f))) * GameHandler.GetEarnDifficulty();
+            float mons = moneyToAdd * GameHandler.GetEarnDifficulty();
+            GameHandler.instance.Money += mons * (1 - (currentWorker.worker.ineffiency / 100.0f));
 
             AudioManager.instance.PlayKeyClick(transform.position);
         }

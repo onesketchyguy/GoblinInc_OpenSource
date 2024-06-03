@@ -44,7 +44,8 @@ namespace LowEngine
                 HideMenus();
             }
 
-            if (GameHandler.MoneyToPayOnPayDay() > 0) DebtText.text = $"{GameHandler.MoneyToPayOnPayDay()} due on payday"; else DebtText.text = "";
+            if (GameHandler.MoneyToPayOnPayDay() > 0) 
+                DebtText.text = $"{GameHandler.MoneyToPayOnPayDay()} due on payday"; else DebtText.text = "";
 
             MoneyText.text = $"{System.Math.Round(GameHandler.instance.Money, 2)}";
         }

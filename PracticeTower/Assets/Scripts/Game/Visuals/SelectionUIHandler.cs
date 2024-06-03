@@ -15,6 +15,8 @@ namespace LowEngine
         public Slider ExperienceDisplay, HungerSlider, ThirstSlider;
 
         public UnityEngine.Events.UnityEvent onSelectEvent;
+        public HiringPanel hpan;
+        public UnityEngine.Events.UnityEvent onFireEvent;
 
         private void Update()
         {
@@ -75,16 +77,8 @@ namespace LowEngine
 
         public void FireWorker()
         {
-            if (SelectedWorker)
-            {
-                ParticleManager.instance.StartEffect_FireWorker(SelectedWorker.transform.position);
-
-                SelectedWorker.worker.Desk.currentWorker = null;
-
-                Destroy(SelectedWorker.gameObject);
-
-                DeselectWorker();
-            }
+            hpan.Fire(SelectedWorker.worker);
+            onFireEvent?.Invoke();
         }
     }
 }

@@ -28,7 +28,7 @@ namespace LowEngine
 
         public static float GetEarnDifficulty()
         {
-            return 1.0f / GAME_DIFFICULTY;
+            return 3.0f / GAME_DIFFICULTY;
         }
 
         public static int daysUntilPayDay = 6;
@@ -71,10 +71,8 @@ namespace LowEngine
 
         public static void DeregisterWorker(Worker worker)
         {
-            if (instance == null) return;
-
             if (instance.workers.Contains(worker) == true)
-                instance.workers.Add(worker);
+                instance.workers.Remove(worker);
         }
 
         public void NewDay()

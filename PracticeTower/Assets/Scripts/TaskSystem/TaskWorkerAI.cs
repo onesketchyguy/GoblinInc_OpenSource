@@ -22,11 +22,14 @@ namespace LowEngine.Tasks
 
         public TaskSystem taskManager;
 
+        private static MapLayoutManager map;
         public static Vector3 home
         {
             get
             {
-                return FindObjectOfType<MapLayoutManager>().PlayAreaSize + Vector2.one;
+                if (map == null) map = FindObjectOfType<MapLayoutManager>();
+                if (map == null) Debug.LogError("Unable to locate MapLayoutManager!");
+                return map.PlayAreaSize + Vector2.one;
             }
         }
 
@@ -70,7 +73,7 @@ namespace LowEngine.Tasks
                 };
 
                 currentTask = "Taking a break.";
-            }
+            } else Debug.Log($"There is no {need} fulfiller nearby.");
 
             return fulfil;
         }
@@ -204,12 +207,17 @@ namespace LowEngine.Tasks
                     }
                 }
 
-                taskManager.tasks.Enqueue(ComeBack);
+                // taskManager.tasks.Enqueue(ComeBack);
             }
         }
 
         private void RequestNextTask()
         {
+            if (TimeScale.isDayTime() == false && AtHome) // This is meant to negate a null error below
+            {
+                taskManager.tasks.Clear();
+                return;
+            }
             HandleNeeds();
 
             TaskSystem.Task task = null;
@@ -243,6 +251,7 @@ namespace LowEngine.Tasks
             }
             else
             {
+
                 if (task == ComeBack && TimeScale.isDayTime() == false && AtHome)
                 {
                     taskManager.tasks.Clear();
@@ -297,11 +306,11 @@ namespace LowEngine.Tasks
         private NeedFulfiller GetNearestNeed(NeedDefinition need)
         {
             NeedFulfiller nearestNeed = null;
-            NeedFulfiller[] workerButtons = FindObjectsOfType<NeedFulfiller>();
+            NeedFulfiller[] fulfillments = FindObjectsOfType<NeedFulfiller>();
 
             float nearest = 20;
 
-            foreach (var desk in workerButtons)
+            foreach (var desk in fulfillments)
             {
                 float dist = Vector2.Distance(transform.position, desk.transform.position);
 

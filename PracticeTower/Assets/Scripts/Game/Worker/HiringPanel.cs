@@ -356,5 +356,21 @@ namespace LowEngine
             selectedEmployee = null;
             UpdateHireButtons();
         }
+
+        public void Fire(Tasks.IWorker iworker)
+        {
+            var worker = (Tasks.Worker)iworker;
+            if (worker.Desk != null)
+            {
+                worker.Desk.currentWorker = null;
+                worker.Desk = null;
+            }
+
+            ParticleManager.instance.StartEffect_FireWorker(worker.transform.position);
+            hiredEmployees.Remove(worker.workerData);
+            Destroy(worker.gameObject);
+
+            UpdateHireButtons();
+        }
     }
 }

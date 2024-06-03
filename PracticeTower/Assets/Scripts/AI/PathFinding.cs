@@ -21,7 +21,7 @@ namespace LowEngine.Navigation
             Node StartNode = grid.NodeFromWorldPosition(start);
             Node TargetNode = grid.NodeFromWorldPosition(end);
 
-            if (TargetNode == StartNode || TargetNode == null)
+            if (TargetNode == null || TargetNode == StartNode)
             {
                 TargetNode = grid.GetClosestNodeToWorldPosition(end);
             }
