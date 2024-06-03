@@ -42,7 +42,7 @@ namespace LowEngine.Modding
                         //objectMods.Add(GetObjectData(modInfo));
                         objectMods.Add(modInfo);
 
-                        Debug.Log($"Loaded {modInfo.name}, wVal: {modInfo.wVal}");
+                        Debug.Log($"Loaded {modInfo.GetInfo()}");
                     }
                 }
             }
@@ -69,7 +69,7 @@ namespace LowEngine.Modding
                 wVal = data.wVal,
                 type = data.type,
                 objectType = data.objectType,
-                fulFills = data.fulfilsNeed,
+                fulFills = (int)data.fulfilsNeed,
                 childPos = data.childPos,
                 spriteSortingLayer = data.spriteSortingLayer,
                 color = data.color,
@@ -89,7 +89,12 @@ namespace LowEngine.Modding
                 Directory.CreateDirectory(ModsDirectory);
             }
 
-            ModInfo mod = new ModInfo(ModData.name, $"{ModData.name}", ModData.spriteSortingLayer, ModData.color, ModData.pVal, ModData.wVal, ModData.type, ModData.objectType, ModData.fulFills, ModData.childPos, ModData.rotatable, ModData.ChangableColor);
+            ModInfo mod = new ModInfo(ModData.name, $"{ModData.name}", 
+                ModData.spriteSortingLayer, ModData.color, 
+                ModData.pVal, ModData.wVal, ModData.type, 
+                ModData.objectType, (LowEngine.Tasks.Needs.NeedDefinition)ModData.fulFills, 
+                ModData.childPos, ModData.rotatable, 
+                ModData.ChangableColor);
 
             string fileInfo = JsonUtility.ToJson(mod);
 

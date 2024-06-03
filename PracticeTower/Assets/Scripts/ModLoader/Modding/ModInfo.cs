@@ -35,6 +35,11 @@ namespace LowEngine.Modding
         public bool rotatable;
         public bool changableColor;
 
+        // public string GetInfo()
+        // {
+        //     return $"${name}, wVal{wVal}, price{price}, oType{type}, poType{objectType}, fulfills{fulfilsNeed}";
+        // }
+
         public ModInfo(string name, string spriteLocation, int spriteSortingLayer, Color color, float price, float wVal, ObjectType type, PlacedObjectType objectType, NeedDefinition fulfilsNeed, Vector3 childPos, bool rotatable, bool changableColor)
         {
             this.name = name;

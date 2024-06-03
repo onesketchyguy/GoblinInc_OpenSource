@@ -278,7 +278,14 @@ namespace LowEngine.Saving
 
                 public ObjectType type;
 
-                public NeedDefinition fulFills;
+                public int fulFills;
+
+                public string GetInfo()
+                {
+                    string v = $"{name}, wVal({wVal}), oType({type}), poType({objectType})";
+                    if (objectType == PlacedObjectType.Need) v += $", fulfills({(LowEngine.Tasks.Needs.NeedDefinition)fulFills})";
+                    return v;
+                }
             }
 
             public class Worker : SavableObject

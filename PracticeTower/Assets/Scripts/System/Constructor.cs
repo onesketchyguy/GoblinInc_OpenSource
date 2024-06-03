@@ -85,7 +85,7 @@ namespace LowEngine.Saving
                 case PlacedObjectType.Need:
                     NeedFulfiller need = obj.AddComponent<NeedFulfiller>();
 
-                    need.Fulfills = data.fulFills;
+                    need.Fulfills = (LowEngine.Tasks.Needs.NeedDefinition)data.fulFills;
                     break;
 
                 default:

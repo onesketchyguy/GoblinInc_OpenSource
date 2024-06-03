@@ -9,8 +9,14 @@ namespace LowEngine.Tasks
         private SelectionUIHandler selectionUIHandler;
 
         public string currentTask;
-
-        public string currentThought;
+        public string currentThought { get; private set; }
+        float thoughtTime = 0;
+        public void SetThought(string thought)
+        {
+            if (Time.timeSinceLevelLoad < thoughtTime) return;
+            thoughtTime = Time.timeSinceLevelLoad + 15;
+            currentThought = thought;
+        }
 
         internal IWorker worker;
 
@@ -41,13 +47,13 @@ namespace LowEngine.Tasks
             {
                 if (GetNearestJob() != null)
                 {
-                    currentThought = ("I found a desk.");
+                    SetThought("I found a desk.");
 
                     GetNearestJob().SetWorker(this);
                 }
                 else
                 {
-                    currentThought = ("I can't find a desk.");
+                    SetThought("I can't find a desk.");
                 }
 
                 state = State.WaitingForNewTask;
@@ -66,7 +72,7 @@ namespace LowEngine.Tasks
                     {
                         GetNearestNeed(need).FulFillneed(worker);
 
-                        currentThought = DialogueSys.GetCelebration();
+                        SetThought(DialogueSys.GetCelebration());
 
                         state = State.WaitingForNewTask;
                     }),
@@ -86,7 +92,7 @@ namespace LowEngine.Tasks
                 worker.GetNeed(NeedDefinition.Thirst).Set(100);
 
                 currentTask = "Going home.";
-                currentThought = DialogueSys.GetPitty();
+                SetThought( DialogueSys.GetPitty());
 
                 state = State.WaitingForNewTask;
             }),
@@ -104,7 +110,7 @@ namespace LowEngine.Tasks
         {
             executeAction = () =>
             {
-                currentThought = DialogueSys.GetCelebration();
+                SetThought( DialogueSys.GetCelebration());
 
                 state = State.WaitingForNewTask;
             }
@@ -207,7 +213,7 @@ namespace LowEngine.Tasks
                     }
                 }
 
-                // taskManager.tasks.Enqueue(ComeBack);
+                taskManager.tasks.Enqueue(ComeBack);
             }
         }
 

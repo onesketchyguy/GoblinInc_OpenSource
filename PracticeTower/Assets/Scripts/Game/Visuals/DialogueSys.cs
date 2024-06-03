@@ -10,7 +10,8 @@ namespace LowEngine
             "I *&!*$^# rule!", "Heck yeah!",
             "I'm not saying I'm awesome. I am saying that I'm the opposite of not awesome.",
             "I rule!", "Woo!", "Woo Hoo!", "Boo ya!",
-            "Sometimes I wish I could be some one else, so I could witness how awesome I am."
+            "Sometimes I wish I could be some one else, so I could witness how awesome I am.",
+            "If I'm not the greatest, then I'm as close as I'm gonna get... Yeah, I'm the greatest."
         };
 
         private static string[] pitty = new string[]
@@ -28,11 +29,10 @@ namespace LowEngine
         {
             "Back to the grind.",
             "Another day, another... Well I get paid weekly so I guess it's not always another dollar.",
-            "Work, work, work! Is that all I'm good for? Hm... I think in the long term yes.",
-            "Work, work, work.",
             "What if I just... Didn't press a button? Oh who am I kidding, I'm gonna press all the buttons.",
             "I really hope my desk doesn't smell like THAT all day again...",
             "One of these days I'm gonna go straight to the top! Where ever that may be... Wait is there a top?",
+            "What if I just... Didn't press a button? Oh who am I kidding, I'm gonna press all the buttons.",
         };
 
         private static string[] randomThoughts = new string[]
@@ -40,7 +40,6 @@ namespace LowEngine
             "Work, work, work! Is that all I'm good for? Hm... I think in the long term yes.",
             "Work, work, work.",
             "I wonder if that bird will still be there when I get home..",
-            "What if I just... Didn't press a button? Oh who am I kidding, I'm gonna press all the buttons.",
             "Some times I get this feeling like we're all just part of a small simulation, developed entirely by one guy in his spare time as some sort of homage to those flash games no body plays any more.",
             "I think if I think a thought that was already thought by a thinker that thought before I thought that think my thinks may be thought too thinking to be thought in a clear sense...",
             "There was this one time... Oh no I lost my train of thought.",
@@ -48,6 +47,8 @@ namespace LowEngine
             "Some times I think about thinking.",
             "GREAAAAAAAHHH! And that's when I had simply had enough of her. Walked right out of that button shop after that.",
             "She sells sea shells by the sea shore, well that's not too hard to think, I don't know what people are on about.",
+            "There's this rumor that there's an accounting office... I don't understand what they would be counting, but it sounds terrific!",
+            "Huh? What? I'm awake...",
         };
 
         private static string[] FirstNames = new string[]

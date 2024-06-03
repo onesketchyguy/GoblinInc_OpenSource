@@ -6,7 +6,7 @@
 "wVal":0.0,
 "type":1,
 "objectType":2,
-"fulfilsNeed":0,
+"fulFills":0,
 "childPos":{"x":0.0,"y":0.0,"z":0.0},
 "rotatable":false,
 "changableColor":false}
