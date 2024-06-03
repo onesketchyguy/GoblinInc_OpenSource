@@ -61,14 +61,7 @@ namespace LowEngine
 
                     if (ghostData.placing != null)
                     {
-                        if (i > 0)
-                        {
-                            if (ghostData.okayToPlace)
-                            {
-                                ghostData.okayToPlace = Constructor.NothingBlocking(ghostData.placing, PlacedObject.objectData);
-                            }
-                        }
-                        else
+                        if (ghostData.okayToPlace)
                         {
                             ghostData.okayToPlace = Constructor.NothingBlocking(ghostData.placing, PlacedObject.objectData);
                         }

@@ -132,7 +132,7 @@ namespace LowEngine.Saving
 
         public static bool NothingBlocking(SaveManager.SavableObject.WorldObject placing, SaveManager.SavableObject.WorldObject placedObject)
         {
-            if (placing == null || placedObject.type == placing.type)
+            if (placing == null)
             {
                 return false;
             }
@@ -146,7 +146,7 @@ namespace LowEngine.Saving
                     return (placing.type == ObjectType.Ground);
 
                 case ObjectType.Ground:
-                    return (placing.type == ObjectType.Table);
+                    return (placing.type == ObjectType.Table || placing.type == ObjectType.Ground);
 
                 case ObjectType.Wall:
                     return false;
