@@ -11,12 +11,12 @@ namespace LowEngine
         /// <param name="StartPoint"></param>
         /// <param name="EndPoint"></param>
         /// <returns></returns>
-        public static List<Vector3> GetPoints(Vector3 StartPoint, Vector3 EndPoint)
+        public static List<Vector2> GetPoints(Vector2 StartPoint, Vector2 EndPoint)
         {
-            Vector3Int start = new Vector3Int((int)StartPoint.x, (int)StartPoint.y, (int)StartPoint.z);
-            Vector3Int end = new Vector3Int((int)EndPoint.x, (int)EndPoint.y, (int)EndPoint.z);
+            Vector2Int start = new Vector2Int((int)StartPoint.x, (int)StartPoint.y);
+            Vector2Int end = new Vector2Int((int)EndPoint.x, (int)EndPoint.y);
 
-            List<Vector3> locations = new List<Vector3>();
+            List<Vector2> locations = new List<Vector2>();
 
             if (start.x > end.x)
             {
@@ -26,18 +26,14 @@ namespace LowEngine
                     {
                         for (int y = end.y; y < start.y + 1; y++)
                         {
-                            Vector3 pos = new Vector3(x, y);
-
-                            locations.Add(pos);
+                            locations.Add(new Vector2(x, y));
                         }
                     }
                     else
                     {
                         for (int y = start.y; y < end.y + 1; y++)
                         {
-                            Vector3 pos = new Vector3(x, y);
-
-                            locations.Add(pos);
+                            locations.Add(new Vector2(x, y));
                         }
                     }
                 }
@@ -50,18 +46,14 @@ namespace LowEngine
                     {
                         for (int y = end.y; y < start.y + 1; y++)
                         {
-                            Vector3 pos = new Vector3(x, y);
-
-                            locations.Add(pos);
+                            locations.Add(new Vector2(x, y));
                         }
                     }
                     else
                     {
                         for (int y = start.y; y < end.y + 1; y++)
                         {
-                            Vector3 pos = new Vector3(x, y);
-
-                            locations.Add(pos);
+                            locations.Add(new Vector2(x, y));
                         }
                     }
                 }

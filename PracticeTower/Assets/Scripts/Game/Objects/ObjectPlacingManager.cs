@@ -47,9 +47,9 @@ namespace LowEngine
 
         private Vector3 start = Vector3.forward;
         private Vector2 lastPos;
-        private Vector3[] positions = null;
+        private Vector2[] positions = null;
 
-        private bool positionExists(Vector3 pos)
+        private bool positionExists(Vector2 pos)
         {
             for (int i = 0; i < positions.Length; i++)
             {
@@ -158,7 +158,7 @@ namespace LowEngine
                 {
                     ghostObject.gameObject.SetActive(true);
 
-                    positions = new Vector3[] { MousePos };
+                    positions = new Vector2[] { MousePos };
                 }
             }
 
