@@ -35,4 +35,4 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
-PracticeTower/Logs/*.log
+/PracticeTower/Logs
