@@ -336,35 +336,29 @@ namespace LowEngine
 
         private void UpdateGhostCount()
         {
-            var task = new System.Threading.Tasks.Task(
-                () => {
-                    while (Ghosts.Count > positions.Length)
+            if (Ghosts.Count > positions.Length)
+            {
+                for (int i = 0; i < Ghosts.Count; i++)
+                {
+                    var item = Ghosts[i];
+
+                    if (item == null || item.gameObject.activeSelf == false)
                     {
-                        for (int i = 0; i < Ghosts.Count; i++)
-                        {
-                            var item = Ghosts[i];
+                        Ghosts.Remove(item);
 
-                            if (item == null || item.gameObject.activeSelf == false)
-                            {
-                                Ghosts.Remove(item);
+                        break;
+                    }
 
-                                break;
-                            }
+                    if (positionExists(item.transform.position) == false)
+                    {
+                        item.gameObject.SetActive(false);
 
-                            if (positionExists(item.transform.position) == false)
-                            {
-                                item.gameObject.SetActive(false);
+                        Ghosts.Remove(item);
 
-                                Ghosts.Remove(item);
-
-                                break;
-                            }
-                        }
+                        break;
                     }
                 }
-            );
-
-            task.Start();
+            }
         }
 
         private void CreateGhost(string objectName = "BullDozer", SaveManager.SavableObject.WorldObject placing = null)

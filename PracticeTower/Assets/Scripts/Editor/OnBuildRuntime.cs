@@ -39,22 +39,25 @@ namespace LowEngine
 
             foreach (var dir in Directory.EnumerateDirectories(fromDir))
             {
-                var dirNames = dir.Split('\\');
-                if (dirNames == null || dirNames.Length == 0) dirNames = dir.Split('/');
+                var dirNames = dir.Split('/');
+                if (dirNames == null || dirNames.Length == 0) dirNames = dir.Split('\\');
 
                 string dirName = "";
 
                 for (int i = 0; i < dirNames.Length; i++)
                     if (dirNames[i].Length > 2) dirName = dirNames[i];
 
-                toDir = $"{toDir}\\{dirName}\\";
+                if (dirName.Contains("Saves")) continue;
+
+                if (Directory.Exists($"{toDir}/{dirName}") == false) Directory.CreateDirectory($"{toDir}/{dirName}");
 
                 foreach (var mod in Directory.EnumerateFiles(dir))
                 {
                     if (mod.Contains(".meta")) continue;
 
-                    string modName = mod.Split('\\').LastOrDefault();
-                    File.Copy(mod, $"{toDir}\\{modName}");
+                    string modName = mod.Split('/').LastOrDefault().Split('\\').LastOrDefault();
+                    // Debug.Log($"{toDir} /{dirName}  + / + {modName}");
+                    File.Copy(mod, $"{toDir}/{dirName}/{modName}");
                 }
 
                 // Try to get all the child folders too
