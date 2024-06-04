@@ -1,7 +1,9 @@
 ﻿using LowEngine.Saving;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 namespace LowEngine
 {
@@ -53,7 +55,7 @@ namespace LowEngine
         {
             for (int i = 0; i < positions.Length; i++)
             {
-                if (pos == positions[i]) return true;
+                if (Vector2.Distance(pos, positions[i]) < 0.5f) return true;
             }
 
             return false;
@@ -64,22 +66,33 @@ namespace LowEngine
             if (cursorManager == null) cursorManager = CursorManager.instance;
 
             //Handle UI
+            if (!HandleUI()) return;
+
+            if (colorPicker != null) PlacingColor = colorPicker.SelectedColor;
+
+            if (Spawning != null)
+            {
+                if (Time.frameCount % 5 == 0) CursorManager.instance.UpdateCursor();
+
+                HandlePlacing();
+            }
+
+            if (bullDozing)
+            {
+                HandleBulldozing();
+            }
+        }
+
+        bool HandleUI()
+        {
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 //When user mouse is over the UI we want to show the cursor.
-                Cursor.visible = true;
+                UnityEngine.Cursor.visible = true;
 
                 //If the user requests a new item, clear the existing one.
                 if (Spawning != null || bullDozing == true)
                 {
-                    if (Spawning != null)
-                    {
-                        Texture2D texture = Modding.ModLoader.GetTexture(Spawning.spriteName);
-
-                        if (cursorManager != null && texture != null)
-                            cursorManager.UpdateCursor(texture);
-                    }
-
                     //Continue following the cursor so that the ghost doesn't just sit there.
                     if (ghostObject != null)
                     {
@@ -91,22 +104,10 @@ namespace LowEngine
                 }
 
                 //Stop reading.
-                return;
+                return false;
             }
 
-            if (colorPicker != null) PlacingColor = colorPicker.SelectedColor;
-
-            if (Spawning != null)
-            {
-                CursorManager.instance.UpdateCursor();
-
-                HandlePlacing();
-            }
-
-            if (bullDozing)
-            {
-                HandleBulldozing();
-            }
+            return true;
         }
 
         private void HandlePlacing()
@@ -146,12 +147,15 @@ namespace LowEngine
                 if (start != Vector3.forward)
                 {
                     ghostObject.gameObject.SetActive(false);
+                    var points = PointGenerator.GetPoints(start, MousePos);
+                    positions = new Vector2[points.Count];
+                    var i = 0;
 
-                    positions = PointGenerator.GetPoints(start, MousePos).ToArray();
-
-                    foreach (var position in positions)
+                    foreach (var position in points)
                     {
                         CreateGhost(position, Spawning.name, Spawning, ghostSprite);
+                        positions[i] = position;
+                        i++;
                     }
                 }
                 else
@@ -232,7 +236,7 @@ namespace LowEngine
         {
             if (ghostObject == null)
             {
-                Cursor.SetCursor(bulldozer, MousePos, CursorMode.Auto);
+                UnityEngine.Cursor.SetCursor(bulldozer, MousePos, CursorMode.Auto);
 
                 CreateGhost();
             }
@@ -284,13 +288,11 @@ namespace LowEngine
 
             void CreateObject()
             {
-                Debug.Log($"Placing ghost at {position}");
+                // Debug.Log($"Placing ghost at {position}");
 
                 var Ghost = Tasks.GhostManager.GetGhost(placing);
-
                 Ghost.transform.position = position;
-
-                Ghost.CheckForCollisions();
+                if (Time.frameCount % 3 == 0) Ghost.CheckForCollisions();
 
                 Ghosts.Add(Ghost);
             }
@@ -307,13 +309,14 @@ namespace LowEngine
 
                     if (positionExists(item.transform.position) == false)
                     {
-                        Ghosts[i].gameObject.SetActive(false);
+                        item.gameObject.SetActive(false); // NOTE: This should NEVER happen
+                        Debug.Log("Invalid Ghost detected");
                         continue;
                     }
                     else
                     if (item.transform.position == position)
                     {
-                        item.CheckForCollisions();
+                        if (Time.frameCount % 10 == 0) item.CheckForCollisions();
 
                         itemExistsAtPosition = true;
                         continue;
@@ -333,35 +336,35 @@ namespace LowEngine
 
         private void UpdateGhostCount()
         {
-            while (Ghosts.Count > positions.Length)
-            {
-                for (int i = 0; i < Ghosts.Count; i++)
-                {
-                    var item = Ghosts[i];
-
-                    if (item == null || item.gameObject.activeSelf == false)
+            var task = new System.Threading.Tasks.Task(
+                () => {
+                    while (Ghosts.Count > positions.Length)
                     {
-                        Ghosts.Remove(item);
+                        for (int i = 0; i < Ghosts.Count; i++)
+                        {
+                            var item = Ghosts[i];
 
-                        break;
-                    }
+                            if (item == null || item.gameObject.activeSelf == false)
+                            {
+                                Ghosts.Remove(item);
 
-                    if (positionExists(item.transform.position) == false)
-                    {
-                        item.gameObject.SetActive(false);
+                                break;
+                            }
 
-                        Ghosts.Remove(item);
+                            if (positionExists(item.transform.position) == false)
+                            {
+                                item.gameObject.SetActive(false);
 
-                        break;
+                                Ghosts.Remove(item);
+
+                                break;
+                            }
+                        }
                     }
                 }
+            );
 
-                if (Ghosts.Count > positions.Length)
-                {
-                    Invoke("UpdateGhostCount", 0.1f);
-                    break;
-                }
-            }
+            task.Start();
         }
 
         private void CreateGhost(string objectName = "BullDozer", SaveManager.SavableObject.WorldObject placing = null)
@@ -382,6 +385,10 @@ namespace LowEngine
             ClearObject();
 
             Spawning = obj;
+
+            Texture2D texture = Modding.ModLoader.GetTexture(Spawning.spriteName);
+
+            if (cursorManager != null && texture != null) cursorManager.UpdateCursor(texture);
         }
 
         private void SpawnObject(Vector3 spawnPoint)
@@ -391,7 +398,7 @@ namespace LowEngine
                 return;
             }
 
-            Debug.Log($"Spawning {Spawning.name} at {spawnPoint}");
+            // Debug.Log($"Spawning {Spawning.name} at {spawnPoint}");
 
             if (GameHandler.instance.Money < Spawning.pVal)
             {
@@ -422,7 +429,7 @@ namespace LowEngine
 
             GameHandler.instance.Money -= Spawning.pVal;
 
-            Debug.Log($"Spawned {Spawning.name} at {spawnPoint}");
+            // Debug.Log($"Spawned {Spawning.name} at {spawnPoint}");
         }
 
         private void RotatePlacing(float degrees)
@@ -443,7 +450,6 @@ namespace LowEngine
             ghostSprite = null;
 
             GameHandler.gameState = GameHandler.GameState.Default;
-
             CursorManager.instance.UpdateCursor();
         }
 
@@ -452,6 +458,7 @@ namespace LowEngine
             if (bullDozing)
             {
                 ClearObject();
+                if (cursorManager != null) cursorManager.UpdateCursor(bulldozer);
             }
 
             bullDozing = !bullDozing;
