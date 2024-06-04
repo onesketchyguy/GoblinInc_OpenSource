@@ -53,6 +53,7 @@ namespace LowEngine.Tasks
                 }
                 else
                 {
+                    NotificationManager.instance.ShowNotificationOnce($"{worker.workerData.name} cannot find a desk");
                     SetThought("I can't find a desk.");
                 }
 

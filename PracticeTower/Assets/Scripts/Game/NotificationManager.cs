@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 
 namespace LowEngine
 {
@@ -12,9 +13,24 @@ namespace LowEngine
 
         Queue<Button> notifications = new Queue<Button>() { };
 
+        List<string> oneNotifications = new List<string>();
+
         private void Awake()
         {
             instance = this;
+        }
+
+        public void ShowNotificationOnce(string notText)
+        {
+            if (oneNotifications.Contains(notText)) return;
+            oneNotifications.Add(notText);
+
+            CancelInvoke("ClearOldestNotification");
+            Button notification = Instantiate(CreateButton(notText), transform);
+            notification.name = notText;
+            notification.onClick.AddListener(() => ClearNotificationOne(notification.gameObject));
+            notifications.Enqueue(notification);
+            Invoke("ClearOldestNotification", 5);
         }
 
         public void ShowNotification(string notText)
@@ -37,7 +53,10 @@ namespace LowEngine
                 Button go = notifications.Dequeue();
 
                 if (go != null)
+                {
+                    if (oneNotifications.Contains(go.gameObject.name)) oneNotifications.Remove(go.gameObject.name);
                     Destroy(go.gameObject);
+                }
 
                 if (notifications.Count > 0) Invoke("ClearOldestNotification", 5);
             }
@@ -45,6 +64,12 @@ namespace LowEngine
             {
                 CancelInvoke("ClearOldestNotification");
             }
+        }
+
+        void ClearNotificationOne(GameObject obj)
+        {
+            oneNotifications.Remove(obj.name);
+            Destroy(obj);
         }
 
         void ClearNotification(GameObject obj)
